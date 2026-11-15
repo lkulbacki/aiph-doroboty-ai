@@ -8,6 +8,8 @@
 @import "./records.css";
 @import "./application.css";
 @import "./editaurus.css";
+@import "./editorial-job-row.css";
+@import "./candidate-hero.css";
 @import "./interactions.css";
 
 @theme inline {

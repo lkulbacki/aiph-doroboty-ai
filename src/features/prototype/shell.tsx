@@ -14,6 +14,8 @@ import {
   Settings,
   LayoutDashboard,
 } from "lucide-react";
+import landingLogoOutline from "@/features/editaurus/assets/logo-poziome-kontur.svg";
+import landingLogo from "@/features/editaurus/assets/logo-poziome-na-zielonym.svg";
 import { BrandMark } from "@/features/public/brand-mark";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { currentPerson } from "./model";
@@ -204,21 +206,47 @@ export function Shell() {
         </div>
       ) : (
         <>
-          <header className="bg-background/95 shadow-[var(--gui-divider-bottom-shadow)] backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <header
+            className={
+              pathname === "/"
+                ? "candidate-home-header editaurus-surface"
+                : "bg-background/95 shadow-[var(--gui-divider-bottom-shadow)] backdrop-blur supports-[backdrop-filter]:bg-background/80"
+            }
+          >
             <div className="mx-auto flex h-16 max-w-[1360px] items-center justify-between gap-4 px-5 lg:px-8">
               <Link
                 className="flex items-center gap-2.5 text-base font-semibold tracking-[var(--gui-tracking-s)]"
                 to="/"
                 aria-label="DoRoboty.ai — strona główna"
               >
-                <BrandMark />
-                <span>DoRoboty.ai</span>
+                {pathname === "/" ? (
+                  <span className="candidate-home-logo" aria-hidden="true">
+                    <img src={landingLogo} alt="" width={935} height={318} />
+                    <img
+                      className="candidate-home-logo-outline"
+                      src={landingLogoOutline}
+                      alt=""
+                      width={935}
+                      height={318}
+                    />
+                  </span>
+                ) : (
+                  <>
+                    <BrandMark />
+                    <span>DoRoboty.ai</span>
+                  </>
+                )}
               </Link>
               <nav aria-label="Główna nawigacja" className="flex items-center gap-2 sm:gap-5">
                 {navigation.map((item) => (
                   <Link
                     key={item.to}
-                    className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:inline"
+                    className={cn(
+                      "text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
+                      pathname === "/" && item.label === "Dla firm"
+                        ? "whitespace-nowrap"
+                        : "hidden md:inline",
+                    )}
                     to={item.to}
                   >
                     {item.label}
@@ -243,9 +271,13 @@ export function Shell() {
                       </>
                     )}
                     <Link
+                      data-home-control="ghost"
                       to="/app"
                       className={cn(
-                        buttonVariants({ variant: "outline", size: "lg" }),
+                        buttonVariants({
+                          variant: pathname === "/" ? "ghost" : "outline",
+                          size: "lg",
+                        }),
                         "text-sm font-medium max-sm:min-h-10 max-sm:px-[var(--gui-space-xs)] max-sm:text-sm",
                       )}
                     >
@@ -257,6 +289,7 @@ export function Shell() {
                         "hidden md:inline-flex",
                       )}
                       to="/auth/sign-in"
+                      data-home-control="ghost"
                       aria-label="Zmień osobę"
                       title="Zmień osobę"
                     >
@@ -266,6 +299,7 @@ export function Shell() {
                 ) : (
                   <>
                     <Link
+                      data-home-control
                       to="/auth/sign-in?audience=candidate"
                       className={cn(
                         buttonVariants({ variant: "outline", size: "lg" }),

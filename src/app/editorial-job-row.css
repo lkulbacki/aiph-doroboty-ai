@@ -1,0 +1,210 @@
+.editorial-job-row {
+  --role-color: var(--ed-paper);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.64fr) minmax(0, 1fr) minmax(0, 0.76fr);
+  align-items: center;
+  gap: clamp(12px, 2.2vw, 32px);
+  padding: 24px 15px;
+  border-top: 1px solid var(--ed-line);
+  overflow-wrap: anywhere;
+  transition: background-color 190ms;
+}
+
+.editorial-job-row:last-child {
+  border-bottom: 1px solid var(--ed-line);
+}
+
+.editorial-job-row[data-category="build"] {
+  --role-color: var(--ed-pink);
+}
+
+.editorial-job-row[data-category="apply"] {
+  --role-color: var(--ed-yellow);
+}
+
+.editorial-job-row[data-category="lead"] {
+  --role-color: var(--ed-mint);
+}
+
+.editorial-job-row:has(a:focus-visible) {
+  background-color: var(--role-color);
+}
+
+@media (hover: hover) {
+  .editorial-job-row:hover {
+    background-color: var(--role-color);
+  }
+
+  .editorial-job-row:hover .editorial-job-category {
+    background-color: var(--ed-paper);
+  }
+}
+
+.editorial-job-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  padding-bottom: 8px;
+  color: var(--ed-green);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.editorial-job-category {
+  padding: 4px 7px;
+  border: 1px solid var(--ed-ink);
+  background: var(--role-color);
+  color: var(--ed-ink);
+  font-size: 10px;
+  font-weight: 900;
+  transition: background-color 190ms;
+}
+
+.editorial-job-row:has(a:focus-visible) .editorial-job-category {
+  background-color: var(--ed-paper);
+}
+
+.editorial-job-row .editorial-job-title {
+  font-family: inherit;
+  font-size: clamp(18px, 1.55vw, 22px);
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: -0.055em;
+}
+
+.editorial-job-title a::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+
+.editorial-job-row .editorial-job-title a:focus-visible {
+  outline: none;
+}
+
+.editorial-job-title a:focus-visible::after {
+  outline: 3px solid var(--ed-green);
+  outline-offset: -3px;
+}
+
+.editorial-job-company {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.editorial-job-company [data-company-logo] {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  background: var(--ed-paper);
+  color: var(--ed-ink);
+}
+
+.editorial-job-company a {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.editorial-job-company a:is(:hover, :focus-visible) {
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
+.editorial-job-company p,
+.editorial-job-pay p {
+  color: var(--ed-green);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.editorial-job-pay > p {
+  margin-top: 5px;
+}
+
+.editorial-job-pay .pp-salary-tag {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.3;
+  letter-spacing: normal;
+}
+
+.editorial-job-pay .pp-salary-description {
+  color: var(--ed-green);
+  margin-top: 2px;
+}
+
+.editorial-job-pay .pp-salary-missing {
+  color: var(--ed-green);
+  font-size: 12px;
+}
+
+@media (max-width: 550px) {
+  .editorial-job-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 20px 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editorial-job-row,
+  .editorial-job-category {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .editorial-job-title a:focus-visible::after {
+    outline-color: Highlight;
+  }
+}
+
+.editorial-job-save {
+  position: relative;
+  z-index: 1;
+  min-width: 44px;
+  min-height: 44px;
+  justify-self: end;
+  border-radius: 4px;
+  color: var(--ed-ink);
+  --control-hover-bg: var(--ed-field-light);
+  --control-hover-text: var(--ed-green);
+}
+
+.editorial-job-save:is([aria-pressed="true"], :hover:not([data-just-unsaved])) svg {
+  color: var(--ed-green);
+  fill: var(--ed-green);
+}
+
+.editorial-job-save[data-just-unsaved] {
+  --control-hover-text: var(--ed-ink);
+}
+
+.editorial-job-row:has(.editorial-job-save) {
+  grid-template-columns: minmax(0, 1.64fr) minmax(0, 1fr) minmax(0, 0.76fr) 44px;
+}
+
+@media (max-width: 650px) {
+  .editorial-job-row:has(.editorial-job-save) {
+    grid-template-columns: minmax(0, 1fr) 44px;
+  }
+
+  .editorial-job-row:has(.editorial-job-save) :is(.editorial-job-company, .editorial-job-pay) {
+    grid-column: 1 / -1;
+  }
+
+  .editorial-job-save {
+    grid-area: 1 / 2;
+    align-self: start;
+  }
+}

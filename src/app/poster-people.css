@@ -48,7 +48,9 @@ textarea:focus-visible {
   border: 1px solid var(--foreground);
   border-radius: 10px;
 }
-header:has([aria-label="Główna nawigacja"]) {
+header:has([aria-label="Główna nawigacja"]):not(
+    :where(.candidate-home-header)
+  ) {
   background: #fff;
   backdrop-filter: none;
 }
