@@ -45,10 +45,6 @@ export function JobCard({
     </Button>
   );
   if (variant === "editorial") {
-    const workMode = remoteLabels[job.remoteStatus];
-    const workplace = job.locations.includes(workMode)
-      ? job.locations
-      : [...job.locations, workMode];
     return (
       <article className="editorial-job-row" data-category={job.category}>
         <div>
@@ -65,7 +61,8 @@ export function JobCard({
           <CompanyLogo company={job.company} />
           <div>
             <Link to={`/firmy/${job.company.slug}`}>{job.company.name}</Link>
-            <p>{workplace.join(" · ")}</p>
+            <p>{job.locations.join(" · ")}</p>
+            <p>{remoteLabels[job.remoteStatus]}</p>
             <p>{contractLabels[job.contract]}</p>
           </div>
         </div>

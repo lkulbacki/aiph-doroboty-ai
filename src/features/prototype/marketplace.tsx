@@ -599,57 +599,72 @@ export function CompanyPage() {
   if (!company) return <NotFound />;
   const jobs = publishedJobs(state).filter((x) => x.companyId === company.id);
   return (
-    <article className="mx-auto max-w-[1360px] px-5 py-14 lg:px-8 lg:py-20">
-      <div className="grid gap-8 pb-12 shadow-[var(--gui-divider-bottom-shadow)] lg:grid-cols-[1fr_320px]">
-        <div>
-          <CompanyLogo company={company} size="large" />
-          <h1 className="mt-3 text-4xl font-semibold tracking-[var(--gui-tracking-s)] sm:text-5xl">
-            {company.name}
-          </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-relaxed">{company.summary}</p>
-          <p className="mt-5 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            {company.description}
-          </p>
+    <article className="editaurus-surface editorial-offer editorial-company">
+      <div className="editorial-offer-inner">
+        <nav className="editorial-offer-breadcrumb" aria-label="Powrót do ofert">
+          <BackLink to="/oferty">Wróć do ofert</BackLink>
+        </nav>
+        <div className="editorial-offer-grid editorial-company-grid">
+          <header className="editorial-offer-hero">
+            <div className="editorial-offer-identity">
+              <CompanyLogo company={company} />
+              <p className="editorial-offer-eyebrow">Profil firmy</p>
+            </div>
+            <h1>{company.name}</h1>
+            <p className="editorial-offer-hero-bottom">{company.summary}</p>
+          </header>
+          <aside className="editorial-offer-sidebar" aria-label="Informacje o firmie">
+            <h2 className="editorial-offer-eyebrow">Informacje o firmie</h2>
+            <dl className="editorial-offer-terms">
+              <div>
+                <dt>
+                  <MapPin aria-hidden="true" /> Lokalizacja
+                </dt>
+                <dd>{company.location}</dd>
+              </div>
+              <div>
+                <dt>
+                  <Users aria-hidden="true" /> Wielkość
+                </dt>
+                <dd>{company.sizeLabel}</dd>
+              </div>
+            </dl>
+            {/^https?:\/\//i.test(company.websiteUrl) && (
+              <a
+                className="editorial-offer-text-link"
+                href={company.websiteUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Strona firmy <ArrowUpRight size={15} aria-hidden="true" />
+              </a>
+            )}
+          </aside>
+          <section className="editorial-offer-employer" aria-labelledby="company-about">
+            <h2 id="company-about">O firmie</h2>
+            <div className="editorial-offer-company-copy">
+              <p>{company.description}</p>
+            </div>
+          </section>
         </div>
-        <dl className="h-fit rounded-xl bg-muted/35 p-6 text-sm">
-          <div className="flex gap-2">
-            <MapPin className="size-5" />
-            <div>
-              <dt className="font-medium">Lokalizacja</dt>
-              <dd className="mt-1 text-muted-foreground">{company.location}</dd>
-            </div>
+        <section className="editorial-offer-related" aria-labelledby="company-roles">
+          <div className="editorial-offer-related-heading">
+            <h2 id="company-roles">Otwarte role</h2>
+            <Link className="editorial-offer-text-link" to="/oferty">
+              Wszystkie oferty
+            </Link>
           </div>
-          <div className="mt-5 flex gap-2">
-            <Users className="size-5" />
+          {jobs.length > 0 ? (
             <div>
-              <dt className="font-medium">Wielkość</dt>
-              <dd className="mt-1 text-muted-foreground">{company.sizeLabel}</dd>
+              {jobs.map((job) => (
+                <JobCard key={job.id} job={job} variant="editorial" />
+              ))}
             </div>
-          </div>
-          {/^https?:\/\//i.test(company.websiteUrl) && (
-            <a
-              className="mt-6 inline-flex items-center gap-2 font-medium text-[var(--gui-link)] hover:underline"
-              href={company.websiteUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Strona firmy <ArrowUpRight className="size-4" />
-            </a>
+          ) : (
+            <p className="editorial-company-empty">Ta firma nie ma teraz aktywnych ofert.</p>
           )}
-        </dl>
+        </section>
       </div>
-      <section className="py-12">
-        <h2 className="text-2xl font-semibold">Otwarte role</h2>
-        {jobs.length > 0 ? (
-          <div className="mt-7 pp-job-list">
-            {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
-            ))}
-          </div>
-        ) : (
-          <p className="mt-5 text-lg">Ta firma nie ma teraz aktywnych ofert.</p>
-        )}
-      </section>
     </article>
   );
 }

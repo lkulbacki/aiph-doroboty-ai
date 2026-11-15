@@ -72,7 +72,8 @@ export function Shell() {
   const { state, issue, error, clearError } = usePrototype();
   const person = currentPerson(state);
   const { pathname } = useLocation();
-  const editorialMarketplace = pathname === "/oferty" || pathname.startsWith("/oferty/");
+  const editorialMarketplace =
+    pathname === "/oferty" || pathname.startsWith("/oferty/") || pathname.startsWith("/firmy/");
   const workspace = pathname.startsWith("/app") && person;
   const [menuAt, setMenuAt] = useState<string | null>(null);
   const main = useRef<HTMLElement>(null);

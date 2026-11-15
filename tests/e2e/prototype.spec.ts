@@ -562,11 +562,14 @@ test("Editorial offer keeps desktop conditions/actions and places them before mo
   await expect(page.getByRole("heading", { name: "Anna Kowalska", exact: true })).toHaveCount(0);
 });
 
-test("restored company and public navigation keep their structure across screen sizes", async ({
+test("editorial company profile connects offers and handles an empty list across screen sizes", async ({
   page,
 }) => {
   await choose(page, "Anna Kowalska");
-  await page.goto("/#/firmy/brightlabs");
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/#/oferty/ai-product-manager");
+  await page.getByRole("link", { name: "Oferty tej firmy", exact: true }).click();
+  await expect(page).toHaveURL(/#\/firmy\/brightlabs$/);
   await expect(page.getByRole("heading", { name: "BrightLabs", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Otwarte role", exact: true })).toBeVisible();
   await expect(page.locator("main")).toContainText("51–200 osób");
@@ -574,7 +577,7 @@ test("restored company and public navigation keep their structure across screen 
     "href",
     "https://example.com/brightlabs",
   );
-  await page.screenshot({ path: "artifacts/original-company-layout-desktop.png", fullPage: true });
+  await page.screenshot({ path: "artifacts/editorial-company-layout-desktop.png", fullPage: true });
   for (const width of [320, 640, 768, 1024]) {
     await page.setViewportSize({ width, height: 900 });
     const nav = await page.getByRole("navigation", { name: "Główna nawigacja" }).boundingBox();
@@ -583,6 +586,16 @@ test("restored company and public navigation keep their structure across screen 
       true,
     );
   }
+  await page.setViewportSize({ width: 390, height: 844 });
+  const company = page.locator(".editorial-company");
+  const facts = company.getByRole("complementary", { name: "Informacje o firmie" });
+  const roles = company.getByRole("region", { name: "Otwarte role" });
+  expect((await facts.boundingBox())!.y).toBeLessThan((await roles.boundingBox())!.y);
+  await expect(roles.locator(".editorial-job-row")).toHaveCount(2);
+  const next = roles.getByRole("link", { name: "AI Operations Specialist", exact: true });
+  await next.focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#\/oferty\/ai-operations-specialist$/);
   await page.goto("/#/oferty");
   await page.setViewportSize({ width: 1440, height: 1000 });
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
@@ -591,6 +604,19 @@ test("restored company and public navigation keep their structure across screen 
   await expect(page.getByRole("textbox", { name: "Szukaj ofert", exact: true })).toBeVisible();
   await expect(page.locator("[data-job-page-summary]")).toHaveText("Oferty 1–6 z 6");
   await page.screenshot({ path: "artifacts/original-list-layout-desktop.png", fullPage: true });
+
+  const empty = initialState();
+  for (const job of empty.jobs) {
+    if (job.companyId === empty.companies[0].id) job.publicationStatus = "archived";
+  }
+  await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
+    key: STORAGE_KEY,
+    value: JSON.stringify(empty),
+  });
+  await page.goto("/#/firmy/brightlabs");
+  await page.reload();
+  await expect(page.getByText("Ta firma nie ma teraz aktywnych ofert.")).toBeVisible();
+  await expect(roles.locator(".editorial-job-row")).toHaveCount(0);
 });
 
 test("mobile search stays visible and filter dialog restores focus", async ({ page }) => {
@@ -861,7 +887,8 @@ test("homepage surfaces and marketplace action type roles match the shared refer
   const lead = latest.locator('article[data-category="lead"]').first();
   const company = lead.getByRole("link", { name: "BrightLabs" });
   await expect(company).toHaveAttribute("href", "#/firmy/brightlabs");
-  await expect(lead.getByText("Warszawa · Hybrydowo", { exact: true })).toBeVisible();
+  const facts = lead.locator(".editorial-job-company p");
+  await expect(facts).toHaveText(["Warszawa", "Hybrydowo", "Umowa o pracę"]);
   await expect(lead.getByText("Umowa o pracę", { exact: true })).toBeVisible();
   await expect(lead.getByText("Product", { exact: true })).toBeVisible();
   await expect(lead.getByText("brutto / mies.", { exact: true })).toBeVisible();

@@ -303,3 +303,49 @@
     margin-block: 0 24px;
   }
 }
+
+.editorial-company-grid {
+  grid-template-areas: "hero sidebar" "employer sidebar";
+}
+
+.editorial-company .editorial-offer-sidebar {
+  position: static;
+}
+
+.editorial-company .editorial-offer-sidebar h2 {
+  font-size: 11px;
+  letter-spacing: 0.09em;
+}
+
+.editorial-company .editorial-offer-terms dt {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.editorial-company .editorial-offer-terms svg,
+.editorial-company .editorial-offer-text-link svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.editorial-company .editorial-offer-sidebar a {
+  gap: 6px;
+}
+
+.editorial-company .editorial-offer-employer {
+  border-top: 1px solid var(--ed-line);
+}
+
+.editorial-company-empty {
+  padding-block: 18px;
+  border-block: 1px solid var(--ed-line);
+  color: var(--ed-green);
+}
+
+@media (max-width: 850px) {
+  .editorial-company-grid {
+    grid-template-areas: "hero" "sidebar" "employer";
+  }
+}
