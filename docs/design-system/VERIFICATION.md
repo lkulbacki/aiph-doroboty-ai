@@ -1,5 +1,7 @@
 # Poster People — application acceptance checklist
 
+> **Migration notice:** This checklist is evidence and regression guidance for the existing Poster People adaptation. Use [editaurus](editaurus/README.md) for the visual target of migrated screens. Its source-value table is not an editaurus acceptance test; retain relevant behavior, accessibility, content, and recovery checks.
+
 Use with [implementation rules](IMPLEMENTATION.md) and the [project guide](README.md). This checklist incorporates the implementation audits A01–A08/R01–R04 and the later process/application/interaction work. Read the [host catalog](HOST-COMPONENTS.md), [record APIs](RECORDS.md) and [status/open findings](STATUS.md) for current owners. It defines checks to execute; it does not claim any future screen has passed them.
 
 ## Evidence required before completion

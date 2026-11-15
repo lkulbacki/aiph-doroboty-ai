@@ -1,5 +1,7 @@
 # Poster People — host implementation rules
 
+> **Migration notice:** [editaurus](editaurus/README.md) is the visual target for migrated screens. This document remains the map of current owners and behavior. Poster People values below describe the existing implementation until each affected surface is migrated and verified.
+
 Read with the [project guide](README.md), [host catalog](HOST-COMPONENTS.md), [current status](STATUS.md), immutable [component API](agent-kit/components/API.md) and [human reference](agent-kit/reference/components.md). These are project integration rules, not a replacement v1 kit or a new reference release. Use the [acceptance checklist](VERIFICATION.md) before claiming completion.
 
 ## Start from anatomy, then adapt

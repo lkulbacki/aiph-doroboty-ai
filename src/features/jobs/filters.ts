@@ -23,6 +23,8 @@ const filterSchema = z.object({
   contract: z.enum(contractTypes).optional(),
   location: z.string().trim().max(80).optional(),
   query: z.string().trim().max(100).optional(),
+  minSalary: z.coerce.number().int().min(0).max(30000).optional().catch(undefined),
+  sort: z.enum(["salary", "az"]).optional().catch(undefined),
   page: z.coerce.number().int().min(1).max(Number.MAX_SAFE_INTEGER).catch(1),
 });
 
@@ -35,6 +37,8 @@ export function parseJobFilters(params: SearchParams): JobFilters {
     contract: optional(params.contract),
     location: optional(params.location),
     query: optional(params.query),
+    minSalary: optional(params.minSalary),
+    sort: optional(params.sort),
     page: first(params.page) ?? 1,
   });
 
@@ -59,12 +63,28 @@ export function filterJobs(items: JobWithCompany[], filters: JobFilters) {
     ) {
       return false;
     }
+    if (filters.minSalary && (monthlyPln(job, job.salaryMin) ?? 0) < filters.minSalary)
+      return false;
     if (query) {
       const haystack = `${job.title} ${job.summary} ${job.company.name}`.toLocaleLowerCase("pl");
       if (!haystack.includes(query)) return false;
     }
     return true;
   });
+}
+
+function monthlyPln(job: JobWithCompany, value: number | undefined) {
+  if (job.salaryCurrency === "EUR" || value === undefined) return undefined;
+  return job.salaryPeriod === "year" ? value / 12 : value;
+}
+
+export function sortJobs(jobs: JobWithCompany[], sort: JobFilters["sort"]) {
+  if (sort === "az") return [...jobs].sort((a, b) => a.title.localeCompare(b.title, "pl"));
+  if (sort === "salary") {
+    const upperPay = (job: JobWithCompany) => monthlyPln(job, job.salaryMax ?? job.salaryMin) ?? -1;
+    return [...jobs].sort((a, b) => upperPay(b) - upperPay(a));
+  }
+  return jobs;
 }
 
 export function hasIndexableFilters(filters: JobFilters) {
@@ -76,6 +96,8 @@ export function hasIndexableFilters(filters: JobFilters) {
     filters.contract ||
     filters.location ||
     filters.query ||
+    filters.minSalary ||
+    filters.sort ||
     filters.page > 1,
   );
 }

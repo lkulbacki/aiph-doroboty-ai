@@ -30,8 +30,10 @@ export function jobListingHref(filters: JobFilters, page = 1, view: "list" | "ma
     "seniority",
     "contract",
     "location",
+    "minSalary",
+    "sort",
   ] as const) {
-    if (filters[key]) query.set(key, filters[key]);
+    if (filters[key]) query.set(key, String(filters[key]));
   }
   if (view === "map") query.set("view", "map");
   else if (page > 1) query.set("page", String(page));

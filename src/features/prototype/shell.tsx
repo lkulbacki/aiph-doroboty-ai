@@ -210,7 +210,9 @@ export function Shell() {
             className={
               pathname === "/"
                 ? "candidate-home-header editaurus-surface"
-                : "bg-background/95 shadow-[var(--gui-divider-bottom-shadow)] backdrop-blur supports-[backdrop-filter]:bg-background/80"
+                : pathname === "/oferty"
+                  ? "editorial-listing-header editaurus-surface"
+                  : "bg-background/95 shadow-[var(--gui-divider-bottom-shadow)] backdrop-blur supports-[backdrop-filter]:bg-background/80"
             }
           >
             <div className="mx-auto flex h-16 max-w-[1360px] items-center justify-between gap-4 px-5 lg:px-8">
@@ -230,6 +232,8 @@ export function Shell() {
                       height={318}
                     />
                   </span>
+                ) : pathname === "/oferty" ? (
+                  <span className="editorial-listing-logo" aria-hidden="true" />
                 ) : (
                   <>
                     <BrandMark />

@@ -1,7 +1,15 @@
+import { Autocomplete } from "@base-ui/react/autocomplete";
 import { Link, useLocation, useParams, useSearchParams } from "react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowUpRight, Users, MapPin, BriefcaseBusiness, Bookmark } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search, ArrowRight, Monitor, X } from "lucide-react";
 import { BackLink } from "@/components/back-link";
 import { ResponsivePanel } from "@/components/responsive-panel";
@@ -13,7 +21,7 @@ import { JobCard } from "@/features/jobs/job-card";
 import { JobFiltersForm } from "@/features/jobs/job-filters";
 import { JobPagination } from "@/features/jobs/job-pagination";
 import { JobDescription } from "@/features/jobs/job-description";
-import { filterJobs, parseJobFilters } from "@/features/jobs/filters";
+import { filterJobs, parseJobFilters, sortJobs } from "@/features/jobs/filters";
 import { paginateJobs, jobListingHref } from "@/features/jobs/pagination";
 import {
   categoryLabels,
@@ -25,6 +33,10 @@ import type { JobWithCompany } from "@/features/jobs/types";
 import { usePrototype } from "./store";
 import { currentPerson, publishedJobs } from "./model";
 import { NotFound } from "./shell";
+import centaurBuild from "@/features/editaurus/assets/centaur-build.webp";
+import centaurApply from "@/features/editaurus/assets/centaur-apply.webp";
+import centaurLead from "@/features/editaurus/assets/centaur-lead.webp";
+import centaurHero from "@/features/editaurus/assets/centaur-hero.webp";
 import { cn } from "@/lib/utils";
 
 function LocalMap({ jobs }: { jobs: JobWithCompany[] }) {
@@ -96,28 +108,52 @@ function LocalMap({ jobs }: { jobs: JobWithCompany[] }) {
     </div>
   );
 }
+const listingSortOptions = {
+  new: "Najnowsze",
+  salary: "Wynagrodzenie PLN ↓",
+  az: "Nazwa A–Z",
+};
+
+const listingCentaurs = [centaurHero, centaurBuild, centaurApply, centaurLead];
+const listingArtAccents = ["mint", "pink", "yellow"];
+
 export function JobsPage() {
   const { state } = usePrototype();
   const person = currentPerson(state);
   const [params, setParams] = useSearchParams();
   const filters = parseJobFilters(Object.fromEntries(params));
+  const [centaur] = useState(
+    () => listingCentaurs[Math.floor(Math.random() * listingCentaurs.length)],
+  );
+  const [artAccent] = useState(
+    () => listingArtAccents[Math.floor(Math.random() * listingArtAccents.length)],
+  );
+  const workplaceInput = useRef<HTMLInputElement>(null);
+  const pendingWorkplaceFocus = useRef(false);
   const chipButtons = useRef(new Map<string, HTMLButtonElement>());
   const resultsHeading = useRef<HTMLHeadingElement>(null);
   const pendingChipFocus = useRef<string | null>(null);
   useEffect(() => {
+    if (pendingWorkplaceFocus.current) {
+      workplaceInput.current?.focus();
+      pendingWorkplaceFocus.current = false;
+    }
     const target = pendingChipFocus.current;
     if (!target) return;
     (chipButtons.current.get(target) ?? resultsHeading.current)?.focus();
     pendingChipFocus.current = null;
   }, [params]);
   const all = publishedJobs(state);
-  const jobs = filterJobs(all, filters);
+  const jobs = sortJobs(filterJobs(all, filters), filters.sort);
   const pagination = paginateJobs(jobs, filters.page);
   const view = params.get("view") === "map" ? "map" : "list";
   const savedIds =
     person?.role === "candidate"
       ? new Set(state.saved.filter((x) => x.candidateId === person.id).map((x) => x.jobId))
       : undefined;
+  const activeFilters = Object.entries(filters).filter(
+    ([key, value]) => key !== "page" && key !== "sort" && value,
+  );
   function change(key: string, value: string) {
     const next = new URLSearchParams(params);
     next.delete("page");
@@ -126,9 +162,7 @@ export function JobsPage() {
     setParams(next);
   }
   function removeFilter(key: string) {
-    const keys = Object.entries(filters)
-      .filter(([name, value]) => name !== "page" && value)
-      .map(([name]) => name);
+    const keys = activeFilters.map(([name]) => name);
     const index = keys.indexOf(key);
     pendingChipFocus.current = keys[index + 1] ?? keys[index - 1] ?? "results";
     change(key, "");
@@ -150,179 +184,235 @@ export function JobsPage() {
   }
   const locations = [...new Set(all.flatMap((x) => x.locations))];
   return (
-    <>
-      <section className="pp-intro-section">
-        <div className="pp-container">
-          <div className="pp-intro-grid">
-            <div className="pp-intro-copy">
-              <h1>
-                Dobra robota.
-                <br />
-                <span>Z AI w środku.</span>
-              </h1>
-              <p>
-                Dla ludzi, którzy tworzą, wdrażają i rozwijają AI.
-                <br />
-                Znajdź rolę, w której zrobisz coś dobrego.
-              </p>
-            </div>
-            <img
-              className="pp-people-art"
-              src={peopleArt}
-              alt="Dwie osoby pracujące razem z laptopem"
-            />
+    <div className="editaurus-surface editorial-listing">
+      <div className="editorial-listing-container">
+        <section className="editorial-listing-hero" aria-labelledby="listing-title">
+          <div>
+            <p className="editorial-listing-kicker">Praca w świecie AI</p>
+            <h1 id="listing-title">
+              AI samo się
+              <br />
+              <em>nie zatrudni.</em>
+            </h1>
+            <p>
+              Znajdź pracę, w której budujesz AI, wdrażasz je w codzienną pracę lub prowadzisz
+              zmianę.
+            </p>
           </div>
-          <form
-            key={`${filters.query ?? ""}:${filters.location ?? ""}`}
-            className="pp-search-form"
-            onSubmit={search}
-          >
-            <label className="pp-search-field">
-              <span>
-                <Search className="pp-icon" />
-              </span>
-              <span className="sr-only">Szukaj ofert</span>
+          <div className="editorial-listing-art" data-accent={artAccent} aria-hidden="true">
+            <img src={centaur} alt="" width={1122} height={1402} />
+          </div>
+        </section>
+        <div className="editorial-listing-tools">
+          <form className="editorial-listing-search" aria-label="Wyszukaj ofertę" onSubmit={search}>
+            <label>
+              <span>Szukaj ofert</span>
               <input
+                key={filters.query ?? ""}
                 name="query"
-                aria-label="Szukaj ofert"
                 maxLength={100}
                 defaultValue={filters.query ?? ""}
                 placeholder="Stanowisko, firma lub słowo kluczowe"
               />
             </label>
-            <label className="pp-location-field">
-              <span>
-                <MapPin className="pp-icon" />
-              </span>
-              <select
-                name="location"
-                aria-label="Lokalizacja"
+            <div className="editorial-workplace">
+              <Autocomplete.Root
+                key={filters.location ?? ""}
+                items={locations}
                 defaultValue={filters.location ?? ""}
+                name="location"
+                openOnInputClick
               >
-                <option value="">Cała Polska</option>
-                {[...new Set([...locations, ...(filters.location ? [filters.location] : [])])].map(
-                  (x) => (
-                    <option key={x}>{x}</option>
-                  ),
-                )}
-              </select>
-            </label>
-            <Button type="submit" className="pp-search-submit">
-              Szukaj <ArrowRight className="pp-icon" />
+                <label>
+                  <span>Miejsce pracy</span>
+                  <Autocomplete.Input
+                    ref={workplaceInput}
+                    maxLength={80}
+                    placeholder="Miasto lub region"
+                  />
+                </label>
+                <Autocomplete.Portal>
+                  <Autocomplete.Positioner sideOffset={8} className="editorial-location-positioner">
+                    <Autocomplete.Popup className="editaurus-surface editorial-picker-menu">
+                      <Autocomplete.Empty className="editorial-location-empty">
+                        Brak podpowiedzi
+                      </Autocomplete.Empty>
+                      <Autocomplete.List>
+                        {(location: string) => (
+                          <Autocomplete.Item
+                            key={location}
+                            value={location}
+                            className="editorial-location-option"
+                          >
+                            {location}
+                          </Autocomplete.Item>
+                        )}
+                      </Autocomplete.List>
+                    </Autocomplete.Popup>
+                  </Autocomplete.Positioner>
+                </Autocomplete.Portal>
+                <Autocomplete.Clear
+                  tabIndex={0}
+                  className="editorial-workplace-clear"
+                  aria-label="Usuń filtr miejsca pracy"
+                  onClick={() => {
+                    if (!filters.location) return;
+                    pendingWorkplaceFocus.current = true;
+                    change("location", "");
+                  }}
+                >
+                  <X size={17} aria-hidden="true" />
+                </Autocomplete.Clear>
+              </Autocomplete.Root>
+            </div>
+            <Button
+              type="submit"
+              size="icon"
+              className="editorial-listing-submit"
+              aria-label="Szukaj"
+            >
+              <Search aria-hidden="true" />
             </Button>
           </form>
-          <div className="pp-category-tabs" aria-label="Kategorie ofert">
-            {(
-              [
-                ["", "Wszystkie oferty", ""],
-                ["build", "Build", "Twórz AI"],
-                ["apply", "Apply", "Wdrażaj AI"],
-                ["lead", "Lead", "Wyznaczaj kierunek"],
-              ] as const
-            ).map(([key, label, description]) => (
-              <button
-                key={key}
-                className={cn("pp-category-tab", (filters.category ?? "") === key && "pp-selected")}
-                aria-pressed={(filters.category ?? "") === key}
-                onClick={() => change("category", key)}
+          <div className="editorial-listing-sort">
+            <span id="editorial-sort-label">Sortuj oferty</span>
+            <Select
+              items={listingSortOptions}
+              value={filters.sort ?? "new"}
+              onValueChange={(value) => change("sort", !value || value === "new" ? "" : value)}
+            >
+              <SelectTrigger
+                aria-labelledby="editorial-sort-label"
+                className="editorial-sort-trigger"
               >
-                <span>
-                  <b>{label}</b>
-                  <small>{description}</small>
-                </span>
-                <span className="pp-category-count">
-                  {filterJobs(all, { ...filters, category: key || undefined }).length}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-      <section className="pp-container pp-board-layout">
-        <div className="pp-filter-position">
-          <ResponsivePanel
-            title="Filtry"
-            description="Wyniki zmieniają się od razu. W każdej grupie wybierz jeden warunek."
-            resultCount={jobs.length}
-          >
-            <JobFiltersForm filters={filters} onChange={change} onReset={reset} />
-          </ResponsivePanel>
-        </div>
-        <div className="pp-results-column">
-          <div className="pp-results-heading">
-            <div className="pp-results-title">
-              <h2 ref={resultsHeading} tabIndex={-1}>
-                Oferty pracy
-              </h2>
-              <span role="status">{jobs.length}</span>
-            </div>
-            <div className="pp-results-controls">
-              <span className="pp-sort-label">Najnowsze</span>
-              <Link
-                className="pp-view-link"
-                aria-current={view === "list" ? "page" : undefined}
-                to={jobListingHref(filters)}
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent
+                sideOffset={8}
+                align="start"
+                alignItemWithTrigger={false}
+                className="editaurus-surface editorial-picker-menu"
               >
-                Lista
-              </Link>
-              <Link
-                className="pp-view-link"
-                aria-current={view === "map" ? "page" : undefined}
-                to={jobListingHref(filters, 1, "map")}
-              >
-                Mapa
-              </Link>
-            </div>
-          </div>
-          {Object.entries(filters).some(([k, v]) => k !== "page" && v) && (
-            <div className="pp-active-filters">
-              {Object.entries(filters)
-                .filter(([k, v]) => k !== "page" && v)
-                .map(([key, value]) => (
-                  <button
-                    className="pp-filter-chip"
-                    key={key}
-                    aria-label={`Usuń filtr: ${value}`}
-                    ref={(element) => {
-                      if (element) chipButtons.current.set(key, element);
-                      else chipButtons.current.delete(key);
-                    }}
-                    onClick={() => removeFilter(key)}
-                  >
-                    {String(value)} <X className="pp-icon" />
-                  </button>
+                {Object.entries(listingSortOptions).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
                 ))}
-              <button className="pp-text-button" onClick={reset}>
-                Wyczyść
-              </button>
-            </div>
-          )}
-          {jobs.length ? (
-            view === "map" ? (
-              <LocalMap jobs={jobs} />
-            ) : (
-              <>
-                <div className="pp-job-list">
-                  {pagination.items.map((job) => (
-                    <JobCard key={job.id} job={job} saved={savedIds?.has(job.id)} />
-                  ))}
-                </div>
-                <JobPagination pagination={pagination} filters={filters} />
-              </>
-            )
-          ) : (
-            <div className="pp-empty-state">
-              <span className="pp-empty-mark">
-                <Search className="pp-icon" />
-              </span>
-              <h3>Brak ofert dla tych filtrów</h3>
-              <p>Wyczyść część kryteriów i spróbuj ponownie.</p>
-              <Button onClick={reset}>Pokaż wszystkie oferty</Button>
-            </div>
-          )}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </section>
-    </>
+        <section className="editorial-listing-board" aria-label="Oferty i filtry">
+          <aside className="editorial-listing-sidebar" aria-label="Filtry ofert">
+            <ResponsivePanel
+              title="Filtry"
+              description="Wyniki zmieniają się od razu. W każdej grupie wybierz jeden warunek."
+              resultCount={jobs.length}
+            >
+              <JobFiltersForm filters={filters} onChange={change} onReset={reset} />
+            </ResponsivePanel>
+          </aside>
+          <div className="editorial-listing-results">
+            <div className="editorial-results-heading">
+              <div>
+                <h2 ref={resultsHeading} tabIndex={-1}>
+                  Znajdź swoją <em>rolę.</em>
+                </h2>
+                <p role="status">
+                  Liczba ofert: <strong>{jobs.length}</strong>
+                </p>
+              </div>
+              <nav className="editorial-listing-view" aria-label="Widok ofert">
+                <Link
+                  className="editaurus-cv-action"
+                  aria-current={view === "list" ? "page" : undefined}
+                  to={jobListingHref(filters, pagination.page)}
+                >
+                  Lista
+                </Link>
+                <Link
+                  className="editaurus-cv-action"
+                  aria-current={view === "map" ? "page" : undefined}
+                  to={jobListingHref(filters, 1, "map")}
+                >
+                  Mapa
+                </Link>
+              </nav>
+            </div>
+            <div className="editorial-category-tabs" role="group" aria-label="Kategorie ofert">
+              {(
+                [
+                  ["", "Wszystkie oferty"],
+                  ["build", "Build"],
+                  ["apply", "Apply"],
+                  ["lead", "Lead"],
+                ] as const
+              ).map(([key, label]) => (
+                <button
+                  type="button"
+                  key={key}
+                  data-category={key}
+                  aria-pressed={(filters.category ?? "") === key}
+                  onClick={() => change("category", key)}
+                >
+                  {label}{" "}
+                  <span>{filterJobs(all, { ...filters, category: key || undefined }).length}</span>
+                </button>
+              ))}
+            </div>
+            {activeFilters.length > 0 && (
+              <div className="pp-active-filters">
+                {activeFilters.map(([key, value]) => {
+                  const label = key === "minSalary" ? `Od ${value} zł/mies.` : String(value);
+                  return (
+                    <button
+                      className="pp-filter-chip"
+                      key={key}
+                      aria-label={`Usuń filtr: ${label}`}
+                      ref={(element) => {
+                        if (element) chipButtons.current.set(key, element);
+                        else chipButtons.current.delete(key);
+                      }}
+                      onClick={() => removeFilter(key)}
+                    >
+                      {label} <X className="pp-icon" />
+                    </button>
+                  );
+                })}
+                <button className="pp-text-button" onClick={reset}>
+                  Wyczyść
+                </button>
+              </div>
+            )}
+            {jobs.length ? (
+              view === "map" ? (
+                <LocalMap jobs={jobs} />
+              ) : (
+                <>
+                  <div>
+                    {pagination.items.map((job) => (
+                      <JobCard
+                        key={job.id}
+                        job={job}
+                        saved={savedIds?.has(job.id)}
+                        variant="editorial"
+                      />
+                    ))}
+                  </div>
+                  <JobPagination pagination={pagination} filters={filters} />
+                </>
+              )
+            ) : (
+              <div className="editorial-listing-empty">
+                <h3>Brak ofert dla tych filtrów</h3>
+                <p>Wyczyść część kryteriów i spróbuj ponownie.</p>
+                <Button onClick={reset}>Pokaż wszystkie oferty</Button>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </div>
   );
 }
 

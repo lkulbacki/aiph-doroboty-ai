@@ -1,6 +1,8 @@
-# GUI — DoRoboty.ai Poster People
+# GUI — DoRoboty.ai design direction
 
-The required visual direction for new and changed screens is the accepted **Poster People** design system. The project instructions are [docs/design-system/README.md](docs/design-system/README.md). Read them before UI work; they define how the standalone reference is adapted to this React/TypeScript/Vite application. The previous theme reference tree and skill requirements have been removed.
+**editaurus is the target for new and migrated UI.** Start with [its project guide](docs/design-system/editaurus/README.md). The candidate application form pilot has been accepted; its hero action and secondary save-draft action are accepted, while the extracted answer field awaits review. These appear in the first component preview. The rest of the running app retains Poster People. The Poster People instructions below document the current implementation and remain useful for route, component, state, and regression checks; they do not set the visual target of an editaurus task.
+
+The current implementation follows **Poster People**. Its [project instructions](docs/design-system/README.md) explain the existing React/TypeScript/Vite adaptation. Keep its behavior and ownership contracts while migrating each approved scope to editaurus.
 
 ## Read and preview
 
@@ -10,12 +12,12 @@ The required visual direction for new and changed screens is the accepted **Post
 4. [Component API](docs/design-system/agent-kit/components/API.md) plus relevant [human reference](docs/design-system/agent-kit/reference/components.md): anatomy, variants, states and evidence.
 5. `npm run design-system:dev`: local catalog, full listing and offer on port 8952. `npm run design-system:check` checks the immutable kit. No global skill or extra installation is required.
 
-## Implement in this app
+## Current implementation and migration
 
 - Preserve the requested scope, React/TypeScript/Vite, hash routes, Base UI's `render` composition, Zod/local data operations and current application workflows.
-- Use local Geist Serif Regular for headings, paper/white/ink/pink roles, source contours and radii, complete title wrapping and responsive listing/offer composition.
+- Use the editaurus typography, color, contour, and state rules for a migrated surface. The Geist Serif and Poster People values below describe legacy screens only.
 - Adapt host tokens and existing primitives together. Do not paste the kit's global reset or vanilla controllers into React, substitute example data for product state, or create a parallel button/card library.
-- Keep docs/design-system/agent-kit unchanged as the reference; implement product UI in src/ and the host theme layer. Existing token names do not establish an alternative visual target.
-- Compare desktop/mobile evidence; test long content, missing salary/marks, keyboard focus, selection, dialogs and recovery. Run ./scripts/verify and report actual checks. The original kit report does not verify a new React screen.
+- Keep docs/design-system/agent-kit unchanged as a historical reference; implement product UI in src/ and the host theme layer. Existing token names do not establish an alternative visual target.
+- Compare editaurus references with the migrated screen and test long content, missing salary/marks, keyboard focus, selection, dialogs and recovery. Run ./scripts/verify and report actual checks. The original kit report does not verify a new React screen.
 
-The running application has a host adaptation; current code still requires comparison with the source on each UI task. Follow the implementation map rather than creating parallel controls. Keep Search outside mobile filters, preserve copied section URLs under HashRouter, manage focus after chip removal, reuse outlined surfaces and compare full action type roles plus one contour. Record actual evidence and partial findings; preserve old audit artifacts in separate task-specific directories.
+The running application has a host adaptation. Follow the implementation map rather than creating parallel controls. Keep Search outside mobile filters, preserve copied section URLs under HashRouter, and manage focus after chip removal. Record actual evidence and partial findings; preserve old audit artifacts in separate task-specific directories.

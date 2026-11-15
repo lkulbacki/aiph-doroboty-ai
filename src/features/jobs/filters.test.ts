@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { filterJobs, hasIndexableFilters, parseJobFilters } from "@/features/jobs/filters";
+import {
+  filterJobs,
+  hasIndexableFilters,
+  parseJobFilters,
+  sortJobs,
+} from "@/features/jobs/filters";
 import { initialState, publishedJobs } from "@/features/prototype/model";
 const joinJobsWithCompanies = () => publishedJobs(initialState());
 
@@ -45,6 +50,29 @@ describe("job filters", () => {
     expect(filterJobs(items, { query: "northstar", page: 1 }).map((job) => job.slug)).toEqual([
       "staff-ai-engineer",
       "growth-lead-ai-products",
+    ]);
+  });
+
+  it("compares monthly PLN bounds without guessing EUR rates or missing pay", () => {
+    const [job] = joinJobsWithCompanies();
+    const annual = {
+      ...job!,
+      slug: "annual",
+      salaryPeriod: "year",
+      salaryMin: 252000,
+      salaryMax: 360000,
+    } as const;
+    const euros = { ...annual, slug: "euros", salaryCurrency: "EUR" } as const;
+    const monthly = { ...job!, slug: "monthly", salaryMin: 20000, salaryMax: 25000 };
+    const missing = { ...job!, slug: "missing", salaryMin: undefined, salaryMax: undefined };
+    expect(filterJobs([euros, monthly, missing, annual], { page: 1, minSalary: 21000 })).toEqual([
+      annual,
+    ]);
+    expect(sortJobs([euros, missing, monthly, annual], "salary")).toEqual([
+      annual,
+      monthly,
+      euros,
+      missing,
     ]);
   });
 

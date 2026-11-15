@@ -1,5 +1,7 @@
 # Record sheets and process timelines — host components
 
+> **Migration notice:** [editaurus](editaurus/README.md) is the visual target for migrated screens. Preserve the record, snapshot, focus, and process behavior documented here while changing presentation.
+
 These components implement the shared employer and candidate process-view composition. See the [host catalog](HOST-COMPONENTS.md) for return links, application preview, hover and motion, and [status](STATUS.md) for unresolved findings. They extend the React host using Poster People typography, paper/white/ink/pink, existing controls and the r24 outlined reading surface. They are not a new release of the immutable v1 reference.
 
 ## RecordSheet

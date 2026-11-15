@@ -1,5 +1,7 @@
 # Poster People — React host component catalog
 
+> **Migration notice:** [editaurus](editaurus/README.md) is the target visual system. Component ownership and behavior contracts here remain current until a component is explicitly migrated; the visual values below describe Poster People.
+
 This is the receiving application's component map, checked against the implemented code on November 2, 2026. Use it with the immutable [source API](agent-kit/components/API.md), [integration rules](IMPLEMENTATION.md), [record APIs](RECORDS.md) and [acceptance checklist](VERIFICATION.md). These host components implement user-requested extensions; they do not create a new v1 kit release. [STATUS.md](STATUS.md) separates implementation evidence from unresolved audit findings.
 
 ## Choose an existing owner

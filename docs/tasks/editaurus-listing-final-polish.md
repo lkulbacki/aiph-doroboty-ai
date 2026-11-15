@@ -1,0 +1,5 @@
+# Listing controls and artwork polish
+
+Show workplace clear for an unsubmitted suggestion or typed value and remove any applied location while preserving other criteria. Match All offers to the account control palette, use a borderless bookmark with green fill on hover and saved, and give the listing logo a white centaur on hover. Randomize the hero accent independently of its illustration using the accent palette then in use. The [hover follow-up](editaurus-listing-hover-adjustments.md) narrows that palette.
+
+The clear action now appears as soon as the field has text and returns focus after clearing. The feature register already describes independent workplace clearing. Category filters retain their assigned colors. Random variants can repeat across reloads and remain fixed while filtering. Full verification passed with 28 unit tests and 45 Chromium scenarios. A desktop browser check confirmed bookmark fill and border, matching account hover color, logo hover and all four hero accents.

@@ -49,7 +49,7 @@ textarea:focus-visible {
   border-radius: 10px;
 }
 header:has([aria-label="Główna nawigacja"]):not(
-    :where(.candidate-home-header)
+    :where(.candidate-home-header, .editorial-listing-header)
   ) {
   background: #fff;
   backdrop-filter: none;

@@ -1,0 +1,85 @@
+# editaurus decisions and open questions
+
+## Accepted for this fork — 2026-11-14
+
+1. editaurus is the target visual language across the application, introduced in small, reviewed stages. Poster People remains the visible implementation where migration has not happened and its immutable kit stays in the repository as historical reference.
+2. The first real-screen pilot is the answer/consent/action portion of the existing candidate `/#/aplikuj/:slug` flow. Preserve the current profile CV, draft, consent, submission, snapshot, and redirect behavior. Do not import the prototype's fictitious job, PDF upload, or demo-only submission.
+3. Reuse the existing React/TypeScript/Vite, Base UI primitives, and shared domain operations. No shadcn/ui installation or new runtime dependency is approved by this stage.
+4. Carry forward the static inner bottom focus line and hero-button behavior described in [the guide](README.md); verify them on the pilot before documenting an implemented component variant.
+5. Stop after each stage for a human review. A stage note records what changed, what was checked, what remains, and where to resume.
+
+## Accepted first pilot — 2026-11-14
+
+- Scope is the application form on `/#/aplikuj/:slug`; the adjacent offer preview and page navigation retain their current owner and visual treatment. No shared Base UI primitive or global token was changed.
+- The form uses the six recorded Editorial v9 colors and locally bundled DM Sans. The answer field has the static ink inner bottom focus line; forced-colors mode adds a full `Highlight` outline. Fraunces is not needed in this form.
+- The submit action uses two offset, outlined accent layers on hover and keyboard focus. A new non-touch hover selects a different accent pair. Touch keeps the initial pair. Reduced-motion mode removes the movement transition.
+- The user accepted the real application-form pilot on 2026-11-14. These visual rules can now be extracted into a reusable component, with the application route remaining the behavioral reference.
+
+## Hero action extraction — accepted on 2026-11-14
+
+- The accepted submit treatment is owned by `src/components/editaurus/hero-button.tsx` and `src/app/editaurus.css`. It composes the existing Base UI-backed `Button`; the application form and the first component preview use the same implementation.
+- The preview route is `/#/design-system/editaurus`. It is a partial public catalog. Its example buttons do not submit or change scenario data; the real application route remains the behavior check.
+- The component API and observed states are recorded in [hero action](components/hero-action.md). Other editaurus button variants and form controls remain separate future work.
+- User revision: remove the decorative arrow from `HeroButton`; keep only centered text (and the existing submitted check icon in the real application state). The accent layers and interaction states remain as accepted.
+- The preview link selects a published job without an existing application for the active candidate, preferring AI Product Manager when available. This avoids the already-submitted notice while preserving local scenario data. If every published job has an application, the preview explains that no form is available.
+- For visitors without a selected candidate, the preview links to candidate selection and returns there afterward. The available job is resolved only after selection, so the link cannot target an offer already submitted by that candidate. The application link names the chosen offer.
+- The user accepted the hero-action component and preview, then approved a focused secondary action stage for the real save-draft control.
+
+## Secondary save-draft action — accepted on 2026-11-14
+
+- The real application form and component preview now compose `SecondaryButton` from the existing Base UI-backed `Button`. It uses paper/ink with mint hover and does not use the hero accent layers.
+- The draft operation, status text, persisted answer and consent behavior are unchanged. The user accepted the visual treatment after reviewing the real form; the API is recorded in [secondary action](components/secondary-action.md).
+
+## Multiline answer field extraction — awaiting human review
+
+- The candidate answer uses `EditaurusTextarea`, which composes the existing textarea primitive. Its focus line and invalid state moved into scoped editaurus CSS; the application keeps the label, help/error text, 20-character minimum, 12,000-character maximum, consent and draft operations.
+- The partial preview shows rest/focus, invalid, disabled and long-content states using the same control. The proposed API is in [answer field](components/answer-field.md); review it on the real form before applying it to other screens.
+- Background color review, revised after user feedback: compare three timings for one lighter warm paper `#faf6ec`: always light, light from hover, or light only on focus. The second timing is provisionally applied to the real answer field, with paper `#f4f0e5` at rest. Invalid fields use `#f9efd9` at rest, hover and focus, with the existing dark-rose border/focus line. Disabled stays neutral. This note records the earlier comparison; the accepted choice is below. Pale mint was removed from this comparison.
+- User correction: when the answer is invalid and focused, the 3 px inner bottom line uses the same dark rose `#892746` as the error border. The regular focused line remains ink; forced-colors focus keeps the full `Highlight` outline.
+
+## Open before public release or affected implementation
+
+- Exact scope, copy, and destination of the landing's employer plans and guarantee; the current app has no payment or purchased publication flow.
+- Whether the landing's local `.txt` offer-draft download should remain a separate marketing tool or connect to the existing employer editor.
+- Packaging of Fraunces with a redistributable font file and accompanying license for a later affected scope. DM Sans is bundled for the pilot; see [asset review](assets.md).
+- Publication terms for the adapted 21st.dev footer; see [asset review](assets.md).
+- The public showcase URL and hosting. No deployment is authorized by this decision.
+
+## Answer-field brightness accepted
+
+- The user selected timing 2 with `#fdf9ef` for hover and focus in the real application form. Rest remains paper `#f4f0e5`. Invalid background remains `#f9efd9` in all states; disabled is unchanged. The nine-shade preview remains a comparison, with `#fdf9ef` marked selected.
+
+## Consent checkbox awaiting human review
+
+- The real candidate consent composes the existing Base UI checkbox through `EditaurusCheckbox`. Scoped styles cover rest, hover, checked, keyboard focus, invalid focus and disabled. The owning form keeps the same explicit approval, error association, draft/submit behavior and data; the preview uses local-only state. Review on the real form before migrating other checkboxes.
+
+## Consent contour and preview cleanup
+
+- At the user’s request, the normal checkbox contour, checked fill and checked disabled contour use the same dark green. Error uses dark rose throughout. The rejected answer-field brightness examples were removed from the preview; the selected `#fdf9ef` treatment and state examples remain.
+
+## Consent label hover and invalid answer shade
+
+- Hovering the full consent label, including its text, lightens an unchecked valid checkbox to `#fdf9ef`. Checked, invalid and disabled controls retain their dedicated states.
+- The invalid answer field uses `#f9efd9` at rest and `#fff8e2` on hover and focus. The rose border and focus line remain unchanged.
+
+## Invalid answer colors accepted
+
+- At the user’s request, the invalid answer field uses `#f9e9d9` at rest and `#f9efd9` on hover and focus. Dark-rose border and focus line stay unchanged. The checkbox error background remains `#f9efd9`.
+
+## Application CV row awaiting human review
+
+- The existing `CvAttachment` remains the source of truth for PDF matching, links and custom text. Scoped editaurus styling is applied only within a migrated surface; the partial preview shows the same row with a matching fixture PDF and a synthetic custom-text fallback. Profile and submitted-record screens are unchanged.
+
+## Error and CV interactions after review
+
+- Invalid answer rest stays `#f9e9d9`; hover and focus use `#faf1dd`. The required-consent checkbox keeps `#f9efd9` at rest and uses `#faf1dd` when the full label is hovered or the control is focused. Dark-rose error borders and focus remain.
+- The checked post-submit checkbox lightens from `#103d35` to `#1b5148` on label hover; fill and border remain the same color. Base UI exposes its disabled state through `aria-disabled`, which the scoped CSS uses.
+- Both prepared-PDF links lift up and left by 2 px on hover and keyboard focus, with a 3 px dark-green `#103d35` shadow. Motion transitions are removed under reduced-motion preference. File selection and destinations are unchanged.
+
+## Light paper hover accents
+
+- The secondary draft action and both prepared-PDF links now use the selected field-hover paper `#fdf9ef` instead of mint. Their contour, focus and link behavior remain unchanged.
+
+## Form feedback accepted
+
+- The candidate application now uses scoped editaurus help, error and saved-draft status styles. Validation text, alert/status semantics, counts, focus, draft persistence and submit behavior remain owned by the real form. The partial preview shows static visual examples only.

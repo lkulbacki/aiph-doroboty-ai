@@ -73,5 +73,7 @@ export type JobFilters = {
   contract?: ContractType;
   location?: string;
   query?: string;
+  minSalary?: number;
+  sort?: "salary" | "az";
   page: number;
 };

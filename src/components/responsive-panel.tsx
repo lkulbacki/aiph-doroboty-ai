@@ -35,11 +35,14 @@ export function ResponsivePanel({
   if (!mobile) return children;
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button variant="outline" className="pp-filter-button" />}>
+      <DialogTrigger render={<Button variant="outline" className="editorial-filter-trigger" />}>
         <SlidersHorizontal className="pp-icon" />
         {title}
       </DialogTrigger>
-      <DialogContent className="pp-filter-dialog pp-dialog" showCloseButton={false}>
+      <DialogContent
+        className="pp-filter-dialog pp-dialog editaurus-surface editorial-filter-dialog"
+        showCloseButton={false}
+      >
         <div className="pp-dialog-heading">
           <DialogTitle>{title}</DialogTitle>
           <DialogClose

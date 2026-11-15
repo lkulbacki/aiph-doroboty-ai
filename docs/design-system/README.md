@@ -1,6 +1,8 @@
 # DoRoboty.ai design system — project instructions
 
-**Poster People v1.0.0 is the required visual reference for new and changed screens.** It is the accepted rounded, illustrated listing/offer system with Geist Serif headings. Use this directory before choosing page composition, typography, color or component treatment. The previous theme guidance has been removed at Wojtek's request.
+> **Migration notice (2026-11-14):** [editaurus](editaurus/README.md) is the target visual system for new and migrated screens. This guide records the current Poster People implementation, its component ownership, and regression contracts. Its visual rules apply only to surfaces that have not been migrated. The immutable kit remains a historical reference; `design-system:check` verifies that kit, not editaurus or the application.
+
+**Poster People v1.0.0 was the required visual reference for the current host adaptation.** It is the rounded, illustrated listing/offer system with Geist Serif headings. Use this directory to understand and verify an unmigrated surface before changing it. For new or migrated visual work, use [editaurus](editaurus/README.md).
 
 This directory contains the complete immutable 67-file v1 agent kit and the receiving project's active integration guidance. The React application now has a host adaptation, mapped in [IMPLEMENTATION.md](IMPLEMENTATION.md). Treat current code as implementation to verify, not a second visual authority or proof of full acceptance. Apply the reference within the user's task scope; installing or updating guidance alone does not initiate a redesign.
 
@@ -19,7 +21,7 @@ All material is local to this repository. No global skill installation, old chat
 
 ## Authority and source boundaries
 
-The user's current instructions and this project's product/security/workflow rules apply first. For visual decisions, use this integration guide, then agent-kit/design.md plus its code/reference. Treat the original [package decisions](agent-kit/CHANGES.md), [source provenance](agent-kit/provenance.json) and [original verification](agent-kit/VERIFICATION.md) as records of that standalone reference, not claims that this React app has already adopted or passed those checks.
+The user's current instructions and this project's product/security/workflow rules apply first. For migrated visual decisions, use the [editaurus guide](editaurus/README.md). Use this integration guide and the kit to inspect the current implementation and preserve its behavior. Treat the original [package decisions](agent-kit/CHANGES.md), [source provenance](agent-kit/provenance.json) and [original verification](agent-kit/VERIFICATION.md) as records of that standalone reference, not claims that this React app has already adopted or passed those checks.
 
 The kit preserves its original HTML/CSS/ESM stack and examples verbatim. Its references to a separate teaching application describe the context at extraction time; this guide governs adoption in the receiving project. Do not follow older screenshot/style values from the current app when they conflict with the approved target. Record a missing design decision explicitly rather than silently inventing another theme.
 
