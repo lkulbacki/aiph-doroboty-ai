@@ -281,6 +281,12 @@ test("mobile navigation, light-only appearance and keyboard person selection", a
   await page.getByRole("button", { name: "Otwórz menu" }).click();
   await page.getByRole("link", { name: "Profil", exact: true }).click();
   await expect(page.getByLabel("Imię i nazwisko")).toBeVisible();
+  const footer = page.getByRole("navigation", { name: "Stopka", exact: true });
+  await expect(footer).toHaveCount(1);
+  await expect(footer.getByRole("link", { name: "Prywatność" })).toHaveAttribute(
+    "href",
+    "#/polityka-prywatnosci",
+  );
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: "artifacts/profile-mobile.png", fullPage: true });
   await page.getByRole("button", { name: "Otwórz menu" }).click();

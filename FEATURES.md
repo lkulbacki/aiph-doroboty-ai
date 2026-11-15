@@ -2,7 +2,7 @@
 
 This register describes the frontend-only prototype as implemented in this worktree. Source coverage is not proof of executed checks or deployment; actual results belong in docs/tasks/frontend-only.md.
 
-All application routes use the hash prefix. All personas share one local scenario. Role checks organize the simulation and do not provide security. Original backend behavior remains in Git history.
+All application routes use the hash prefix. The shared site footer provides marketplace, methodology, privacy and case links on both public and workspace pages. All personas share one local scenario. Role checks organize the simulation and do not provide security. Original backend behavior remains in Git history.
 
 Stable IDs are retained, including explicit removed entries. The legacy duplicate EMP-10 has been consolidated rather than assigned an ambiguous second identity.
 

@@ -322,35 +322,30 @@ export function Shell() {
           <main id="main" ref={main} tabIndex={-1} className="outline-none">
             {content}
           </main>
-          <footer className="bg-muted/40 text-foreground shadow-[var(--gui-divider-top-shadow)]">
-            <div className="mx-auto grid max-w-[1360px] gap-10 px-5 py-12 sm:grid-cols-2 lg:px-8">
-              <div>
-                <p className="text-base font-semibold">DoRoboty.ai</p>
-                <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
-                  Praca dla ludzi, którzy potrafią z AI zbudować coś wartościowego — nie tylko
-                  wpisać je do CV.
-                </p>
-              </div>
-              <nav
-                aria-label="Stopka"
-                className="flex flex-wrap content-start gap-x-6 gap-y-3 text-sm text-muted-foreground sm:justify-end"
-              >
-                <Link to="/oferty">Oferty</Link>
-                <Link to="/metodologia">Metodologia</Link>
-                <Link to="/polityka-prywatnosci">Prywatność</Link>
-                <Link className="inline-flex items-center gap-1" to="/auth/sign-in">
-                  Strefa case <ArrowUpRight className="size-4" />
-                </Link>
-              </nav>
-            </div>
-            <div className="px-5 py-4 text-xs text-muted-foreground shadow-[var(--gui-divider-top-shadow)] lg:px-8">
-              <div className="mx-auto max-w-[1360px]">
-                © {new Date().getFullYear()} DoRoboty.ai — od Superhero.tech
-              </div>
-            </div>
-          </footer>
         </>
       )}
+      <footer className="editaurus-surface editaurus-site-footer">
+        <div className="editaurus-site-footer-inner">
+          <div>
+            <p className="editaurus-site-footer-brand">DoRoboty.ai</p>
+            <p className="editaurus-site-footer-description">
+              Praca dla ludzi, którzy potrafią z AI zbudować coś wartościowego — nie tylko wpisać je
+              do CV.
+            </p>
+          </div>
+          <nav aria-label="Stopka">
+            <Link to="/oferty">Oferty</Link>
+            <Link to="/metodologia">Metodologia</Link>
+            <Link to="/polityka-prywatnosci">Prywatność</Link>
+            <Link to="/auth/sign-in">
+              Strefa case <ArrowUpRight size={15} aria-hidden="true" />
+            </Link>
+          </nav>
+          <p className="editaurus-site-footer-credit">
+            © {new Date().getFullYear()} DoRoboty.ai — od Superhero.tech
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
