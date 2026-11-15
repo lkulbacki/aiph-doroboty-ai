@@ -17,6 +17,7 @@ import {
 import { EmployerJobs, EmployerJobEditor, CompanyEditor } from "./employer";
 import { SettingsPage, PrivacyPage } from "./settings";
 import { CasePage } from "./case";
+import { EditaurusComponentsPage } from "@/features/editaurus/components-page";
 function AppRoutes() {
   return (
     <Routes>
@@ -27,6 +28,7 @@ function AppRoutes() {
         <Route path="firmy/:slug" element={<CompanyPage />} />
         <Route path="metodologia" element={<MethodologyPage />} />
         <Route path="polityka-prywatnosci" element={<PrivacyPage />} />
+        <Route path="design-system/editaurus" element={<EditaurusComponentsPage />} />
         <Route path="auth/:mode" element={<PersonPicker />} />
         <Route
           path="aplikuj/:slug"

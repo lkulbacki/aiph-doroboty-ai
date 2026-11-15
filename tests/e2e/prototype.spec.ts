@@ -838,6 +838,359 @@ for (const width of [1280, 390]) {
   });
 }
 
+test("editaurus application form keeps focus and hero states within the pilot surface", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/aplikuj/ai-product-manager");
+  const form = page.getByRole("form", { name: "Twoja aplikacja", exact: true });
+  const answer = form.getByLabel("Dlaczego pasujesz do tej roli?");
+  const send = form.getByRole("button", { name: "Wyślij aplikację", exact: true });
+
+  await answer.click();
+  expect(
+    await answer.evaluate((element) => ({
+      shadow: getComputedStyle(element).boxShadow,
+      radius: getComputedStyle(element).borderRadius,
+      family: getComputedStyle(element).fontFamily,
+    })),
+  ).toEqual({
+    shadow: "rgb(16, 46, 42) 0px -3px 0px 0px inset",
+    radius: "0px",
+    family: '"DM Sans", Arial, sans-serif',
+  });
+  await expect(page.locator(".application-offer")).toHaveCSS("border-radius", "24px");
+
+  await send.hover();
+  const first = await send.evaluate((element) => [
+    element.style.getPropertyValue("--ed-shadow-first"),
+    element.style.getPropertyValue("--ed-shadow-last"),
+  ]);
+  await page.getByRole("heading", { name: "Aplikuj na ofertę" }).hover();
+  await send.hover();
+  const second = await send.evaluate((element) => [
+    element.style.getPropertyValue("--ed-shadow-first"),
+    element.style.getPropertyValue("--ed-shadow-last"),
+  ]);
+  expect(second).not.toEqual(first);
+  await expect(send).toHaveCSS("background-color", "rgb(16, 61, 53)");
+  await expect(send).toHaveCSS("box-shadow", /rgb\(16, 61, 53\)/);
+
+  await page.emulateMedia({ forcedColors: "active" });
+  await answer.focus();
+  await expect(answer).toHaveCSS("outline-style", "solid");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test("editaurus hero action preview reuses the application component", async ({ page }) => {
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/design-system/editaurus");
+  await expect(page.getByRole("heading", { name: "Główna akcja" })).toBeVisible();
+  const active = page.getByRole("button", { name: "Wyślij aplikację", exact: true });
+  await expect(active).toHaveCSS("font-family", '"DM Sans", Arial, sans-serif');
+  await expect(active).toHaveCSS("text-align", "center");
+  await expect(active).not.toContainText("↗");
+  await expect(page.getByRole("button", { name: "Wysłano!" })).toBeDisabled();
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    const longButtonFits = await page
+      .getByRole("button", { name: "Zatwierdź i wyślij aplikację" })
+      .evaluate((element) => {
+        const card = element.closest(".editaurus-catalog-card");
+        return Boolean(
+          card && element.getBoundingClientRect().right <= card.getBoundingClientRect().right,
+        );
+      });
+    expect(longButtonFits).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  }
+  await active.hover();
+  await expect(active).toHaveCSS("box-shadow", /rgb\(16, 61, 53\)/);
+  await page.getByRole("link", { name: /Sprawdź komponenty w formularzu/ }).click();
+  await expect(page).toHaveURL(/#\/aplikuj\/ai-product-manager$/);
+  await expect(page.getByRole("form", { name: "Twoja aplikacja" })).toBeVisible();
+});
+
+test("editaurus hero action keeps its initial accent pair on touch", async ({
+  browser,
+  baseURL,
+}) => {
+  const context = await browser.newContext({
+    baseURL,
+    hasTouch: true,
+    viewport: { width: 390, height: 844 },
+  });
+  try {
+    const page = await context.newPage();
+    await page.goto("/#/design-system/editaurus");
+    const active = page.getByRole("button", { name: "Wyślij aplikację", exact: true });
+    await active.tap();
+    expect(
+      await active.evaluate((element) => [
+        element.style.getPropertyValue("--ed-shadow-first"),
+        element.style.getPropertyValue("--ed-shadow-last"),
+      ]),
+    ).toEqual(["", ""]);
+  } finally {
+    await context.close();
+  }
+});
+
+test("editaurus preview links to an unsubmitted application for the current candidate", async ({
+  page,
+}) => {
+  await application(page);
+  await page.goto("/#/design-system/editaurus");
+  await page.getByRole("link", { name: /Sprawdź komponenty w formularzu/ }).click();
+  await expect(page).not.toHaveURL(/#\/aplikuj\/ai-product-manager$/);
+  await expect(page.getByRole("form", { name: "Twoja aplikacja" })).toBeVisible();
+});
+
+test("editaurus preview returns to the job chooser after selecting a candidate", async ({
+  page,
+}) => {
+  await page.goto("/#/design-system/editaurus");
+  await page.getByRole("link", { name: "Wybierz kandydata, aby sprawdzić formularz ↗" }).click();
+  await expect(page).toHaveURL(/audience=candidate&next=\/design-system\/editaurus/);
+  await page.getByRole("button", { name: "Wejdź jako Anna Kowalska" }).click();
+  await expect(page).toHaveURL(/#\/design-system\/editaurus$/);
+  await page
+    .getByRole("link", { name: /Sprawdź komponenty w formularzu: AI Product Manager/ })
+    .click();
+  await expect(page.getByRole("form", { name: "Twoja aplikacja" })).toBeVisible();
+});
+
+test("editaurus secondary action shares the real draft control and state examples", async ({
+  page,
+}) => {
+  await page.goto("/#/design-system/editaurus");
+  const cards = page.locator(".editaurus-catalog-card");
+  const active = cards.nth(3).getByRole("button", { name: "Zapisz szkic" });
+  await expect(active).toHaveCSS("border-radius", "4px");
+  await expect(active).toHaveCSS("background-color", "rgb(244, 240, 229)");
+  await expect(cards.nth(4).getByRole("button", { name: "Zapisz szkic" })).toBeDisabled();
+  await active.hover();
+  await expect(active).toHaveCSS("background-color", "rgb(253, 249, 239)");
+  await expect(active).toHaveCSS("transform", "matrix(1, 0, 0, 1, -3, -3)");
+  await expect(active).toHaveCSS("box-shadow", "rgb(16, 61, 53) 4px 4px 0px 0px");
+  await page.mouse.down();
+  await expect(active).toHaveCSS("transform", "matrix(1, 0, 0, 1, -1, -1)");
+  await expect(active).toHaveCSS("box-shadow", "rgb(16, 61, 53) 2px 2px 0px 0px");
+  await page.mouse.up();
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    const fits = await cards
+      .nth(5)
+      .getByRole("button", { name: "Zapisz odpowiedź jako szkic" })
+      .evaluate((element) => {
+        const card = element.closest(".editaurus-catalog-card");
+        return Boolean(
+          card && element.getBoundingClientRect().right <= card.getBoundingClientRect().right,
+        );
+      });
+    expect(fits).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  }
+  await page.emulateMedia({ forcedColors: "active" });
+  await active.focus();
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Shift+Tab");
+  await expect(active).toBeFocused();
+  await expect(active).toHaveCSS("outline-style", "solid");
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/aplikuj/ai-product-manager");
+  const draft = page.getByRole("form", { name: "Twoja aplikacja" }).getByRole("button", {
+    name: "Zapisz szkic",
+  });
+  await expect(draft).toHaveClass(/editaurus-secondary-button/);
+});
+
+test("editaurus answer field shows the same focus and error states as the real form", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#/design-system/editaurus");
+  const answer = page.locator("#ed-answer-default");
+  await expect(page.locator(".editaurus-field-option")).toHaveCount(0);
+  await expect(answer).toHaveCSS("background-color", "rgb(244, 240, 229)");
+  await answer.hover();
+  await expect(answer).toHaveCSS("background-color", "rgb(253, 249, 239)");
+  await answer.fill("Prowadziłam badania i wdrożenia produktów AI.");
+  await answer.focus();
+  await expect(answer).toHaveCSS("box-shadow", "rgb(16, 46, 42) 0px -3px 0px 0px inset");
+  const invalid = page.locator("#ed-answer-error");
+  await expect(invalid).toHaveAttribute("aria-invalid", "true");
+  await expect(invalid).toHaveCSS("border-color", "rgb(137, 39, 70)");
+  await expect(invalid).toHaveCSS("background-color", "rgb(249, 233, 217)");
+  await invalid.hover();
+  await expect(invalid).toHaveCSS("background-color", "rgb(250, 241, 221)");
+  await invalid.focus();
+  await expect(invalid).toHaveCSS("background-color", "rgb(250, 241, 221)");
+  await expect(invalid).toHaveCSS("box-shadow", "rgb(137, 39, 70) 0px -3px 0px 0px inset");
+  await expect(page.locator("#ed-answer-disabled")).toBeDisabled();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.emulateMedia({ forcedColors: "active" });
+  await answer.focus();
+  await expect(answer).toHaveCSS("outline-style", "solid");
+
+  await page.emulateMedia({ forcedColors: "none" });
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/aplikuj/ai-product-manager");
+  const realAnswer = page.getByLabel("Dlaczego pasujesz do tej roli?");
+  await expect(realAnswer).toHaveClass(/editaurus-textarea/);
+  await expect(realAnswer).toHaveCSS("background-color", "rgb(244, 240, 229)");
+  await realAnswer.hover();
+  await expect(realAnswer).toHaveCSS("background-color", "rgb(253, 249, 239)");
+  await realAnswer.focus();
+  await expect(realAnswer).toHaveCSS("background-color", "rgb(253, 249, 239)");
+  await page.getByRole("button", { name: "Wyślij aplikację", exact: true }).click();
+  await expect(realAnswer).toBeFocused();
+  await expect(realAnswer).toHaveCSS("background-color", "rgb(250, 241, 221)");
+  await expect(realAnswer).toHaveCSS("box-shadow", "rgb(137, 39, 70) 0px -3px 0px 0px inset");
+});
+
+test("editaurus consent preview matches the real form's required state", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#/design-system/editaurus");
+  const preview = page
+    .getByRole("checkbox", { name: "Zatwierdzam treść i przesłanie aplikacji." })
+    .first();
+  await expect(preview).toHaveCSS("background-color", "rgb(244, 240, 229)");
+  await page
+    .locator(".editaurus-catalog-consent")
+    .first()
+    .locator(":scope > span:last-child")
+    .hover();
+  await expect(preview).toHaveCSS("background-color", "rgb(253, 249, 239)");
+  await preview.focus();
+  await page.keyboard.press("Space");
+  await expect(preview).toBeChecked();
+  await expect(preview).toHaveCSS("border-color", "rgb(16, 61, 53)");
+  await expect(preview).toHaveCSS("background-color", "rgb(16, 61, 53)");
+  const invalid = page
+    .getByRole("checkbox", { name: "Zatwierdzam treść i przesłanie aplikacji." })
+    .nth(1);
+  await expect(invalid).toHaveCSS("border-color", "rgb(137, 39, 70)");
+  await expect(invalid).toHaveCSS("background-color", "rgb(249, 239, 217)");
+  await page
+    .locator(".editaurus-catalog-consent")
+    .nth(1)
+    .locator(":scope > span:last-child")
+    .hover();
+  await expect(invalid).toHaveCSS("background-color", "rgb(250, 241, 221)");
+  await invalid.focus();
+  await expect(invalid).toHaveCSS("outline-color", "rgb(137, 39, 70)");
+  await expect(invalid).toHaveCSS("background-color", "rgb(250, 241, 221)");
+  const disabled = page
+    .getByRole("checkbox", { name: "Zatwierdzam treść i przesłanie aplikacji." })
+    .nth(2);
+  await expect(disabled).toBeDisabled();
+  await expect(disabled).toHaveCSS("border-color", "rgb(16, 61, 53)");
+  await expect(disabled).toHaveCSS("background-color", "rgb(16, 61, 53)");
+  await page
+    .locator(".editaurus-catalog-consent")
+    .nth(2)
+    .locator(":scope > span:last-child")
+    .hover();
+  await expect(disabled).toHaveCSS("border-color", "rgb(27, 81, 72)");
+  await expect(disabled).toHaveCSS("background-color", "rgb(27, 81, 72)");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/aplikuj/ai-product-manager");
+  const consent = page.getByRole("checkbox", { name: "Zatwierdzam treść i przesłanie aplikacji" });
+  await expect(consent).toHaveClass(/editaurus-checkbox/);
+  await page.locator(".application-consent > span:last-child").hover();
+  await expect(consent).toHaveCSS("background-color", "rgb(253, 249, 239)");
+  await page
+    .getByLabel("Dlaczego pasujesz do tej roli?")
+    .fill("Moje doświadczenie pasuje do odpowiedzialności opisanej w tej ofercie.");
+  await page.getByRole("button", { name: "Wyślij aplikację", exact: true }).click();
+  await expect(consent).toBeFocused();
+  await expect(consent).toHaveCSS("border-color", "rgb(137, 39, 70)");
+  await expect(consent).toHaveCSS("background-color", "rgb(250, 241, 221)");
+});
+
+test("editaurus CV row reuses local PDF and preserves custom text", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#/design-system/editaurus");
+  const prepared = page.getByRole("article").filter({ hasText: "Przygotowany PDF" });
+  await expect(prepared).toContainText("anna-kowalska-cv-v1.pdf");
+  await expect(
+    prepared.getByRole("link", { name: "Pobierz CV (PDF)", exact: true }),
+  ).toHaveAttribute("href", /^\.?\/cv\/anna-kowalska-cv-v1\.pdf$/);
+  const openLink = prepared.getByRole("link", { name: /Otwórz CV \(PDF\)/ });
+  const downloadLink = prepared.getByRole("link", { name: "Pobierz CV (PDF)", exact: true });
+  for (const link of [openLink, downloadLink]) {
+    await link.hover();
+    await expect(link).toHaveCSS("transform", "matrix(1, 0, 0, 1, -2, -2)");
+    await expect(link).toHaveCSS("box-shadow", "rgb(16, 61, 53) 3px 3px 0px 0px");
+    await expect(link).toHaveCSS("background-color", "rgb(253, 249, 239)");
+    await page.mouse.down();
+    await expect(link).toHaveCSS("transform", "matrix(1, 0, 0, 1, -1, -1)");
+    await expect(link).toHaveCSS("box-shadow", "rgb(16, 61, 53) 1px 1px 0px 0px");
+    await page.mouse.up();
+  }
+  await downloadLink.focus();
+  await expect(downloadLink).toHaveCSS("transform", "matrix(1, 0, 0, 1, -2, -2)");
+  await expect(prepared.locator(".cv-file-row > svg")).toHaveCSS(
+    "background-color",
+    "rgb(16, 61, 53)",
+  );
+  const custom = page.getByRole("article").filter({ hasText: "Własna treść CV" });
+  await expect(custom).toContainText("Dodatkowy akapit zachowuje podział wierszy.");
+  await expect(custom.locator(".cv-text")).toHaveCSS("white-space", "pre-wrap");
+  expect(await custom.locator(".cv-text").textContent()).toContain("\nDodatkowy akapit");
+  await expect(custom.getByRole("link", { name: "Pobierz CV (PDF)" })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/aplikuj/ai-product-manager");
+  const form = page.getByRole("form", { name: "Twoja aplikacja" });
+  await expect(form.getByRole("region", { name: "Twoje CV" })).toContainText(
+    "CV z Twojego profilu",
+  );
+  await expect(form.locator(".cv-file-row > svg")).toHaveCSS("background-color", "rgb(16, 61, 53)");
+  await form.getByRole("link", { name: "Pobierz CV (PDF)", exact: true }).hover();
+  await expect(form.getByRole("link", { name: "Pobierz CV (PDF)", exact: true })).toHaveCSS(
+    "box-shadow",
+    "rgb(16, 61, 53) 3px 3px 0px 0px",
+  );
+});
+
+test("editaurus form feedback mirrors real validation and draft states", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#/design-system/editaurus");
+  await expect(page.locator(".editaurus-form-help").first()).toContainText("Minimum 20 znaków");
+  await expect(page.locator(".editaurus-form-error").first()).toHaveCSS(
+    "border-left-color",
+    "rgb(137, 39, 70)",
+  );
+  await expect(page.locator(".editaurus-form-status").first()).toHaveCSS(
+    "background-color",
+    "rgb(253, 249, 239)",
+  );
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/aplikuj/ai-product-manager");
+  const answer = page.getByLabel("Dlaczego pasujesz do tej roli?");
+  const form = page.getByRole("form", { name: "Twoja aplikacja" });
+  await expect(form.locator("#application-answer-help")).toHaveClass(/editaurus-form-help/);
+  await answer.fill("Za krótko");
+  await form.getByRole("button", { name: "Wyślij aplikację" }).click();
+  await expect(form.locator("#application-answer-help")).toHaveClass(/editaurus-form-error/);
+  await expect(answer).toBeFocused();
+  await answer.fill("Prowadziłam badania użytkowników i wdrożenie produktu z zespołem.");
+  await form.getByRole("button", { name: "Zapisz szkic" }).click();
+  await expect(form.getByRole("status")).toContainText("Szkic został zapisany.");
+  await expect(form.getByRole("status")).toHaveClass(/editaurus-form-status/);
+  await form.getByRole("button", { name: "Wyślij aplikację" }).click();
+  await expect(form.locator("#application-consent-error")).toHaveClass(/editaurus-form-error/);
+});
+
 for (const reducedMotion of ["no-preference", "reduce"] as const) {
   test(`submission celebrates only once after success with motion ${reducedMotion}`, async ({
     page,

@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router";
 import { CheckCircle2, FileText } from "lucide-react";
+import { HeroButton } from "@/components/editaurus/hero-button";
+import { SecondaryButton } from "@/components/editaurus/secondary-button";
+import { EditaurusTextarea } from "@/components/editaurus/textarea";
+import { EditaurusCheckbox } from "@/components/editaurus/checkbox";
 import { ConfettiBurst, type ConfettiOrigin } from "@/components/confetti-burst";
 import { BackLink } from "@/components/back-link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { JobCard } from "@/features/jobs/job-card";
 import { ApplicationOfferPreview } from "@/features/jobs/application-offer-preview";
 import { usePrototype } from "./store";
@@ -303,7 +306,7 @@ export function ApplyPage() {
         <form
           noValidate
           onSubmit={submit}
-          className="record-sheet application-form"
+          className="record-sheet application-form editaurus-surface editaurus-application"
           aria-labelledby="application-form-title"
         >
           <header className="application-form-intro">
@@ -327,7 +330,7 @@ export function ApplyPage() {
             aria-label="Odpowiedź do aplikacji"
           >
             <Field label="Dlaczego pasujesz do tej roli?">
-              <Textarea
+              <EditaurusTextarea
                 disabled={submitted}
                 ref={answerInput}
                 required
@@ -345,7 +348,9 @@ export function ApplyPage() {
             <p
               id="application-answer-help"
               role={answerInvalid ? "alert" : undefined}
-              className={answerInvalid ? "error-message" : "text-sm text-muted-foreground"}
+              className={
+                answerInvalid ? "error-message editaurus-form-error" : "editaurus-form-help"
+              }
             >
               {answerInvalid
                 ? `Odpowiedź jest za krótka. Wpisz co najmniej ${MIN_APPLICATION_ANSWER_LENGTH} znaków (obecnie: ${answerLength}).`
@@ -354,7 +359,7 @@ export function ApplyPage() {
           </section>
           <div className="application-form-section application-submit">
             <label className="application-consent">
-              <Checkbox
+              <EditaurusCheckbox
                 id="application-consent"
                 disabled={submitted}
                 checked={consent}
@@ -368,12 +373,16 @@ export function ApplyPage() {
               </span>
             </label>
             {consentInvalid && (
-              <p id="application-consent-error" className="error-message" role="alert">
+              <p
+                id="application-consent-error"
+                className="error-message editaurus-form-error"
+                role="alert"
+              >
                 Zatwierdź treść aplikacji i jej przesłanie pracodawcy.
               </p>
             )}
             <div className="application-actions">
-              <Button
+              <HeroButton
                 ref={sendButton}
                 type="submit"
                 disabled={submitted}
@@ -381,22 +390,24 @@ export function ApplyPage() {
               >
                 {submitted && <CheckCircle2 aria-hidden="true" />}
                 {submitted ? "Wysłano!" : "Wyślij aplikację"}
-              </Button>
-              <Button
+              </HeroButton>
+              <SecondaryButton
                 type="button"
                 disabled={submitted}
-                variant="outline"
+                className="application-draft"
                 onClick={() => {
                   if (run({ type: "draft", jobId: job.id, notes, generated, answer }))
                     setMessage("Szkic został zapisany.");
                 }}
               >
                 Zapisz szkic
-              </Button>
+              </SecondaryButton>
             </div>
             <p
               role="status"
-              className={submitted || !message ? "sr-only" : "application-save-status"}
+              className={
+                submitted || !message ? "sr-only" : "application-save-status editaurus-form-status"
+              }
             >
               {submitted ? "Wysłano aplikację. Otwieramy listę Twoich aplikacji." : message}
             </p>

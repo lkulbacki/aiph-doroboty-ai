@@ -299,3 +299,52 @@
   background: var(--gui-color-1);
   color: var(--gui-text);
 }
+
+/* editaurus pilot: the application form is an isolated visual surface. */
+.editaurus-application {
+  background: var(--ed-paper);
+  border: 2px solid var(--ed-ink);
+  border-radius: 4px;
+}
+
+.editaurus-application .application-form-intro h2 {
+  font-family: inherit;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--ed-ink);
+}
+
+.editaurus-application .application-form-intro p,
+.editaurus-application .application-help,
+.editaurus-application .cv-file-description span {
+  color: var(--ed-ink);
+  opacity: 0.78;
+}
+
+.editaurus-application .application-form-section {
+  border-top-color: var(--ed-line);
+}
+
+.editaurus-application .application-form-section h3 {
+  font-family: inherit;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--ed-ink);
+}
+
+.editaurus-application .application-answer .field > span {
+  font-family: inherit;
+  font-weight: 750;
+  color: var(--ed-ink);
+}
+
+.editaurus-application .application-consent {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ed-ink);
+}
+
+.editaurus-application .application-actions {
+  gap: 16px;
+}
