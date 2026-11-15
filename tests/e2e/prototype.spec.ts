@@ -517,13 +517,13 @@ test("legacy dark preference keeps scenario data and renders the light interface
   ).toBeUndefined();
 });
 
-test("Poster People offer keeps desktop conditions/actions and places them before mobile reading", async ({
+test("Editorial offer keeps desktop conditions/actions and places them before mobile reading", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await choose(page, "Anna Kowalska");
   await page.goto("/#/oferty/ai-product-manager");
-  const article = page.locator(".pp-offer-page");
+  const article = page.locator(".editorial-offer");
   const hero = article.locator("header");
   await expect(hero).toContainText(
     "Poprowadź produkt od problemu operacyjnego do mierzalnego wdrożenia AI.",
@@ -539,16 +539,21 @@ test("Poster People offer keeps desktop conditions/actions and places them befor
   expect(heroBox!.width).toBeLessThanOrEqual(1024);
   expect(factsBox!.x).toBeGreaterThan(descriptionBox!.x + descriptionBox!.width);
   const apply = article.getByRole("link", { name: "Aplikuj", exact: true });
+  await expect(apply).toHaveClass(/editaurus-hero-button/);
+  await expect(facts.getByRole("button", { name: "Zapisz ofertę" })).toHaveClass(
+    /editaurus-secondary-button/,
+  );
+  await expect(article.locator(".editorial-offer-related .editorial-job-row")).toHaveCount(3);
   const applyBox = await apply.boundingBox();
   expect(applyBox!.x).toBeGreaterThan(descriptionBox!.x + descriptionBox!.width);
-  await page.screenshot({ path: "artifacts/original-job-layout-desktop.png", fullPage: true });
+  await page.screenshot({ path: "artifacts/editorial-job-layout-desktop.png", fullPage: true });
   const nav = page.getByRole("navigation", { name: "Główna nawigacja" });
   await expect(nav.getByRole("link", { name: "Aplikacje", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Profil", exact: true })).toBeVisible();
   await page.setViewportSize({ width: 375, height: 812 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect((await facts.boundingBox())!.y).toBeLessThan((await description.boundingBox())!.y);
-  await page.screenshot({ path: "artifacts/original-job-layout-mobile.png", fullPage: true });
+  await page.screenshot({ path: "artifacts/editorial-job-layout-mobile.png", fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await nav.getByRole("link", { name: "Dla firm", exact: true }).click();
   await expect(
@@ -722,7 +727,7 @@ test("desktop reset synchronizes search, category and facets with the URL", asyn
   );
 });
 
-test("editorial listing keeps right-hand filters and offer details keep their typography", async ({
+test("editorial listing keeps right-hand filters and offer details use shared editorial typography", async ({
   page,
 }) => {
   for (const width of [1280, 1100, 850, 390, 320]) {
@@ -740,15 +745,17 @@ test("editorial listing keeps right-hand filters and offer details keep their ty
       true,
     );
   }
-  for (const [width, title, salary] of [
-    [1280, "64px", "24px"],
-    [850, "46px", "20px"],
-    [390, "47px", "25px"],
-  ] as const) {
+  for (const width of [1280, 850, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/#/oferty/ai-product-manager");
-    await expect(page.locator(".pp-offer-hero h1")).toHaveCSS("font-size", title);
-    await expect(page.locator(".pp-offer-pay .pp-salary-tag")).toHaveCSS("font-size", salary);
+    await expect(page.locator(".editorial-offer-hero h1")).toHaveCSS("font-weight", "900");
+    await expect(page.locator(".editorial-offer-pay .pp-salary-tag")).toHaveCSS(
+      "font-weight",
+      "900",
+    );
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
   }
 });
 
@@ -766,7 +773,7 @@ test("offer section links survive copied URLs and restore section focus through 
   await expect(page).toHaveURL(/#\/oferty\/ai-product-manager#employer$/);
   const copied = await context.newPage();
   await copied.goto(destination);
-  await expect(copied.locator(".pp-offer-hero h1")).toHaveText("AI Product Manager");
+  await expect(copied.locator(".editorial-offer-hero h1")).toHaveText("AI Product Manager");
   await expect(copied.locator("#employer")).toBeFocused();
   expect((await copied.locator("#employer").boundingBox())!.y).toBeLessThan(50);
   await copied.close();
@@ -875,22 +882,9 @@ test("homepage surfaces and marketplace action type roles match the shared refer
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/#\/oferty\/ai-product-manager$/);
-  for (const [width, offerSize, payLine] of [
-    [1280, "14px", "34.8px"],
-    [1100, "13px", "31.9px"],
-    [850, "12px", "29px"],
-    [700, "14px", "36.25px"],
-    [600, "14px", "33.75px"],
-    [390, "14px", "33.75px"],
-  ] as const) {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto("/#/oferty/ai-product-manager");
-    const action = page.locator(".pp-offer-actions a").first();
-    await expect(action).toHaveCSS("font-size", offerSize);
-    await expect(action).toHaveCSS("font-weight", "600");
-    await expect(action).toHaveCSS("line-height", `${parseInt(offerSize) * 1.5}px`);
-    await expect(page.locator(".pp-offer-pay .pp-salary-tag")).toHaveCSS("line-height", payLine);
-  }
+  const action = page.getByRole("link", { name: "Wybierz osobę i aplikuj" });
+  await expect(action).toHaveClass(/editaurus-hero-button/);
+  await expect(action).toHaveAttribute("href", /next=%2Faplikuj%2Fai-product-manager/);
 });
 
 test("process sheet keeps notes across keyboard tabs and saves stage history with focus", async ({
@@ -1009,7 +1003,7 @@ for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     await choose(page, "Anna Kowalska");
     await page.goto("/#/oferty/ai-product-manager");
-    const gap = await page.locator(".pp-offer-actions").evaluate((element) => {
+    const gap = await page.locator(".editorial-offer-actions").evaluate((element) => {
       const [apply, save] = element.querySelectorAll("a, button");
       return save.getBoundingClientRect().top - apply.getBoundingClientRect().bottom;
     });

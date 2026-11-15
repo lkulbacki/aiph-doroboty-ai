@@ -72,6 +72,7 @@ export function Shell() {
   const { state, issue, error, clearError } = usePrototype();
   const person = currentPerson(state);
   const { pathname } = useLocation();
+  const editorialMarketplace = pathname === "/oferty" || pathname.startsWith("/oferty/");
   const workspace = pathname.startsWith("/app") && person;
   const [menuAt, setMenuAt] = useState<string | null>(null);
   const main = useRef<HTMLElement>(null);
@@ -210,7 +211,7 @@ export function Shell() {
             className={
               pathname === "/"
                 ? "candidate-home-header editaurus-surface"
-                : pathname === "/oferty"
+                : editorialMarketplace
                   ? "editorial-listing-header editaurus-surface"
                   : "bg-background/95 shadow-[var(--gui-divider-bottom-shadow)] backdrop-blur supports-[backdrop-filter]:bg-background/80"
             }
@@ -232,7 +233,7 @@ export function Shell() {
                       height={318}
                     />
                   </span>
-                ) : pathname === "/oferty" ? (
+                ) : editorialMarketplace ? (
                   <span className="editorial-listing-logo" aria-hidden="true" />
                 ) : (
                   <>

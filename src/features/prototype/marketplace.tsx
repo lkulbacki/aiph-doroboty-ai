@@ -10,12 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, ArrowRight, Monitor, X } from "lucide-react";
+import { Search, Monitor, X } from "lucide-react";
 import { BackLink } from "@/components/back-link";
 import { ResponsivePanel } from "@/components/responsive-panel";
 import { SalaryFact } from "@/features/jobs/salary-fact";
 import { functionLabels } from "@/features/jobs/presentation";
-import peopleArt from "../../../docs/design-system/agent-kit/assets/people.png";
+import { HeroLink } from "@/components/editaurus/hero-button";
+import { SecondaryButton } from "@/components/editaurus/secondary-button";
 import { CompanyLogo } from "@/features/jobs/company-logo";
 import { JobCard } from "@/features/jobs/job-card";
 import { JobFiltersForm } from "@/features/jobs/job-filters";
@@ -444,56 +445,56 @@ export function JobPage() {
     .sort((a, b) => Number(b.category === job.category) - Number(a.category === job.category))
     .slice(0, 3);
   return (
-    <article className="pp-offer-page pp-container pp-offer-main">
-      <nav className="pp-offer-breadcrumb" aria-label="Powrót do ofert">
-        <BackLink to="/oferty">Wróć do ofert</BackLink>
-        <span>{job.company.name}</span>
-      </nav>
-      <div className="pp-offer-grid">
-        <header className="pp-offer-hero">
-          <div className="pp-offer-identity">
-            <CompanyLogo company={job.company} />
-            <div>
-              <Link className="pp-offer-company-link" to={`/firmy/${job.company.slug}`}>
-                {job.company.name}
-                <ArrowUpRight className="pp-icon" />
-              </Link>
-              <p className="pp-offer-date">
-                Opublikowano {new Intl.DateTimeFormat("pl-PL").format(new Date(job.publishedAt))}
-              </p>
+    <article className="editaurus-surface editorial-offer" data-category={job.category}>
+      <div className="editorial-offer-inner">
+        <nav className="editorial-offer-breadcrumb" aria-label="Powrót do ofert">
+          <BackLink to="/oferty">Wróć do ofert</BackLink>
+          <span>{job.company.name}</span>
+        </nav>
+        <div className="editorial-offer-grid">
+          <header className="editorial-offer-hero">
+            <div className="editorial-offer-identity">
+              <CompanyLogo company={job.company} />
+              <div>
+                <Link className="editorial-offer-company-link" to={`/firmy/${job.company.slug}`}>
+                  {job.company.name}
+                  <ArrowUpRight className="pp-icon" />
+                </Link>
+                <p className="editorial-offer-date">
+                  Opublikowano {new Intl.DateTimeFormat("pl-PL").format(new Date(job.publishedAt))}
+                </p>
+              </div>
+              <span className="editorial-job-category">{categoryLabels[job.category]}</span>
             </div>
-            <span className="pp-offer-category">{categoryLabels[job.category]}</span>
-          </div>
-          <h1>{job.title}</h1>
-          <div className="pp-offer-key-facts">
-            <span>
-              <MapPin className="pp-icon" />
-              {job.locations.join(" / ")}
-            </span>
-            <span>
-              <Monitor className="pp-icon" />
-              {remoteLabels[job.remoteStatus]}
-            </span>
-            <span>
-              <BriefcaseBusiness className="pp-icon" />
-              {seniorityLabels[job.seniority]}
-            </span>
-          </div>
-          <div className="pp-offer-skill-row">
-            <span>{functionLabels[job.function]}</span>
-          </div>
-          <div className="pp-offer-hero-bottom">
-            <span>{job.summary}</span>
-          </div>
-        </header>
-        <aside className="pp-offer-sidebar">
-          <div className="pp-offer-action-card">
-            <div className="pp-offer-pay">
-              <p className="pp-offer-eyebrow">Wynagrodzenie</p>
-              <SalaryFact job={job} />
+            <h1>{job.title}</h1>
+            <div className="editorial-offer-key-facts">
+              <span>
+                <MapPin className="pp-icon" />
+                {job.locations.join(" / ")}
+              </span>
+              <span>
+                <Monitor className="pp-icon" />
+                {remoteLabels[job.remoteStatus]}
+              </span>
+              <span>
+                <BriefcaseBusiness className="pp-icon" />
+                {seniorityLabels[job.seniority]}
+              </span>
+            </div>
+            <div className="editorial-offer-skill-row">
+              <span>{functionLabels[job.function]}</span>
+            </div>
+            <div className="editorial-offer-hero-bottom">
+              <span>{job.summary}</span>
+            </div>
+          </header>
+          <aside className="editorial-offer-sidebar">
+            <div className="editorial-offer-pay">
+              <p className="editorial-offer-eyebrow">Wynagrodzenie</p>
+              <SalaryFact job={job} showContract={false} />
             </div>
             <h2 className="sr-only">Konkrety</h2>
-            <dl className="pp-offer-terms">
+            <dl className="editorial-offer-terms">
               {[
                 ["Forma współpracy", contractLabels[job.contract]],
                 ["Tryb pracy", remoteLabels[job.remoteStatus]],
@@ -506,89 +507,87 @@ export function JobPage() {
                 </div>
               ))}
             </dl>
-            <div className="pp-offer-actions">
+            <div className="editorial-offer-actions">
               {person?.role === "candidate" ? (
                 <>
-                  <Link
-                    className={buttonVariants()}
+                  <HeroLink
                     to={submitted ? `/app/aplikacje/${submitted.id}` : `/aplikuj/${job.slug}`}
                   >
                     {submitted ? "Zobacz swoją aplikację" : "Aplikuj"}
-                    <ArrowRight />
-                  </Link>
-                  <Button
-                    variant="outline"
+                  </HeroLink>
+                  <SecondaryButton
                     aria-label="Zapisz ofertę"
                     aria-pressed={saved}
                     onClick={() => run({ type: "toggle_saved", jobId: job.id })}
                   >
                     <Bookmark className={cn(saved && "fill-current")} />
                     Zapisz ofertę
-                  </Button>
+                  </SecondaryButton>
                 </>
               ) : !person ? (
-                <Link
-                  className={buttonVariants()}
+                <HeroLink
                   to={`/auth/sign-in?audience=candidate&next=${encodeURIComponent(`/aplikuj/${job.slug}`)}`}
                 >
                   Wybierz osobę i aplikuj
-                </Link>
+                </HeroLink>
               ) : (
                 <p>Aplikacje są dostępne z profilu kandydata.</p>
               )}
               <p>Prototyp: aplikacja zostaje w tym przeglądarkowym scenariuszu.</p>
             </div>
-          </div>
-        </aside>
-        <div className="pp-offer-description">
-          <nav className="pp-offer-section-nav" aria-label="Sekcje oferty">
-            <Link to={{ pathname: `/oferty/${job.slug}`, hash: "#role" }}>O roli</Link>
-            <Link to={{ pathname: `/oferty/${job.slug}`, hash: "#employer" }}>O firmie</Link>
-          </nav>
-          <div className="pp-offer-reading">
-            <section id="role" tabIndex={-1} className="pp-offer-section">
+          </aside>
+          <div className="editorial-offer-description">
+            <nav className="editorial-offer-section-nav" aria-label="Sekcje oferty">
+              <Link
+                aria-current={location.hash !== "#employer" ? "location" : undefined}
+                to={{ pathname: `/oferty/${job.slug}`, hash: "#role" }}
+              >
+                O roli
+              </Link>
+              <Link
+                aria-current={location.hash === "#employer" ? "location" : undefined}
+                to={{ pathname: `/oferty/${job.slug}`, hash: "#employer" }}
+              >
+                O firmie
+              </Link>
+            </nav>
+            <section id="role" tabIndex={-1} className="editorial-offer-section">
               <h2>O roli</h2>
               <JobDescription description={job.description} />
             </section>
           </div>
-        </div>
-        <section className="pp-offer-employer" id="employer" tabIndex={-1}>
-          <div className="pp-employer-top">
-            <CompanyLogo company={job.company} />
-            <div>
-              <p className="pp-offer-eyebrow">Poznaj firmę</p>
-              <h2>{job.company.name}</h2>
+          <section className="editorial-offer-employer" id="employer" tabIndex={-1}>
+            <div className="editorial-offer-company-top">
+              <CompanyLogo company={job.company} />
+              <div>
+                <p className="editorial-offer-eyebrow">Poznaj firmę</p>
+                <h2>{job.company.name}</h2>
+              </div>
             </div>
-          </div>
-          <div className="pp-employer-copy">
-            <div>
+            <div className="editorial-offer-company-copy">
               <p>{job.company.description}</p>
-              <Link
-                className={buttonVariants({ variant: "outline", size: "sm" })}
-                to={`/firmy/${job.company.slug}`}
-              >
-                Oferty tej firmy <ArrowRight />
+              <Link className="editorial-offer-text-link" to={`/firmy/${job.company.slug}`}>
+                Oferty tej firmy
               </Link>
             </div>
-            <img src={peopleArt} alt="" />
-          </div>
-        </section>
+          </section>
+        </div>
+        {related.length > 0 && (
+          <section className="editorial-offer-related">
+            <div className="editorial-offer-related-heading">
+              <h2>Może też Cię zainteresować</h2>
+              <Link className="editorial-offer-text-link" to="/oferty">
+                Wszystkie oferty
+              </Link>
+            </div>
+            <div>
+              {related.map((x) => (
+                <JobCard key={x.id} job={x} variant="editorial" />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
-      {related.length > 0 && (
-        <section className="pp-offer-related">
-          <div className="pp-offer-related-heading">
-            <h2>Może też Cię zainteresować</h2>
-            <Link to="/oferty">
-              Wszystkie oferty <ArrowRight className="pp-icon" />
-            </Link>
-          </div>
-          <div className="pp-job-list">
-            {related.map((x) => (
-              <JobCard key={x.id} job={x} />
-            ))}
-          </div>
-        </section>
-      )}
     </article>
   );
 }

@@ -15,15 +15,15 @@
   border-bottom: 1px solid var(--ed-line);
 }
 
-.editorial-job-row[data-category="build"] {
+:is(.editorial-job-row, .editorial-offer)[data-category="build"] {
   --role-color: var(--ed-pink);
 }
 
-.editorial-job-row[data-category="apply"] {
+:is(.editorial-job-row, .editorial-offer)[data-category="apply"] {
   --role-color: var(--ed-yellow);
 }
 
-.editorial-job-row[data-category="lead"] {
+:is(.editorial-job-row, .editorial-offer)[data-category="lead"] {
   --role-color: var(--ed-mint);
 }
 
