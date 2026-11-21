@@ -1,3 +1,4 @@
+import { ListingFiltersGuide } from "./listing-filters-guide";
 import { useState } from "react";
 import { Link } from "react-router";
 import { FormSelect } from "@/components/ui/form-select";
@@ -92,7 +93,8 @@ export function ChoicesPreview() {
           </Link>
         </article>
       </div>
-      <h2>Komunikaty i puste stany Editaurusa</h2>
+      <ListingFiltersGuide />
+      <h2 id="ed-messages">Komunikaty i puste stany Editaurusa</h2>
       <p>Te same komponenty obsługują informacje i odzyskiwanie danych w aplikacji.</p>
       <Empty>
         Brak wyników podglądu.{" "}

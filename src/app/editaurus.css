@@ -343,7 +343,7 @@
   letter-spacing: -0.06em;
 }
 
-.editaurus-catalog h2 {
+.editaurus-catalog :is(h2, h3) {
   margin-bottom: 12px;
   font-family: inherit;
   font-size: 24px;
@@ -1107,4 +1107,80 @@
 .editaurus-form-combobox:has([aria-invalid="true"]):focus-within {
   background: #faf1dd;
   box-shadow: inset 0 -3px #892746;
+}
+
+.editaurus-catalog {
+  width: min(100% - 32px, 1440px);
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+.editaurus-catalog-content {
+  min-width: 0;
+}
+.editaurus-catalog-content [id] {
+  scroll-margin-top: 24px;
+}
+.editaurus-catalog-nav {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid var(--ed-ink);
+  border-radius: 4px;
+  background: var(--ed-paper-light);
+}
+.editaurus-catalog-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 20px;
+}
+.editaurus-catalog-nav a {
+  --control-hover-bg: var(--ed-paper);
+  --control-hover-text: var(--ed-ink);
+  display: block;
+  padding: 8px;
+  font-size: 14px;
+  border-left: 3px solid transparent;
+}
+.editaurus-catalog-nav a[aria-current="location"] {
+  border-color: var(--ed-green);
+  font-weight: 800;
+}
+.editaurus-catalog-nav a:focus-visible {
+  outline: 2px solid var(--ed-green);
+  outline-offset: -2px;
+}
+.editaurus-palette {
+  list-style: none;
+  padding: 0;
+}
+.editaurus-palette li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-block: 8px;
+}
+.editaurus-palette span {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--ed-ink);
+  flex-shrink: 0;
+}
+@media (max-width: 1000px) {
+  .editaurus-catalog {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  .editaurus-catalog-nav {
+    position: static;
+    max-height: none;
+  }
+  .editaurus-catalog-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+  }
 }

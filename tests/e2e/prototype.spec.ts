@@ -1275,7 +1275,9 @@ test("editaurus secondary action shares the real draft control and state example
   page,
 }) => {
   await page.goto("/#/design-system/editaurus");
-  const cards = page.locator(".editaurus-catalog-card");
+  const cards = page.locator(
+    ".editaurus-catalog-content > .editaurus-catalog-grid > .editaurus-catalog-card",
+  );
   const active = cards.nth(3).getByRole("button", { name: "Zapisz szkic" });
   await expect(active).toHaveCSS("border-radius", "4px");
   await expect(active).toHaveCSS("background-color", "rgb(244, 240, 229)");
