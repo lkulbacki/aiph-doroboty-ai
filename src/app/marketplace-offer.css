@@ -51,9 +51,7 @@
   flex-wrap: wrap;
 }
 
-.editorial-offer
-  :is(.editorial-offer-identity, .editorial-offer-company-top)
-  > [data-company-logo] {
+:is(.editorial-offer-identity, .editorial-offer-company-top) > [data-company-logo] {
   width: 44px;
   height: 44px;
   border-radius: 4px;
@@ -151,9 +149,6 @@
   min-width: 0;
   margin-top: 24px;
   padding: clamp(16px, 2vw, 25px);
-  border: 1px solid var(--ed-ink);
-  border-radius: 4px;
-  background: var(--ed-field-light);
 }
 
 .editorial-offer-pay .pp-salary-tag {

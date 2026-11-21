@@ -1,0 +1,214 @@
+/* Shared workspace chrome only: route content keeps its own migration scope. */
+.editaurus-workspace {
+  --ed-workspace-canvas: #f4f0e5;
+  display: grid;
+  grid-template-columns: 244px minmax(0, 1fr);
+  align-items: start;
+  background: var(--ed-workspace-canvas);
+}
+
+.editaurus-workspace .workspace {
+  min-width: 0;
+  margin-left: 0;
+  background: var(--ed-workspace-canvas);
+}
+
+.editaurus-workspace .workspace-nav-divider {
+  margin-block: 14px;
+  border-top: 1px solid var(--ed-line);
+}
+
+.editaurus-workspace .sidebar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100dvh;
+  padding-top: 24px;
+  border-right: 1px solid var(--ed-ink);
+  background: var(--ed-paper);
+  box-shadow: none;
+  overflow-y: auto;
+}
+
+.editaurus-workspace .brand {
+  --control-hover-bg: transparent;
+  display: inline-flex;
+  min-height: 44px;
+}
+
+.editaurus-workspace .editorial-listing-logo {
+  width: 190px;
+  max-width: 100%;
+  height: 65px;
+}
+
+.editaurus-workspace .brand:is(:hover, :focus-visible) .editorial-listing-logo::before {
+  opacity: 0;
+}
+
+.editaurus-workspace .brand:is(:hover, :focus-visible) .editorial-listing-logo::after {
+  opacity: 1;
+}
+
+.editaurus-workspace .workspace-label {
+  gap: 10px;
+  padding: 18px 0;
+  margin: 20px 0;
+  border-block: 1px solid var(--ed-line);
+  box-shadow: none;
+}
+
+.editaurus-workspace .workspace-label > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.editaurus-workspace .workspace-label strong {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.editaurus-workspace .workspace-label div > span {
+  color: var(--ed-green);
+}
+
+.editaurus-workspace .workspace-avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--ed-ink);
+  border-radius: 4px;
+  background: var(--ed-paper);
+  box-shadow: none;
+  font-weight: 800;
+}
+
+.editaurus-workspace .nav-link {
+  --control-hover-bg: var(--ed-paper);
+  --control-hover-text: var(--ed-ink);
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  color: var(--ed-ink);
+}
+
+.editaurus-workspace .nav-link svg {
+  flex-shrink: 0;
+}
+
+.editaurus-workspace .nav-link:hover {
+  background: var(--control-hover-bg);
+  color: var(--control-hover-text);
+  border-color: var(--ed-line);
+}
+
+.editaurus-workspace .nav-active {
+  --control-hover-bg: #1b5148;
+  --control-hover-text: var(--ed-paper-light);
+  border-color: var(--ed-green);
+  background: var(--ed-green);
+  color: var(--ed-paper-light);
+  font-weight: 800;
+}
+
+.editaurus-workspace .topbar {
+  gap: 16px;
+  padding-block: 10px;
+  border-bottom: 1px solid var(--ed-ink);
+  background: var(--ed-paper);
+  color: var(--ed-green);
+  box-shadow: none;
+  font-size: 13px;
+}
+
+.editaurus-workspace .topbar > a,
+.editaurus-workspace .mobile-header button {
+  --control-hover-bg: var(--ed-paper);
+  --control-hover-text: var(--ed-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--ed-ink);
+  border-radius: 4px;
+  background: var(--ed-paper-light);
+  box-shadow: none;
+  color: var(--ed-ink);
+  font-family: inherit;
+  font-weight: 700;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.editaurus-workspace :is(.topbar > a, .mobile-header button):hover {
+  background: var(--ed-paper);
+}
+
+.editaurus-workspace :is(.topbar > a, .mobile-header button):active {
+  transform: translate(1px, 1px);
+}
+
+.editaurus-workspace :is(.sidebar, .topbar, .mobile-header) :focus-visible {
+  outline: 2px solid var(--ed-ink);
+  outline-offset: 3px;
+}
+
+@media (min-width: 768px) and (max-width: 900px) {
+  .editaurus-workspace {
+    grid-template-columns: 212px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .editaurus-workspace {
+    display: block;
+    position: relative;
+  }
+
+  .editaurus-workspace .mobile-header {
+    gap: 12px;
+    border-bottom: 1px solid var(--ed-ink);
+    background: var(--ed-paper);
+    box-shadow: none;
+  }
+
+  .editaurus-workspace .mobile-header .editorial-listing-logo {
+    width: 170px;
+    height: 58px;
+  }
+
+  .editaurus-workspace .sidebar {
+    position: absolute;
+    top: 68px;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--ed-ink);
+    max-height: calc(100dvh - 68px);
+    overscroll-behavior: contain;
+  }
+
+  .editaurus-workspace .sidebar .brand {
+    display: none;
+  }
+
+  .editaurus-workspace .topbar > a {
+    max-width: 60%;
+  }
+}
+
+@media (forced-colors: active) {
+  .editaurus-workspace :is(.sidebar, .topbar, .mobile-header) :focus-visible {
+    outline-color: Highlight;
+  }
+
+  .editaurus-workspace .nav-active {
+    border-color: Highlight;
+  }
+}

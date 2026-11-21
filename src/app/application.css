@@ -6,12 +6,14 @@
   margin: 30px 0 34px;
 }
 .application-header h1 {
-  font-size: 64px;
-  line-height: 1.04;
-  letter-spacing: -2px;
+  font-family: inherit;
+  font-size: clamp(36px, 5.1vw, 74px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.055em;
 }
 .application-header p {
-  color: var(--gui-text-muted);
+  color: var(--ed-green);
   font-size: 15px;
   line-height: 1.7;
   margin-top: 14px;
@@ -28,36 +30,27 @@
 .application-offer {
   position: sticky;
   top: 24px;
+  padding: clamp(16px, 2.1vw, 28px);
+  overflow-wrap: anywhere;
 }
 .application-offer:has(details[open]) {
   position: static;
 }
 .application-eyebrow {
-  color: var(--gui-text-muted);
-  font-size: 12px;
-  line-height: 1.5;
-  margin-bottom: 22px;
+  margin-bottom: 14px;
 }
 .application-company {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   font-size: 14px;
-  font-weight: 600;
-  overflow-wrap: anywhere;
-}
-.application-company [data-company-logo] {
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--gui-edge);
-  border-radius: 10px;
+  font-weight: 900;
 }
 .application-offer h2 {
-  font-size: 28px;
+  margin-bottom: 12px;
+  font-family: inherit;
+  font-size: clamp(24px, 2.4vw, 36px);
+  font-weight: 900;
   line-height: 1.12;
-  letter-spacing: -0.7px;
-  margin-bottom: 14px;
+  letter-spacing: -0.055em;
 }
 .application-location {
   display: flex;
@@ -72,35 +65,10 @@
   margin-top: 2px;
 }
 .application-pay {
-  margin-top: 22px;
+  margin-top: 20px;
 }
 .application-pay .pp-salary-tag {
-  font-size: 20px;
-  line-height: 1.4;
-}
-.application-pay .pp-salary-description {
-  font-size: 12px;
-  margin-top: 8px;
-}
-.application-offer-facts {
-  display: grid;
-  gap: 14px;
-  padding-block: 22px;
-  margin-top: 22px;
-  border-block: 1px solid var(--pp-line);
-  font-size: 13px;
-}
-.application-offer-facts > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-}
-.application-offer-facts dt {
-  color: var(--gui-text-muted);
-}
-.application-offer-facts dd {
-  text-align: right;
-  overflow-wrap: anywhere;
+  font-size: clamp(22px, 2.3vw, 30px);
 }
 .application-offer-summary {
   font-size: 14px;
@@ -117,8 +85,9 @@
   align-items: center;
   gap: 12px;
   font-size: 13px;
-  font-weight: 600;
-  padding: 12px 0;
+  font-weight: 800;
+  min-height: 44px;
+  padding: 8px 0;
   list-style: none;
   cursor: pointer;
 }
@@ -126,10 +95,11 @@
   display: none;
 }
 .application-description summary:hover {
-  background: var(--gui-color-1-transparent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 .application-description summary:focus-visible {
-  outline: 2px solid var(--gui-focus);
+  outline: 2px solid var(--ed-ink);
   outline-offset: 4px;
 }
 .application-description summary svg {
@@ -141,12 +111,14 @@
 .application-description [data-job-description] {
   padding-top: 14px;
   font-size: 14px;
-  line-height: 1.75;
-  overflow-wrap: anywhere;
+  line-height: 1.65;
+  color: var(--ed-ink);
 }
 .application-description [data-job-description] h3 {
-  font-size: 24px;
-  font-weight: 400;
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--ed-ink);
 }
 .application-form {
   display: grid;
@@ -229,15 +201,9 @@
   overflow-wrap: anywhere;
 }
 @media (max-width: 1100px) {
-  .application-header h1 {
-    font-size: 54px;
-  }
   .application-layout {
     gap: 24px;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
-  }
-  .application-pay .pp-salary-tag {
-    font-size: 18px;
   }
 }
 @media (max-width: 850px) {
@@ -247,9 +213,6 @@
   .application-offer {
     position: static;
   }
-  .application-header h1 {
-    font-size: 47px;
-  }
 }
 @media (max-width: 600px) {
   .application-page {
@@ -258,19 +221,8 @@
   .application-header {
     margin-block: 24px 28px;
   }
-  .application-header h1 {
-    font-size: 43px;
-    line-height: 1.06;
-    letter-spacing: -1.5px;
-  }
   .application-header p {
     font-size: 13px;
-  }
-  .application-offer h2 {
-    font-size: 26px;
-  }
-  .application-pay .pp-salary-tag {
-    font-size: 20px;
   }
   .application-form-intro {
     padding-bottom: 20px;
@@ -300,13 +252,7 @@
   color: var(--gui-text);
 }
 
-/* editaurus pilot: the application form is an isolated visual surface. */
-.editaurus-application {
-  background: var(--ed-paper);
-  border: 2px solid var(--ed-ink);
-  border-radius: 4px;
-}
-
+/* Application form surface and field composition. */
 .editaurus-application .application-form-intro h2 {
   font-family: inherit;
   font-weight: 900;

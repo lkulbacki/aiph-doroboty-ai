@@ -10,11 +10,12 @@
   --ed-ink: #102e2a;
   --ed-green: #103d35;
   --ed-paper: #f4f0e5;
+  --ed-paper-light: #fdf9ef;
   --ed-pink: #f282b7;
   --ed-yellow: #f1f36a;
   --ed-mint: #a9dcc6;
   --ed-line: rgb(16 46 42 / 30%);
-  --ed-field-light: #fdf9ef;
+  --ed-field-light: var(--ed-paper-light);
   --ed-field-error: #f9e9d9;
   --ed-field-error-light: #faf1dd;
   --ed-field-rest: var(--ed-paper);
@@ -22,6 +23,17 @@
   --ed-field-focus: var(--ed-field-light);
   font-family: "DM Sans", Arial, sans-serif;
   color: var(--ed-ink);
+}
+
+.editaurus-canvas {
+  background: var(--ed-paper);
+}
+
+.editaurus-panel,
+.editaurus-catalog-card {
+  border: 1px solid var(--ed-ink);
+  border-radius: 4px;
+  background: var(--ed-paper-light);
 }
 
 .editaurus-surface .editaurus-hero-button {
@@ -113,13 +125,14 @@
   box-shadow: 2px 2px 0 var(--ed-green);
 }
 
-.editaurus-surface .editaurus-secondary-button:disabled {
+.editaurus-surface .editaurus-secondary-button:disabled,
+.editaurus-job-editor .editaurus-hero-button:disabled {
   border-color: #50605b;
   background: #eae8de;
   color: #50605b;
 }
 
-.editaurus-surface .editaurus-textarea {
+.editaurus-surface :is(.editaurus-textarea, .editaurus-input) {
   min-height: 180px;
   min-width: 0;
   max-width: 100%;
@@ -132,31 +145,33 @@
   letter-spacing: normal;
 }
 
-.editaurus-surface .editaurus-textarea:hover:not(:disabled, :focus, [aria-invalid="true"]) {
+.editaurus-surface
+  :is(.editaurus-textarea, .editaurus-input):hover:not(:disabled, :focus, [aria-invalid="true"]) {
   background: var(--ed-field-hover);
 }
 
-.editaurus-surface .editaurus-textarea:focus {
+.editaurus-surface :is(.editaurus-textarea, .editaurus-input):focus {
   outline: none;
   box-shadow: inset 0 -3px 0 var(--ed-ink);
   background: var(--ed-field-focus);
 }
 
-.editaurus-surface .editaurus-textarea[aria-invalid="true"] {
+.editaurus-surface :is(.editaurus-textarea, .editaurus-input)[aria-invalid="true"] {
   border-color: #892746;
   background: var(--ed-field-error);
 }
 
-.editaurus-surface .editaurus-textarea[aria-invalid="true"]:hover:not(:focus) {
+.editaurus-surface
+  :is(.editaurus-textarea, .editaurus-input)[aria-invalid="true"]:hover:not(:focus) {
   background: var(--ed-field-error-light);
 }
 
-.editaurus-surface .editaurus-textarea[aria-invalid="true"]:focus {
+.editaurus-surface :is(.editaurus-textarea, .editaurus-input)[aria-invalid="true"]:focus {
   box-shadow: inset 0 -3px 0 #892746;
   background: var(--ed-field-error-light);
 }
 
-.editaurus-surface .editaurus-textarea:disabled {
+.editaurus-surface :is(.editaurus-textarea, .editaurus-input):disabled {
   border-color: #50605b;
   background: #eae8de;
   color: #50605b;
@@ -315,7 +330,8 @@
 
 .editaurus-catalog {
   width: min(100% - 32px, 1080px);
-  margin: 48px auto 80px;
+  margin-inline: auto;
+  padding-block: 48px 80px;
 }
 
 .editaurus-catalog h1 {
@@ -360,9 +376,6 @@
   gap: 18px;
   min-height: 250px;
   padding: 24px;
-  border: 2px solid var(--ed-ink);
-  border-radius: 4px;
-  background: var(--ed-paper);
 }
 
 .editaurus-catalog-card p {
@@ -445,7 +458,7 @@
     outline: 2px solid Highlight;
     outline-offset: 2px;
   }
-  .editaurus-surface .editaurus-textarea:focus {
+  .editaurus-surface :is(.editaurus-textarea, .editaurus-input):focus {
     outline: 2px solid Highlight;
     outline-offset: 2px;
   }
@@ -530,4 +543,568 @@
   .editaurus-site-footer a:focus-visible {
     outline-color: Highlight;
   }
+}
+
+.editaurus-applications {
+  max-width: 1100px;
+  margin-inline: auto;
+  overflow-wrap: anywhere;
+}
+
+.editaurus-applications h1,
+.editaurus-application-row h2 {
+  font-family: inherit;
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1.1;
+}
+
+.editaurus-applications h1 {
+  margin-bottom: 24px;
+  font-size: clamp(32px, 4.5vw, 60px);
+}
+
+.editaurus-applications-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+}
+
+.editaurus-applications-notice svg {
+  flex-shrink: 0;
+}
+
+.editaurus-applications-search {
+  display: grid;
+  gap: 8px;
+  width: min(100%, 440px);
+  margin-bottom: 24px;
+}
+
+.editaurus-applications-search span {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.editaurus-applications-search input {
+  min-height: 44px;
+  min-width: 0;
+  padding-inline: 12px;
+  border: 1px solid var(--ed-ink);
+  background: var(--ed-field-rest);
+}
+
+.editaurus-applications-search input:hover {
+  background: var(--ed-field-hover);
+}
+
+.editaurus-applications-search input:focus {
+  background: var(--ed-field-focus);
+  box-shadow: inset 0 -3px var(--ed-ink);
+  outline: none;
+}
+
+.editaurus-applications-results {
+  border-block: 1px solid var(--ed-line);
+}
+
+.editaurus-application-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.43fr) auto;
+  align-items: center;
+  gap: 10px 18px;
+  padding: 16px 12px;
+}
+
+.editaurus-application-row + .editaurus-application-row {
+  border-top: 1px solid var(--ed-line);
+}
+
+.editaurus-application-row h2 {
+  font-size: clamp(17px, 2vw, 23px);
+}
+
+.editaurus-application-row a {
+  --control-hover-bg: transparent;
+  --control-hover-text: var(--ed-ink);
+}
+
+.editaurus-application-row a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.editaurus-application-row a:focus-visible {
+  outline-color: var(--ed-ink);
+}
+
+.editaurus-application-row p {
+  color: var(--ed-green);
+  font-size: 13px;
+}
+
+.editaurus-application-row h2 + p {
+  margin-top: 5px;
+}
+
+.editaurus-application-stage {
+  font-weight: 800;
+}
+
+.editaurus-applications-empty {
+  padding: 18px 12px;
+}
+
+@media (max-width: 640px) {
+  .editaurus-application-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .editaurus-application-row > div {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (forced-colors: active) {
+  .editaurus-applications-search input:focus {
+    outline: 2px solid Highlight;
+  }
+}
+
+.editaurus-saved-empty {
+  padding-block: 24px;
+  border-block: 1px solid var(--ed-line);
+}
+
+.editaurus-overview-stat {
+  min-width: 0;
+  padding: 24px;
+}
+
+.editaurus-overview-stat > p {
+  font-size: 14px;
+  color: var(--ed-green);
+}
+
+.editaurus-overview-stat > strong {
+  font-size: 42px;
+  line-height: 1.1;
+  font-weight: 900;
+}
+
+.editaurus-surface .editaurus-input {
+  min-height: 44px;
+  height: auto;
+  box-shadow: none;
+}
+
+.editaurus-surface .editaurus-input:focus {
+  box-shadow: inset 0 -3px var(--ed-ink);
+}
+
+.editaurus-profile-panel {
+  padding: clamp(16px, 3vw, 28px);
+  overflow-wrap: anywhere;
+}
+
+.editaurus-profile h2 {
+  font-family: inherit;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.editaurus-profile-form {
+  display: grid;
+  gap: 24px;
+}
+
+.editaurus-profile-form > button {
+  justify-self: start;
+}
+
+.editaurus-profile .field {
+  min-width: 0;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.editaurus-profile .editaurus-input:user-invalid {
+  border-color: #892746;
+  background: var(--ed-field-error);
+}
+
+.editaurus-profile .editaurus-input:user-invalid:is(:hover, :focus) {
+  background: var(--ed-field-error-light);
+}
+
+.editaurus-profile .editaurus-input:user-invalid:focus {
+  box-shadow: inset 0 -3px #892746;
+}
+
+.editaurus-surface .editaurus-danger-button {
+  --control-hover-bg: var(--ed-field-error-light);
+  --control-hover-text: #892746;
+  background: var(--ed-field-error);
+  border-color: #892746;
+  color: #892746;
+}
+
+.editaurus-surface .editaurus-danger-button:is(:hover, :focus-visible) {
+  box-shadow: 4px 4px 0 #892746;
+  outline-color: #892746;
+}
+
+.editaurus-surface .editaurus-danger-button:active {
+  box-shadow: 2px 2px 0 #892746;
+}
+
+.editaurus-settings-panel {
+  display: grid;
+  gap: 24px;
+  padding: clamp(16px, 3vw, 28px);
+  overflow-wrap: anywhere;
+}
+
+.editaurus-settings h2,
+.editaurus-confirm [data-slot="alert-dialog-title"] {
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 24px;
+  letter-spacing: -0.035em;
+}
+
+.editaurus-settings-panel > button {
+  justify-self: start;
+}
+
+.editaurus-settings-panel:has(input:focus-visible) label {
+  outline: 2px solid var(--ed-ink);
+  outline-offset: 3px;
+}
+
+.editaurus-confirm[data-slot="alert-dialog-content"] {
+  width: min(480px, calc(100% - 32px));
+  max-width: 480px;
+  padding: 24px;
+  border: 1px solid var(--ed-ink);
+  border-radius: 4px;
+  background: var(--ed-paper-light);
+  box-shadow: none;
+}
+
+.editaurus-confirm [data-slot="alert-dialog-description"] {
+  color: var(--ed-green);
+  font-family: inherit;
+}
+
+.editaurus-confirm [data-slot="alert-dialog-footer"] {
+  background: transparent;
+}
+
+.editaurus-employer-job-list {
+  border-top: 1px solid var(--ed-line);
+}
+
+.editaurus-role-gate {
+  padding: clamp(16px, 3vw, 28px);
+  overflow-wrap: anywhere;
+}
+
+.editaurus-employer-job {
+  padding: 24px 12px;
+  border-bottom: 1px solid var(--ed-line);
+  overflow-wrap: anywhere;
+}
+
+.editaurus-employer-job-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.editaurus-employer-job-inner > div {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.editaurus-employer-job h2 {
+  font-family: inherit;
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.editaurus-employer-job h2 a {
+  --control-hover-bg: transparent;
+  --control-hover-text: var(--ed-ink);
+}
+
+.editaurus-employer-job h2 a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.editaurus-employer-job-meta {
+  margin-top: 10px;
+  color: var(--ed-green);
+  font-size: 14px;
+}
+
+.editaurus-person-picker {
+  padding: clamp(32px, 5vw, 64px) 20px;
+}
+
+.editaurus-person-picker-description {
+  margin: 16px 0 32px;
+  color: var(--ed-green);
+}
+
+.editaurus-person-card {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: clamp(16px, 3vw, 28px);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.editaurus-person-name {
+  font-family: inherit;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.editaurus-person-headline {
+  margin: 16px 0 24px;
+  color: var(--ed-green);
+}
+
+.editaurus-person-card .editaurus-secondary-button {
+  margin-top: auto;
+}
+
+.editaurus-application-row .editaurus-candidate-summary {
+  grid-column: 1 / -1;
+  max-width: 80ch;
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.editaurus-job-proposal {
+  padding-block: 20px;
+  border-block: 1px solid var(--ed-line);
+  overflow-wrap: anywhere;
+}
+
+.editaurus-surface .editaurus-select-trigger {
+  --control-hover-bg: var(--ed-paper-light);
+  --control-hover-text: var(--ed-ink);
+  width: 100%;
+  min-height: 44px;
+  border: 2px solid var(--ed-ink);
+  border-radius: 0;
+  background: var(--ed-paper);
+  color: var(--ed-ink);
+  box-shadow: none;
+  font-family: inherit;
+  font-weight: 500;
+  letter-spacing: normal;
+}
+
+.editaurus-surface .editaurus-select-trigger:is(:hover, :focus, [data-popup-open]) {
+  background: var(--ed-paper-light);
+}
+
+.editaurus-surface .editaurus-select-trigger:is(:focus, [data-popup-open]) {
+  outline: none;
+  box-shadow: inset 0 -3px var(--ed-ink);
+}
+
+.editaurus-select-menu[data-slot="select-content"] {
+  border: 1px solid var(--ed-ink);
+  border-radius: 4px;
+  background: var(--ed-paper);
+  box-shadow: none;
+}
+
+.editaurus-select-menu [data-slot="select-item"] {
+  min-height: 44px;
+  border-radius: 0;
+  color: var(--ed-ink);
+  background: var(--ed-paper);
+  font-family: inherit;
+  letter-spacing: normal;
+  cursor: pointer;
+}
+
+.editaurus-select-menu [data-slot="select-item"]:is(:hover, :focus, [data-highlighted]) {
+  background: var(--ed-paper-light);
+}
+
+.editaurus-select-menu [data-slot="select-item"] svg {
+  stroke-width: 3;
+}
+
+@media (forced-colors: active) {
+  .editaurus-surface .editaurus-select-trigger:focus-visible {
+    outline: 2px solid Highlight;
+  }
+}
+
+.editaurus-form-combobox {
+  display: flex;
+  min-width: 0;
+  min-height: 52px;
+  border: 1px solid var(--ed-ink);
+  background: var(--ed-paper);
+}
+
+.editaurus-form-combobox:is(:hover, :focus-within, :has([data-popup-open])) {
+  background: var(--ed-paper-light);
+}
+
+.editaurus-form-combobox:is(:focus-within, :has([data-popup-open])) {
+  box-shadow: inset 0 -3px var(--ed-ink);
+}
+
+.editaurus-form-combobox .editaurus-combobox-input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  padding: 12px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--ed-ink);
+  font: inherit;
+  font-weight: 500;
+  outline: none;
+  box-shadow: none;
+}
+
+.editaurus-form-combobox .editaurus-combobox-toggle {
+  --control-hover-bg: transparent;
+  --control-hover-text: var(--ed-ink);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  flex-shrink: 0;
+  color: var(--ed-ink);
+}
+
+.editaurus-combobox-toggle:active {
+  transform: translate(1px, 1px);
+}
+
+.editaurus-combobox-toggle:focus-visible {
+  outline: 2px solid var(--ed-ink);
+  outline-offset: -3px;
+}
+
+.editaurus-combobox-option {
+  justify-content: space-between;
+  gap: 12px;
+  padding-right: 12px;
+}
+
+@media (forced-colors: active) {
+  .editaurus-form-combobox:is(:focus-within, :has([data-popup-open])) {
+    outline: 2px solid Highlight;
+  }
+}
+
+/* Self-scoped: Shell recovery also renders outside migrated route surfaces. */
+.editaurus-surface.editaurus-message {
+  min-width: 0;
+  margin-block: 16px;
+  padding: 16px 20px;
+  border: 1px solid var(--ed-ink);
+  border-radius: 4px;
+  background: var(--ed-paper-light);
+  color: var(--ed-ink);
+  box-shadow: none;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.editaurus-surface.editaurus-message-info {
+  border-color: var(--ed-green);
+  border-left-width: 3px;
+}
+
+.editaurus-surface.editaurus-message-error {
+  border-color: #892746;
+  border-left-width: 3px;
+  background: var(--ed-field-error);
+  color: #892746;
+}
+
+.editaurus-message a {
+  --control-hover-bg: transparent;
+  --control-hover-text: var(--ed-green);
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
+
+.editaurus-message a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+@media (forced-colors: active) {
+  .editaurus-message a:focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+.editaurus-information {
+  color: var(--ed-ink);
+}
+.editaurus-methodology {
+  width: min(100% - 40px, 1040px);
+  margin-inline: auto;
+  padding-block: 56px 80px;
+}
+.editaurus-information :is(h1, h2) {
+  font-family: inherit;
+  color: var(--ed-ink);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.editaurus-information .text-muted-foreground {
+  color: var(--ed-ink);
+}
+.editaurus-information-panel {
+  display: grid;
+  gap: 20px;
+  padding: clamp(20px, 4vw, 32px);
+  line-height: 1.7;
+}
+.editaurus-information-panel a {
+  justify-self: start;
+  overflow-wrap: anywhere;
+}
+
+.editaurus-form-combobox:has([aria-invalid="true"]) {
+  border-color: #892746;
+  background: #f9e9d9;
+}
+
+.editaurus-form-combobox:has([aria-invalid="true"]):focus-within {
+  background: #faf1dd;
+  box-shadow: inset 0 -3px #892746;
 }

@@ -74,8 +74,7 @@
 
 .candidate-hero .text-link:is(:hover, :focus-visible) {
   box-shadow: inset 0 -1px currentColor;
-  text-decoration: underline;
-  text-underline-offset: 0.25em;
+  text-decoration: none;
 }
 
 .candidate-hero .hero-bottom > button,
@@ -610,4 +609,8 @@
   a:has(.candidate-home-logo):is(:hover, :focus-visible)
   .candidate-home-logo-outline {
   opacity: 1;
+}
+
+.candidate-hero .hero-actions :is(a, button) {
+  text-decoration: none;
 }

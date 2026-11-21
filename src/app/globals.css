@@ -8,8 +8,10 @@
 @import "./records.css";
 @import "./application.css";
 @import "./editaurus.css";
+@import "./editaurus-record.css";
 @import "./editorial-job-row.css";
 @import "./editorial-listing.css";
+@import "./editaurus-workspace.css";
 @import "./candidate-hero.css";
 @import "./interactions.css";
 

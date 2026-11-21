@@ -15,15 +15,15 @@
   border-bottom: 1px solid var(--ed-line);
 }
 
-:is(.editorial-job-row, .editorial-offer)[data-category="build"] {
+:is(.editorial-job-row, .editorial-offer, .application-offer)[data-category="build"] {
   --role-color: var(--ed-pink);
 }
 
-:is(.editorial-job-row, .editorial-offer)[data-category="apply"] {
+:is(.editorial-job-row, .editorial-offer, .application-offer)[data-category="apply"] {
   --role-color: var(--ed-yellow);
 }
 
-:is(.editorial-job-row, .editorial-offer)[data-category="lead"] {
+:is(.editorial-job-row, .editorial-offer, .application-offer)[data-category="lead"] {
   --role-color: var(--ed-mint);
 }
 

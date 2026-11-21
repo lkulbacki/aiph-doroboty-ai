@@ -1,7 +1,11 @@
+import { DomainPreview } from "./domain-preview";
+import { ChoicesPreview } from "./choices-preview";
 import { useState } from "react";
 import { Link } from "react-router";
+import { Input } from "@/components/ui/input";
 import { CheckCircle2 } from "lucide-react";
-import { HeroButton } from "@/components/editaurus/hero-button";
+import { BackLink } from "@/components/back-link";
+import { HeroButton, HeroLink } from "@/components/editaurus/hero-button";
 import { SecondaryButton } from "@/components/editaurus/secondary-button";
 import { EditaurusTextarea } from "@/components/editaurus/textarea";
 import { EditaurusCheckbox } from "@/components/editaurus/checkbox";
@@ -12,6 +16,7 @@ import { usePrototype } from "@/features/prototype/store";
 
 export function EditaurusComponentsPage() {
   const [previewConsent, setPreviewConsent] = useState(false);
+  const [actionPreview, setActionPreview] = useState("");
   const { state } = usePrototype();
   const person = currentPerson(state);
   const jobs = publishedJobs(state);
@@ -26,8 +31,8 @@ export function EditaurusComponentsPage() {
       : null;
   return (
     <section className="editaurus-surface editaurus-catalog" aria-labelledby="editaurus-title">
-      <p className="editaurus-catalog-eyebrow">editaurus / pierwsza rodzina komponentów</p>
-      <h1 id="editaurus-title">Komponenty formularza</h1>
+      <p className="editaurus-catalog-eyebrow">editaurus / akcje i formularz</p>
+      <h1 id="editaurus-title">Akcje i komponenty formularza</h1>
       <p>
         Te same przyciski, pole odpowiedzi, zgoda, CV i komunikaty działają w formularzu
         aplikowania. Tutaj możesz obejrzeć ich stany; przykłady na tej stronie nie zapisują danych.
@@ -86,6 +91,95 @@ export function EditaurusComponentsPage() {
           <SecondaryButton type="button">Zapisz odpowiedź jako szkic</SecondaryButton>
         </article>
       </div>
+      <section aria-labelledby="ed-actions-title">
+        <h2 id="ed-actions-title">Nawigacja i pozostałe akcje</h2>
+        <p>
+          Linki prowadzą do rzeczywistych ekranów. Przykładowa akcja niebezpieczna zmienia tylko
+          komunikat poniżej — nie resetuje danych. „Wysłano!” oznacza zakończoną czynność;
+          niedostępna publikacja ma inny wygląd i wyjaśnienie.
+        </p>
+        <div className="editaurus-catalog-grid">
+          <article className="editaurus-catalog-card">
+            <h2>Główna nawigacja</h2>
+            <p>Ten sam link co w przeglądzie konta. Enter otwiera oferty.</p>
+            <HeroLink to="/oferty">Przeglądaj wszystkie dostępne oferty pracy</HeroLink>
+          </article>
+          <article className="editaurus-catalog-card editaurus-job-editor">
+            <h2>Niedostępna publikacja</h2>
+            <p id="ed-publish-unavailable">Najpierw zatwierdź opis oferty.</p>
+            <HeroButton type="button" disabled aria-describedby="ed-publish-unavailable">
+              Opublikuj ofertę
+            </HeroButton>
+          </article>
+          <article className="editaurus-catalog-card">
+            <h2>Akcja niebezpieczna</h2>
+            <p>Receptura przycisku z ustawień. To bezpieczny podgląd bez resetowania.</p>
+            <SecondaryButton
+              type="button"
+              className="editaurus-danger-button"
+              onClick={() => setActionPreview("Podgląd: dane scenariusza pozostają bez zmian.")}
+            >
+              Sprawdź wygląd akcji resetowania
+            </SecondaryButton>
+          </article>
+          <article className="editaurus-catalog-card editorial-offer">
+            <h2>Cichy link</h2>
+            <p>Tekstowy link używany przy ofertach i firmach, bez dominującego wypełnienia.</p>
+            <Link className="editorial-offer-text-link" to="/oferty">
+              Wszystkie oferty
+            </Link>
+          </article>
+          <article className="editaurus-catalog-card editaurus-record">
+            <h2>Powrót do kontekstu</h2>
+            <p>Ten sam BackLink co w ofercie, formularzu i historii aplikacji.</p>
+            <BackLink to="/oferty">Wróć do ofert</BackLink>
+          </article>
+        </div>
+        <p role="status" className="editaurus-form-status" hidden={!actionPreview}>
+          {actionPreview}
+        </p>
+      </section>
+      <section aria-labelledby="ed-inputs-title">
+        <h2 id="ed-inputs-title">Pola profilu i oferty</h2>
+        <p>Te same pola co w profilu i edytorze oferty. Przykłady nie zapisują danych.</p>
+        <div className="editaurus-catalog-grid">
+          <article className="editaurus-catalog-card">
+            <div className="editaurus-catalog-field">
+              <label htmlFor="ed-input-default">Nagłówek zawodowy</label>
+              <Input
+                id="ed-input-default"
+                className="editaurus-input"
+                defaultValue="Projektantka produktów AI"
+              />
+            </div>
+          </article>
+          <article className="editaurus-catalog-card">
+            <div className="editaurus-catalog-field">
+              <label htmlFor="ed-input-invalid">Tytuł oferty — błąd</label>
+              <Input
+                id="ed-input-invalid"
+                className="editaurus-input"
+                aria-invalid="true"
+                aria-describedby="ed-input-error"
+              />
+              <p id="ed-input-error" data-error>
+                Wpisz tytuł oferty.
+              </p>
+            </div>
+          </article>
+          <article className="editaurus-catalog-card">
+            <div className="editaurus-catalog-field">
+              <label htmlFor="ed-input-disabled">Pole nieaktywne</label>
+              <Input
+                id="ed-input-disabled"
+                className="editaurus-input"
+                disabled
+                defaultValue="Zachowana treść"
+              />
+            </div>
+          </article>
+        </div>
+      </section>
       <h2>Pole odpowiedzi</h2>
       <p>
         Pole wielowierszowe używa wybranego tła #FDF9EF od hover przez fokus i tej samej dolnej
@@ -210,10 +304,13 @@ export function EditaurusComponentsPage() {
         <article className="editaurus-catalog-card">
           <div>
             <h2>Własna treść CV</h2>
-            <p>Pełny tekst pozostaje widoczny, gdy nie ma pasującego pliku PDF.</p>
+            <p>
+              Zmieniona treść CV tej samej osoby nie może otworzyć starszego PDF. Pokazujemy pełny
+              tekst.
+            </p>
           </div>
           <CvAttachment
-            candidateId="example-custom"
+            candidateId="candidate-anna"
             fallbackText={
               "Przykładowe CV — doświadczenie w badaniach użytkowników i wdrażaniu produktów.\nDodatkowy akapit zachowuje podział wierszy."
             }
@@ -245,6 +342,8 @@ export function EditaurusComponentsPage() {
           </p>
         </article>
       </div>
+      <ChoicesPreview />
+      <DomainPreview />
       {person?.role !== "candidate" ? (
         <Link
           className="editaurus-catalog-link"

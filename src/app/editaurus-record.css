@@ -1,0 +1,163 @@
+/* Shared candidate/employer record adaptation; base recipes stay in records.css. */
+.editaurus-record {
+  max-width: 1100px;
+  margin-inline: auto;
+  overflow-wrap: anywhere;
+}
+
+.editaurus-record :is(h1, h2, h3) {
+  font-family: inherit;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.editaurus-record .recruiting-header h1 {
+  font-size: clamp(32px, 4.5vw, 60px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.055em;
+}
+
+.editaurus-record .back-link {
+  --control-hover-bg: transparent;
+  --control-hover-text: var(--ed-ink);
+  font-family: inherit;
+}
+
+.editaurus-record .record-meta {
+  gap: 12px 16px;
+}
+
+.editaurus-record .record-stage {
+  border: 1px solid var(--ed-ink);
+  border-radius: 4px;
+  background: var(--ed-paper-light);
+  font-weight: 800;
+}
+
+.editaurus-record .record-stage:focus {
+  outline-color: var(--ed-ink);
+}
+
+.editaurus-record .recruiting-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.4fr);
+  grid-template-areas: "sheet margin";
+  gap: 28px;
+  margin-top: 32px;
+}
+
+.editaurus-record .record-sheet {
+  border: 1px solid var(--ed-ink);
+  border-radius: 4px;
+  background: var(--ed-paper-light);
+  padding: 24px;
+}
+
+.editaurus-record .record-tabs {
+  gap: 8px;
+  border-color: var(--ed-line);
+  margin-bottom: 0;
+}
+
+.editaurus-record .record-tabs .record-tab {
+  min-width: 0;
+  flex-shrink: 1;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  --control-hover-bg: var(--ed-paper);
+  --control-hover-text: var(--ed-ink);
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ed-green);
+  font-family: inherit;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.editaurus-record .record-tab[data-active] {
+  font-weight: 800;
+  color: var(--ed-ink);
+}
+
+.editaurus-record .record-tab[data-active]::after {
+  bottom: 0;
+  background: var(--ed-ink);
+}
+
+.editaurus-record .record-tab:is(:hover, :focus-visible) {
+  background: var(--ed-paper);
+}
+
+.editaurus-record .record-tab:focus-visible {
+  outline: 2px solid var(--ed-ink);
+  outline-offset: -2px;
+}
+
+.editaurus-record .record-tab:active {
+  transform: translate(1px, 1px);
+}
+
+.editaurus-record .record-reading h3 {
+  font-size: clamp(22px, 2.4vw, 28px);
+  line-height: 1.2;
+}
+
+.editaurus-record .record-reading p {
+  font-size: 16px;
+}
+
+.editaurus-record .record-footer {
+  border-color: var(--ed-line);
+  background: transparent;
+}
+
+.editaurus-record :is(.record-caption, .record-meta > span:last-child, .process-timeline time) {
+  color: var(--ed-green);
+}
+
+.editaurus-record .recruiting-margin h2 {
+  font-size: 22px;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.editaurus-record .process-timeline li::before {
+  background: var(--ed-paper);
+  border-color: var(--ed-ink);
+}
+
+.editaurus-record .process-timeline li[aria-current="step"]::before {
+  background: var(--ed-green);
+}
+
+.editaurus-record .process-timeline li::after {
+  background: var(--ed-line);
+}
+
+.editaurus-record .cv-preview {
+  border-color: var(--ed-ink);
+  border-radius: 4px;
+  background: var(--ed-paper);
+}
+
+@media (max-width: 950px) {
+  .editaurus-record .recruiting-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "sheet" "margin";
+  }
+}
+
+@media (max-width: 600px) {
+  .editaurus-record .record-sheet {
+    padding: 16px;
+  }
+}
+
+@media (forced-colors: active) {
+  .editaurus-record :is(.record-tab:focus-visible, .record-stage:focus) {
+    outline: 2px solid Highlight;
+  }
+}

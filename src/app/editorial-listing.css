@@ -528,6 +528,12 @@
   border-radius: 0;
 }
 
+.editorial-map-panel {
+  min-width: 0;
+  padding: clamp(16px, 2vw, 26px);
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 850px) {
   .editorial-listing-board {
     grid-template-columns: minmax(0, 1fr);
@@ -713,7 +719,7 @@
     button:not(:disabled),
     [data-home-control],
     .pp-pagination a,
-    .prototype-panel > a,
+    .editorial-map-panel > a,
     summary,
     fieldset label
   ):active,
@@ -762,4 +768,33 @@
 
 .editorial-category-tabs button[data-category=""]:hover:not(:active) {
   box-shadow: 2px 2px var(--ed-ink);
+}
+
+@media (forced-colors: active) {
+  .editorial-filters fieldset label:is(:hover, :has(:focus-visible)),
+  .editorial-listing .editorial-listing-view .editaurus-cv-action[aria-current="page"] {
+    background: Canvas;
+    color: CanvasText;
+    outline: 2px solid Highlight;
+  }
+
+  .editorial-filters fieldset input {
+    position: static;
+    width: 17px;
+    height: 17px;
+    opacity: 1;
+    flex-shrink: 0;
+  }
+
+  .editorial-filters .editorial-filter-check {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .editorial-filter-dialog .pp-filter-dialog-footer button {
+    background: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonText;
+  }
 }
