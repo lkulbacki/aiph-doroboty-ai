@@ -1,5 +1,11 @@
 # Poster People — host implementation rules
 
+> Current application status (2026-11-22): the [Editaurus ledger](editaurus/coverage.md)
+> records implemented routes and stage 3B human acceptance. Keep the behavior/API
+> contracts below; legacy visual measurements do not override migrated recipes.
+> NH-01–05 and JRA-01/JRA-02 are resolved for their recorded scopes in
+> [status](STATUS.md). Real-reader execution remains separate.
+
 > **Migration notice:** [editaurus](editaurus/README.md) is the visual target for migrated screens. This document remains the map of current owners and behavior. Poster People values below describe the existing implementation until each affected surface is migrated and verified.
 
 Read with the [project guide](README.md), [host catalog](HOST-COMPONENTS.md), [current status](STATUS.md), immutable [component API](agent-kit/components/API.md) and [human reference](agent-kit/reference/components.md). These are project integration rules, not a replacement v1 kit or a new reference release. Use the [acceptance checklist](VERIFICATION.md) before claiming completion.

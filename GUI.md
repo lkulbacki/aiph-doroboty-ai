@@ -5,10 +5,12 @@ foundation, using the existing Base UI-compatible implementation.** Begin with t
 [editaurus guide](docs/design-system/editaurus/README.md) and the
 [current coverage and acceptance ledger](docs/design-system/editaurus/coverage.md).
 
-Public marketplace screens and many candidate/employer workspace screens already
-use scoped editaurus treatments. The ledger distinguishes implemented migration,
-recorded acceptance, provisional component APIs and remaining legacy surfaces.
-Approval of documentation does not accept every implemented screen or variant.
+Public marketplace, candidate/employer workspace and information routes use
+scoped editaurus treatments. The ledger records their owners, accepted local
+contracts, deliberate exceptions and unexercised environments.
+The user accepted the implemented visual/local component-contract scope in stage
+3B on 2026-11-22. Real assistive-technology validation and publication remain
+separate; the ledger records those boundaries.
 
 ## Read and preview
 
@@ -26,7 +28,8 @@ Approval of documentation does not accept every implemented screen or variant.
    route, state, accessibility and recovery contracts. Their Poster People visual
    measurements apply to legacy surfaces, not migrated editaurus surfaces.
 3. Run `npm run dev` at `http://127.0.0.1:3001/`. The live partial editaurus catalog
-   is `/#/design-system/editaurus`; it shares the form’s hero/secondary actions,
+   is `/#/design-system/editaurus`, organized into foundations, components and
+   patterns with section links and keyboard focus. It shares the form’s hero/secondary actions,
    answer field, checkbox and CV owner, plus feedback styles. The
    [action pilot](docs/design-system/editaurus/components/actions.md) adds native
    navigation, danger/unavailable and context-return examples. Choices, dialogs,
@@ -56,8 +59,9 @@ Approval of documentation does not accept every implemented screen or variant.
   preserve render composition for the controls that need it.
 - The catalog imports production owners and uses isolated synthetic examples.
   Verify new patterns on real screens before accepting their API or exporting
-  reusable rules to the portable skill. The skill is a later, separate stage;
-  it contains no DoRoboty domain logic and is not a build dependency.
+  reusable rules to the portable skill. The portable skill was reconciled in 2G;
+  later accepted deltas are reviewed separately. It contains no DoRoboty domain
+  logic and is not a build dependency.
 - Keep `docs/design-system/agent-kit` unchanged. Do not import its standalone
   controllers/reset or replace working product data with demonstration fixtures.
   Preserve search outside mobile filters, copied section URLs and focus after

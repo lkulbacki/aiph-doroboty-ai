@@ -32,8 +32,8 @@ implemented token changes.
    list/map/filter/sort/pagination, import/export/reset and recovery. A similarly
    named shadcn component does not replace these domain contracts.
 5. `src/features/editaurus/components-page.tsx` demonstrates the same production
-   owners with local-only synthetic examples. It is a partial catalog, not a
-   second control implementation or evidence that every variant is accepted.
+   owners with local-only synthetic examples. It is a needs-based catalog with foundations/components/pattern navigation, not a
+   second control implementation or a requirement to invent unused variants.
 6. The portable editaurus skill receives only accepted reusable rules after
    real-screen verification and catalog alignment. Domain routes, enums,
    CV matching, recruitment operations and exceptions stay in this repo. The
@@ -73,10 +73,11 @@ lift states. See the ledger’s current-rule table and the component notes:
 [answer](components/answer-field.md), [checkbox](components/consent-checkbox.md),
 [CV](components/cv-row.md) and [feedback](components/form-feedback.md).
 
-Specific style corrections and a route’s acceptance do not automatically approve
-an extracted API, every shared consumer or a portable skill update. Keep missing
-acceptance explicit, including the marketing pale-blue hero-link palette and
-reusable secondary/CV-shadow exceptions.
+Stage 3B acceptance (2026-11-22) covers the current application/catalog appearance
+and local component contracts recorded in the ledger, including existing
+marketing and secondary/CV-shadow exceptions. Those remain host choices, not
+universal portable rules. Future variants, replacements and real reader behavior
+require their own evidence.
 
 ## Host contracts and historical material
 
@@ -108,6 +109,7 @@ stages run `./scripts/verify` and a separate review; report actual execution and
 remaining limits. Review FEATURES and update it for behavior changes in the same
 change, without treating source coverage as test/deployment evidence.
 
-[Handoff](handoff.md) names the current stop point. Documentation reconciliation
-is complete in stage 2A; foundation measurements and catalog/code/skill work need
-separate approval. There is no deployment or publication authorization.
+[Handoff](handoff.md) names the current local closure status. Stages 1, 2A–2G
+and 3A are implemented; the user accepted 3B and authorized remaining local work.
+The ledger separates actual validation from the real-reader and publication
+boundaries. There is no deployment or publication authorization.

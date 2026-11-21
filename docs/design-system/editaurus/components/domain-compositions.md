@@ -1,6 +1,13 @@
 # Domain compositions — stage 2F
 
-Implemented examples remain pending visual/API review. The catalog imports actual
+> Current status (2026-11-22): the user accepted stage 3B for the implemented
+> application/catalog appearance and local component/API usage. The
+> [current ledger](../coverage.md) supersedes earlier pending-review/next-stage
+> statements below. Real-reader behavior, future variants, portable exceptions
+> and publication rights are separate boundaries. Historical stage evidence is
+> retained; no upstream conformance is inferred.
+
+Current implemented examples and local API usage are accepted in stage 3B. The catalog imports actual
 JobCard, SalaryFact, RecordSheet, ProcessTimeline and MatchScore. CvAttachment is
 already demonstrated by 2D. No forked record, row, filter or workflow controller.
 
@@ -21,13 +28,12 @@ rules stay in host APIs and model operations.
 
 ## Company findings
 
-NH-01: targeted current company Axe main-content scan added. Its result is recorded
-in the task; passing it is an accessibility slice, not visual acceptance.
-NH-04: candidate saved binding supplied; targeted regression checks toggle/focus,
-reload, removal and employer exclusion. This functional finding can be closed
-once that regression passes. Other findings are independent: NH-02 light-paper
-panel visual review, NH-03 fallback/long identity/boundary review and NH-05 human
-choice on demonstrative context remain open. No global company redesign is made.
+NH-01 targeted definition-list/Axe regression and NH-04 save/focus/reload tests
+passed. NH-02 paper panels, NH-03 logo/fallback/long identity and NH-05 explicit
+demonstrative context have runtime evidence in the company-boundaries task. Stage
+3B accepts their current visual/local API treatment, closing these scoped findings.
+See [host status](../../STATUS.md) for stable dispositions. No global company
+redesign or historical-kit rewrite is required.
 
 Full real application/profile/snapshot, search/map/filter/save and history/stage
 journeys run with the project gate. Catalog note switching gets a focused isolation

@@ -191,3 +191,18 @@ current text on entry; typing searches without first using X, and confirming an
 option replaces the selected enum. Backspace/Delete clears an unchanged selected
 label using the existing Clear operation. Listing workplace uses the same text
 selection and clearing, preserving other URL filters and search confirmation.
+
+## Stage 3B acceptance and local closure — 2026-11-22
+
+The user explicitly accepted 3B and authorized the remaining local stages through
+3F. This accepts the existing application/catalog visual treatment and local
+component/API usage recorded in the current coverage ledger, including marketing
+typography/pale-blue actions, contextual secondary/CV lifts and distinct
+answer/consent invalid-rest shades. It does not certify upstream file identity,
+future unused variants, asset rights, spoken announcements or other products.
+
+The catalog structure is needs-based: foundations, components and patterns with
+current production owners. The external catalog is an information-architecture
+reference only; no missing family must be invented to match its section count.
+Keep original historical-kit evidence unchanged. The final local closure record
+separates executed checks from the real-reader session still requiring an operator.

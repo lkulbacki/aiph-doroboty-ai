@@ -1,8 +1,29 @@
-# editaurus continuation
+# Editaurus local handoff
 
-Current stage: **2A–2G implementation sequence complete, 2026-11-21**.
-Start with the [guide](README.md), [coverage ledger](coverage.md) and
-[completion record](../../tasks/editaurus-stage-2-completion.md).
+Updated 2026-11-22. Stages 1, 2A–2G and 3A are implemented. The user explicitly
+accepted 3B and authorized remaining local closure. The [current ledger](coverage.md)
+is authoritative for route/component acceptance and exceptions;
+[host status](../STATUS.md) records stable finding dispositions.
+
+The catalog is `/#/design-system/editaurus`: foundations, components and patterns,
+desktop/mobile contents, direct section URLs, URL-selected state and heading focus.
+It imports production owners; actual search/filter/map/recovery/workflow controllers
+stay on real routes. There is no completeness requirement to copy an external
+catalog or introduce unused components.
+
+The [closure record](../../tasks/editaurus-local-closure.md) records final checks,
+review, skill comparison and the consolidated human follow-up. The
+[stage register](../../tasks/editaurus-remaining-stages.md) is the current plan/status.
+Real reader output is not covered by the automated browser evidence. No push,
+deployment, publication, course release, asset transfer or upstream replacement
+was performed or implied. Preserve the existing Base UI/render API and immutable
+historical kit. No application feature was removed to match Editorial v9.
+
+## Historical continuation notes
+
+The following sections retain their sequence and dated evidence. Their old
+pending, deferral and next-stage statements are superseded by the current ledger,
+stage register and closure record above. They are not instructions to repeat work.
 
 ## Current outcome and next boundary
 
@@ -23,8 +44,10 @@ there are no application routes, enums, identity fixtures or recruiting logic in
 the active portable guidance. Existing Codex/Claude symlinks see the shared update;
 this does not migrate other projects automatically.
 
-There is no automatic stage 3 implementation. Review the current catalog and ledger,
-then choose any further visual/API decisions or rollout. Do not treat pending
+The user requested planning stage 3A to organize existing catalog content and
+navigation, followed by the remaining acceptance, accessibility, documentation
+and conditional skill-delta steps in the current plan. This planning update does
+not itself start implementation or broaden component coverage. Do not treat pending
 variants, unmatched upstream revisions, asset rights or untested mode/breakpoint
 combinations as approved by the completed implementation sequence.
 
@@ -125,3 +148,12 @@ is transient store state, survives persona remount and clears on new operations
 or route changes; Shell's persona isolation key remains. Invalid-import data
 preservation and persistence warnings remain unchanged. See
 [verification](../../tasks/editaurus-import-feedback.md).
+
+## Stage 3A catalog organization
+
+The user authorized catalog organization from the remaining-stage plan. The
+catalog now groups current coverage into foundations, components and patterns,
+with desktop sticky/mobile in-flow contents and hash-router section links.
+Existing owners/examples remain; foundations summarize current tokens, not a new
+library roadmap. See [stage 3A](../../tasks/editaurus-stage-3a.md) for verification.
+Human visual/API acceptance (3B) is separate from this implementation.

@@ -1,7 +1,13 @@
 # Choices, dialogs, empty states and recovery
 
-Stage 2E, 2026-11-21. Implemented catalog examples; visual/API acceptance remains
-pending. The catalog imports existing owners, not replacement shadcn source.
+> Current status (2026-11-22): the user accepted stage 3B for the implemented
+> application/catalog appearance and local component/API usage. The
+> [current ledger](../coverage.md) supersedes earlier pending-review/next-stage
+> statements below. Real-reader behavior, future variants, portable exceptions
+> and publication rights are separate boundaries. Historical stage evidence is
+> retained; no upstream conformance is inferred.
+
+Stage 2E, 2026-11-21; current catalog examples and local API usage accepted in 3B. The catalog imports existing owners, not replacement shadcn source.
 
 | Pattern                | Owner / retained contract        | Catalog and real verification boundary                                                                                                                                                                                                                                                                                                                                  |
 | ---------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -32,9 +38,8 @@ No source replacement was needed; future API replacement requires a pinned diff.
 Focused regression verifies enum query/no-results/confirm/clear, confirmation
 error retention/retry/focus and mobile dialog Escape. Existing real editor and
 listing journeys cover FormData enum stability, replacement, URLs and recovery.
-Full gate results and manual observations are recorded in the task. Open human
-decisions include full recovery visual acceptance,
-confirmation semantics and exhaustive portal mode/breakpoint review.
+Full gate results and manual observations are recorded in the task. Stage 3B accepts current recovery visuals and confirmation usage. Exhaustive
+portal mode/breakpoint combinations and real spoken feedback are not inferred.
 
 ## Shared message migration
 
@@ -57,4 +62,13 @@ five employer taxonomy fields use this contract; the catalog uses the same owner
 with associated help. Plain selection keeps Base UI required validation and can
 receive explicit error/help. No inferred searchable blur validation is added to
 plain selects or optional filters. See the required-selects task for executed
-verification and remaining human/assistive-technology acceptance limits.
+verification and the separate real-reader validation boundary.
+
+## Listing filter guide
+
+The live catalog now includes a Polish listing-filter guide sourced from the
+production option labels and owners. It documents single selection per group,
+combined conditions, salary normalization/exclusions, query/category/location,
+chips/reset, sorting, URLs/paging and responsive immediate-apply dialog behavior.
+Preset links exercise real routes; no parallel filtering controller was added.
+See the listing-filters-catalog task for executed checks.

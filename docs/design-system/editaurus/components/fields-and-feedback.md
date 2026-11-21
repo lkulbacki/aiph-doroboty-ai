@@ -1,7 +1,14 @@
 # Fields, consent, CV and feedback — stage 2D reconciliation
 
-Date: 2026-11-21. Existing owners retained; full API/visual acceptance remains
-pending in the [ledger](../coverage.md). This slice extends the catalog, not the
+> Current status (2026-11-22): the user accepted stage 3B for the implemented
+> application/catalog appearance and local component/API usage. The
+> [current ledger](../coverage.md) supersedes earlier pending-review/next-stage
+> statements below. Real-reader behavior, future variants, portable exceptions
+> and publication rights are separate boundaries. Historical stage evidence is
+> retained; no upstream conformance is inferred.
+
+Stage 2D date: 2026-11-21. Existing owners retained; current API/visual acceptance
+is recorded in the [ledger](../coverage.md). This slice extends the catalog, not the
 primitive library. No upstream source replacement or new dependency is involved.
 
 | Family             | Owner and API                                                                                                 | Existing behavior / current catalog                                                                                                                                                                                                             |
@@ -27,8 +34,8 @@ the underlying input/textarea API but has no new accepted editaurus recipe.
 Checkbox indeterminate is also inherited, not a meaningful consent state accepted
 for application submission. Do not add those demo states as product requirements.
 
-Keep the current answer/checkbox invalid-rest difference (`#f9e9d9` versus
-`#f9efd9`) pending human decision. No color normalization, focus redesign or
+Keep the answer/checkbox invalid-rest difference (`#f9e9d9` versus
+`#f9efd9`), accepted locally in 3B. No color normalization, focus redesign or
 validation change was made. Long/missing CV, salary and identity remain domain
 concerns. CV stack/row and optional native iframe contracts remain in the
 [host record API](../../RECORDS.md); candidate profile can evolve while submitted
@@ -45,5 +52,6 @@ description, disabled state and same-person changed-CV text fallback. Existing
 real-form validation/consent/draft, profile/snapshot, CV matching and recovery
 journeys remain the behavioral regression suite. No dedicated header test was
 added, per the user's instruction; its existing public recipe was inspected in
-the browser. Human review of field/consent/CV APIs, error shades and real employer
-error association remains open. Stage 2E choices/dialogs is a separate stop gate.
+the browser. Stage 3B accepts current field/consent/CV APIs, error shades and the existing
+feature-specific validation differences; it does not claim uniform per-field
+error coverage or spoken announcements. Stage 2E choices/dialogs is complete.

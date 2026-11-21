@@ -1,6 +1,13 @@
 # Actions — stage 2C catalog pilot
 
-Date: 2026-11-21. Implemented catalog extension; **human visual/API review pending**.
+> Current status (2026-11-22): the user accepted stage 3B for the implemented
+> application/catalog appearance and local component/API usage. The
+> [current ledger](../coverage.md) supersedes earlier pending-review/next-stage
+> statements below. Real-reader behavior, future variants, portable exceptions
+> and publication rights are separate boundaries. Historical stage evidence is
+> retained; no upstream conformance is inferred.
+
+Historical stage 2C status (2026-11-21): implemented catalog extension, then awaiting human review.
 The existing [HeroButton acceptance](hero-action.md) is not widened by this pilot.
 See [coverage](../coverage.md), [foundations](../foundations.md) and
 [execution](../../../tasks/editaurus-stage-2c.md).
@@ -74,6 +81,7 @@ No loading promise or asynchronous pending state was added to the synchronous
 application flow. No missing salary, saved job, recovery or snapshot behavior was
 removed to simplify the examples.
 
-Review the new action examples and existing real consumers before accepting any
-portable rules. Next proposed family is 2D fields/consent/CV/feedback reconciliation;
-stop here until the user authorizes it. The external skill remains a later stage.
+Stage 2D and the subsequent catalog families were completed, and the portable
+skill was reconciled in 2G. Stage 3B accepts the current local action usage;
+marketing/shadow exceptions remain scoped to the host rather than blanket
+portable permission.

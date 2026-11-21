@@ -1,5 +1,11 @@
 # DoRoboty.ai design system — project instructions
 
+> Current application status (2026-11-22): the [Editaurus ledger](editaurus/coverage.md)
+> records implemented routes and stage 3B human acceptance. Keep the behavior/API
+> contracts below; legacy visual measurements do not override migrated recipes.
+> NH-01–05 and JRA-01/JRA-02 are resolved for their recorded scopes in
+> [status](STATUS.md). Real-reader execution remains separate.
+
 > **Migration notice (2026-11-14):** [editaurus](editaurus/README.md) is the target visual system for new and migrated screens. This guide records the current Poster People implementation, its component ownership, and regression contracts. Its visual rules apply only to surfaces that have not been migrated. The immutable kit remains a historical reference; `design-system:check` verifies that kit, not editaurus or the application.
 
 **Poster People v1.0.0 was the required visual reference for the current host adaptation.** It is the rounded, illustrated listing/offer system with Geist Serif headings. Use this directory to understand and verify an unmigrated surface before changing it. For new or migrated visual work, use [editaurus](editaurus/README.md).

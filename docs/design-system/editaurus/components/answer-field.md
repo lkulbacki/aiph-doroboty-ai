@@ -1,6 +1,13 @@
 # Multiline answer field — editaurus
 
-Status: implemented on `/#/aplikuj/:slug` and in the component preview at `/#/design-system/editaurus`; awaiting human review of the extracted component.
+> Current status (2026-11-22): the user accepted stage 3B for the implemented
+> application/catalog appearance and local component/API usage. The
+> [current ledger](../coverage.md) supersedes earlier pending-review/next-stage
+> statements below. Real-reader behavior, future variants, portable exceptions
+> and publication rights are separate boundaries. Historical stage evidence is
+> retained; no upstream conformance is inferred.
+
+Status: current component usage on `/#/aplikuj/:slug`, migrated consumers and `/#/design-system/editaurus` accepted in stage 3B.
 
 ## Ownership and use
 
@@ -23,7 +30,7 @@ Status: implemented on `/#/aplikuj/:slug` and in the component preview at `/#/de
 | Forced colors              | Full 2 px `Highlight` focus outline with 2 px offset.                                                                                                                                                                    |
 | Long content/mobile        | Text wraps within the field, with no horizontal page overflow at 390 px.                                                                                                                                                 |
 
-The source prototype's optional 2,000-character demo answer and PDF upload do not replace the fork's current validation or CV flow. Single-line profile/editor fields are now demonstrated through the existing Input owner; see [stage 2D contracts](fields-and-feedback.md). Select variants remain a separate review slice.
+The source prototype's optional 2,000-character demo answer and PDF upload do not replace the fork's current validation or CV flow. Single-line profile/editor fields are now demonstrated through the existing Input owner; see [stage 2D contracts](fields-and-feedback.md). Current select variants are documented in the accepted choices/recovery contract.
 
 The preview shows only the accepted `#fdf9ef` treatment: paper at rest, lighter paper from hover through focus. The invalid background is `#f9e9d9` at rest and `#faf1dd` on hover/focus; disabled keeps its neutral background.
 

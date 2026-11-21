@@ -1,169 +1,120 @@
 # Editaurus — current coverage and acceptance
 
-Reconciled on 2026-11-21 against the working tree. This is the current index for
-the [guide](README.md), [GUI](../../../GUI.md) and [handoff](handoff.md), not an
-approval of all implemented UI. Stage 2A changed documentation only; stage 2C
-extended the action catalog using existing owners, without changing primitives.
+Reconciled on 2026-11-22. This is the current index for the [guide](README.md),
+[GUI](../../../GUI.md), [host findings](../STATUS.md) and [handoff](handoff.md).
+The user explicitly accepted stage 3B (visual and component-contract review) on
+2026-11-22 and authorized the remaining local closure work. That acceptance covers
+the existing application/catalog scope below, including its deliberate local
+exceptions. It does not certify unseen variants, future changes, upstream source
+identity, publication rights or assistive-technology behavior.
 
-Stage 2C adds HeroLink, contextual unavailable publication, danger preview, quiet
-navigation and BackLink examples. See [action ownership and preflight](components/actions.md).
-These implementations remain review pending; prior scoped acceptance is unchanged.
+Stages 1, 2A–2G and 3A are implemented. The catalog now organizes current needs
+into foundations, components and patterns with section URLs, current-location
+indication and heading focus. Completeness is determined by this application's
+needs, not by matching every section of an external catalog. Real workflow
+controllers remain on real routes; previews import production owners with
+isolated local state.
 
-Stage 2D adds existing Input valid/invalid/disabled examples and a same-candidate
-changed-CV fallback. The catalog now uses the existing public editaurus header.
-See [field/consent/CV/feedback reconciliation](components/fields-and-feedback.md).
-The primitive APIs, domain behavior and pending human acceptance remain unchanged.
+## Status and architecture
 
-Stage 2E/2F examples and stage 2G portable extraction are complete as implementation
-slices. See [choices/recovery](components/choices-and-recovery.md),
-[domain compositions](components/domain-compositions.md) and the
-[completion record](../../tasks/editaurus-stage-2-completion.md).
-Human visual/API decisions remain pending where recorded; continuing the stages
-authorized work, not automatic acceptance of every implementation.
+- **Accepted in 3B:** current visual treatment and local component/API usage in
+  the named scopes. Earlier pending-review descriptions are superseded here.
+- **Retained host exception:** accepted locally, without making it a portable rule.
+- **Not exercised:** no execution claim for that environment or unimplemented state.
+- **Historical:** dated evidence retained for context, superseded by later fixes.
 
-## How to interpret status
-
-- **Recorded accepted:** an existing decision or continuation explicitly records
-  human acceptance for the named scope. This reconciliation does not create a
-  new acceptance or widen it to later variants/shared consumers.
-- **Implemented, review pending:** source contains the treatment, but explicit
-  final acceptance is missing, partial or contradictory. Tests alone cannot
-  change this status.
-- **Legacy/mixed:** the route or global condition has no complete editaurus
-  migration recorded; shared chrome may already be migrated.
-- **Partial catalog:** production owners are reused for the listed examples;
-  this is neither complete library coverage nor an executed domain journey.
-
-Current architecture: `src/components/ui` is the single locally owned
-shadcn-compatible foundation over Base UI/native HTML; editaurus wrappers/scoped
-recipes specify presentation; features/shared host compositions own behavior;
-the catalog imports those owners. `base-nova` configuration and a shadcn
-dependency do not establish exact upstream provenance/conformance for every
-file. Preserve existing APIs/render and appearance; no reinitialization,
-CLI overwrite, dependencies or parallel primitive set is authorized.
+`src/components/ui` is the single locally owned shadcn-compatible foundation over
+Base UI/native HTML. Editaurus wrappers/scoped recipes specify appearance and
+states; features/shared host compositions own routes and domain behavior.
+`components.json` selects `base-nova`, but not every component is an unchanged
+upstream file. Keep Base UI's `render` API, current exports and accepted appearance.
+No parallel primitives, CLI overwrite, dependency installation or global token
+rewrite was needed. Exact upstream revision/diff is a prerequisite for a future
+replacement, not an unfinished migration required to close this local work.
 
 ## Route and surface coverage
 
-Paths use the app's `/#/` prefix. Source owners are repository relative.
-Unqualified prototype filenames in the table resolve under
-`src/features/prototype/`; `home-roles.tsx` resolves under
-`src/features/editaurus/`. Shared component names resolve to the owners in the
-component-family table and host API documents.
-Detailed historical execution belongs to task records; rows below are portable
-scope/status descriptions and do not require access to those records to resume.
+Paths use the app's `/#/` prefix. Unqualified prototype owners resolve under
+`src/features/prototype/`. All rows below are accepted in 3B for their implemented
+scope; behavioral and test boundaries remain as stated.
 
-| Route / surface                                                                                                    | Current owner                                                                                                                                 | Implemented scope                                                                                                                                  | Acceptance / remaining boundary                                                                                                                                                                                     |
-| ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`                                                                                                                | `src/features/prototype/home.tsx`, `src/features/editaurus/candidate-hero.tsx`, `home-roles.tsx`                                              | Candidate hero/header, animated role section, latest Editorial offer rows                                                                          | Hero/header recorded accepted. Role/latest-offer and marketing variants remain implemented with acceptance to reconcile separately; do not turn the whole landing into approved component APIs.                     |
-| `/oferty`, including map/filters/sort/pages                                                                        | `src/features/prototype/marketplace.tsx:JobsPage/LocalMap`, `src/features/jobs`                                                               | Editorial listing, shared rows, query/location search, facets/chips, salary filter, sort, list/map and pagination                                  | Implemented, review pending for the complete composition and latest interaction corrections; preserve URL/draft/commit/focus contracts.                                                                             |
-| `/oferty/:slug`                                                                                                    | `marketplace.tsx:JobPage`, shared job metadata/actions                                                                                        | Editorial detail, sticky conditions/actions, mobile order, company/related rows and route-aware sections                                           | Recorded accepted route composition; later shared changes still require consumer checks.                                                                                                                            |
-| `/firmy/:slug`                                                                                                     | `marketplace.tsx:CompanyPage`, shared JobCard/CompanyLogo                                                                                     | Editorial company/facts/rows, local data and empty roles                                                                                           | Recorded accepted route composition; historical NH-01–05 findings are not all closed. See host status below.                                                                                                        |
-| `/aplikuj/:slug`                                                                                                   | `src/features/prototype/workspace.tsx:ApplyPage`, `src/features/jobs/application-offer-preview.tsx`, `src/components/editaurus`, CvAttachment | Accepted form pilot plus extracted controls, feedback and migrated live offer context/navigation                                                   | Form pilot, hero/secondary and feedback recorded accepted; extracted textarea/checkbox/CV APIs and embedded preview remain review pending. Specific shade/interaction corrections are recorded below.               |
-| `/app/aplikacje`, submitted `/app/aplikacje/:id` and confirmation alias                                            | `workspace.tsx:ApplicationsPage/ApplicationDetail`, `candidate-application.tsx`, `application-record.tsx`                                     | Editorial list/search and candidate snapshot sheet, Answer/CV, actual history, two-step withdrawal                                                 | Candidate record body acceptance is recorded in the workspace-chrome follow-up in decisions. List and subsequent shared/withdrawal variants need explicit status confirmation; do not infer universal API approval. |
-| Candidate `/app`                                                                                                   | `workspace.tsx:WorkspaceHome`                                                                                                                 | Paper overview, existing counts and links                                                                                                          | Implemented, review pending.                                                                                                                                                                                        |
-| `/app/profil`, `/app/profil/podglad`                                                                               | `workspace.tsx:ProfilePage`, Input/Textarea/CvAttachment                                                                                      | Profile editor/preview and existing local CV behavior                                                                                              | Implemented, review pending; native validation and current profile versus submitted snapshot remain distinct.                                                                                                       |
-| `/app/zapisane`                                                                                                    | `workspace.tsx:SavedPage`, shared JobCard                                                                                                     | Editorial saved rows and empty state                                                                                                               | Implemented, review pending; removing last item/focus/reload need retained coverage.                                                                                                                                |
-| `/app/oferty`                                                                                                      | `src/features/prototype/employer.tsx:EmployerJobs`                                                                                            | Editorial job management list/counts/links                                                                                                         | Implemented, review pending.                                                                                                                                                                                        |
-| `/app/oferty/nowa`, `/app/oferty/:id`                                                                              | `employer.tsx:EmployerJobEditor`, `src/components/ui/form-select.tsx`                                                                         | Existing brief/proposal/approval/publication, fields and five searchable taxonomy controls in editaurus                                            | Implemented, review pending, including latest typing replacement/clearing. No purchased publishing flow or new provider call.                                                                                       |
-| Employer `/app`                                                                                                    | `workspace.tsx:WorkspaceHome`                                                                                                                 | Editorial employer overview                                                                                                                        | Implemented, review pending.                                                                                                                                                                                        |
-| `/app/kandydaci`, `/app/organizacja`                                                                               | `workspace.tsx:ApplicationsPage`, `employer.tsx:CompanyEditor`                                                                                | Company-scoped candidate rows/search and organization form                                                                                         | Recorded accepted in the previous continuation. Acceptance concerns these route treatments, not all later shared fields/records.                                                                                    |
-| `/app/kandydaci/:id`                                                                                               | `recruiting-application.tsx`, ApplicationRecord/RecordSheet/ProcessTimeline                                                                   | Shared editaurus snapshot/history layout, note and permitted stage actions                                                                         | Implemented, review pending; the earlier “employer detail outside scope” description is obsolete.                                                                                                                   |
-| `/app/settings`                                                                                                    | `src/features/prototype/settings.tsx`, ConfirmDialog                                                                                          | Paper panels/actions, controlled portal confirmation, existing data operations                                                                     | Implemented, review pending. Preserve import/export/original-save recovery/reset; inline candidate withdrawal is a different composition.                                                                           |
-| `/auth/*`, persona/role gates                                                                                      | `workspace.tsx:PersonPicker/RequireRole`                                                                                                      | Editorial selection cards, audience links and wrong-role guidance                                                                                  | Implemented, review pending. Persona selection is simulation, not access security.                                                                                                                                  |
-| Workspace/public chrome and footer                                                                                 | `src/features/prototype/shell.tsx`                                                                                                            | Editorial public header on home/marketplace/application/picker, workspace frame/navigation/gutters, shared footer                                  | Home header and shared footer recorded accepted; workspace base-paper correction accepted. Other chrome states/boundaries remain review pending. Catalog now reuses the public editaurus header (2D).               |
-| `/design-system/editaurus`                                                                                         | `src/features/editaurus/components-page.tsx`                                                                                                  | Partial production-owner catalog: actions, fields, consent/CV/feedback, choices/dialogs/recovery, offer/pay/record/history/score; real-route links | Accepted hero/secondary preview; remaining family acceptance follows the component table. 2C–2F added scoped examples; full route/API acceptance and live domain journeys remain separate.                          |
-| `/metodologia`, `/polityka-prywatnosci`, `/app/case`, unknown/unavailable routes and global storage notices/errors | MethodologyPage, PrivacyPage, CasePage, Shell/NotFound/store/storage                                                                          | Preserved information/recovery content; shared migrated chrome may surround legacy bodies                                                          | Route bodies remain legacy/mixed; shared global storage notices/errors now use self-scoped Editaurus messages. No global token migration.                                                                           |
+| Route / surface                                                                  | Current owner                                                                        | Implemented scope and retained boundary                                                                                                                                                 |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                                                                              | `home.tsx`, Editaurus CandidateHero/HomeRoles                                        | Editorial hero/header, role section and latest rows. Fraunces/Manrope/Caveat and pale-blue/pink marketing actions are deliberate local exceptions.                                      |
+| `/oferty`                                                                        | `marketplace.tsx:JobsPage/LocalMap`, `src/features/jobs`                             | Rows, explicit query/location confirmation, facets/chips, salary, sorting, list/map and paging. Preserve URL/history, draft/commit and focus contracts.                                 |
+| `/oferty/:slug`                                                                  | `marketplace.tsx:JobPage`                                                            | Detail, conditions/actions, company/related rows and section URLs/focus.                                                                                                                |
+| `/firmy/:slug`                                                                   | `marketplace.tsx:CompanyPage`, JobCard/CompanyLogo                                   | Paper panels, logo/fallback, offers/empty state, candidate saving and demonstrative-data context. NH-01–05 dispositions are closed for their verified/accepted scopes in host status.   |
+| `/aplikuj/:slug`                                                                 | `workspace.tsx:ApplyPage`, ApplicationOfferPreview, Editaurus controls, CvAttachment | Answer, consent, CV, help/error/status, draft and submission; live offer context. Validation, legacy draft data and immutable submission remain domain-owned.                           |
+| `/app/aplikacje`, `/app/aplikacje/:id` and confirmation alias                    | `workspace.tsx`, `candidate-application.tsx`, ApplicationRecord                      | Candidate rows/search, snapshot Answer/CV, candidate-visible history and two-step withdrawal.                                                                                           |
+| Candidate/employer `/app`                                                        | `workspace.tsx:WorkspaceHome`                                                        | Role-specific overview/counts/links; persona simulation is not security.                                                                                                                |
+| `/app/profil`, `/app/profil/podglad`                                             | `workspace.tsx:ProfilePage`, Input/Textarea/CvAttachment                             | Profile editing/preview and local CV; browser constraint validation remains distinct from the application form. Profile edits do not rewrite submitted snapshots.                       |
+| `/app/zapisane`                                                                  | `workspace.tsx:SavedPage`, JobCard                                                   | Saved rows/empty state; retained removal/focus/reload behavior.                                                                                                                         |
+| `/app/oferty`, `/app/oferty/nowa`, `/app/oferty/:id`                             | `employer.tsx:EmployerJobs/EmployerJobEditor`, FormSelect                            | Actual draft/edit/proposal/approval/publication, salary/taxonomy and replacement/clearing. Editing revokes approval; unchanged imported metadata is retained.                           |
+| `/app/kandydaci`, `/app/kandydaci/:id`, `/app/organizacja`                       | ApplicationsPage, recruiting-application, CompanyEditor                              | Company-scoped rows, snapshot/history/note/stage actions and organization editing. Terminal states and role projections remain domain-owned.                                            |
+| `/app/settings`                                                                  | `settings.tsx`, ConfirmDialog, store/storage                                         | Import/export/reset, unreadable-save recovery and persistence warning. Completion survives persona remount and clears on a new recovery attempt/navigation.                             |
+| `/auth/*`, role gates                                                            | `workspace.tsx:PersonPicker/RequireRole`                                             | Selection cards, audience links and wrong-role guidance.                                                                                                                                |
+| Shared chrome/footer                                                             | `shell.tsx`                                                                          | Editorial public header, paper workspace/sidebar/topbar/gutters, mobile navigation and shared footer.                                                                                   |
+| `/design-system/editaurus`                                                       | `src/features/editaurus`                                                             | Foundations and production-owner examples; contents/navigation, field/choice/dialog/recovery, row/pay/record/history/score and listing-filter guide. No scenario writes from specimens. |
+| `/metodologia`, `/polityka-prywatnosci`, `/app/case`, unknown/unavailable routes | Information pages, Shell/NotFound                                                    | Migrated information recipes and scoped Editaurus messages; original Polish content, recovery destinations and operator boundary retained.                                              |
 
-## Component-family status and catalog gaps
+## Component families and catalog coverage
 
-The F IDs match the stage 1 inventory. Here `C` means current catalog coverage,
-not a test result. Owners include existing primitives/compositions: do not create
-replacement domain controllers to fill a missing catalog example.
+F IDs retain the stage 1 inventory mapping. `C` means a catalog specimen/guide,
+not a separately executed domain journey. Existing owner/API usage is accepted in
+3B; absent specimens do not require new product functionality.
 
-| Family                          | Current owner / contract                                                            | Status and catalog gap                                                                                                                                                                                      |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| F01 foundations                 | `src/app/editaurus.css`, route/workspace/record CSS, `tokens.css` and `globals.css` | Palette/paper correction recorded; measured foundation report available. No global theme approval or token rewrite.                                                                                         |
-| F02 primary/action links        | HeroButton/HeroLink over `ui/button.tsx`                                            | HeroButton pilot accepted; C now includes HeroLink and unavailable-publication state. Marketing/API extensions remain pending.                                                                              |
-| F03 secondary/quiet/danger/back | SecondaryButton, BackLink, buttonVariants and scoped recipes                        | Draft action accepted; C adds danger/quiet/back examples. Full extension and portability acceptance remains scoped.                                                                                         |
-| F04 inputs                      | Base UI-backed Input plus native search/number/file controls                        | Implemented, review pending. C valid/invalid/disabled Input; field/feedback contract records native-validation differences.                                                                                 |
-| F05 multiline                   | EditaurusTextarea over native Textarea                                              | Accepted field shade/focus corrections; extracted API still pending. C: rest/focus, invalid, disabled, long. Profile/editor/note consumers exceed the original answer-only scope.                           |
-| F06 field anatomy               | `workspace.tsx:Field`, labels/help/errors in features                               | Existing labels/help/error associations demonstrated; no new shadcn Field adapter or universal error API.                                                                                                   |
-| F07 closed taxonomy search      | FormSelect over direct Base UI Combobox                                             | C local closed-choice examples with actual FormSelect; selection/query/no-results/clear tested. Invalid/required API remains pending.                                                                       |
-| F08 workplace suggestions       | JobsPage over direct Base UI Autocomplete                                           | Real workplace Autocomplete retained; catalog links to actual search. No duplicate controller or universal enum adaptation.                                                                                 |
-| F09 select/sort                 | Base UI-backed Select; job filter/sort functions                                    | C actual FormSelect plain selected/disabled examples. Domain sorting and URL rules remain in real listing.                                                                                                  |
-| F10 checkbox/facets             | EditaurusCheckbox/Base UI; native JobFiltersForm facets and category controls       | Consent extraction pending despite specific requested corrections. C: consent interactive/invalid/disabled checked; no facet/category family or indeterminate contract.                                     |
-| F11 feedback                    | Feature-owned help/alert/status, Notice and store messages                          | Form feedback accepted. C: static help/error/status. This does not accept a universal error/recovery component or change live-region timing.                                                                |
-| F12 dialogs                     | Dialog/AlertDialog, ConfirmDialog, ResponsivePanel                                  | C ConfirmDialog failure/retry/cancel and mobile ResponsivePanel. Existing real pending/recovery contracts retained; full acceptance pending.                                                                |
-| F13 navigation                  | Shell, BackLink, Router links/NavLink                                               | C HeroLink, quiet and BackLink; public header reused. Current role/keyboard samples do not certify every navigation consumer.                                                                               |
-| F14 rows/metadata               | JobCard editorial variant, SalaryFact, CompanyLogo and labels                       | C actual JobCard, SalaryFact including missing pay; production CSS context retained, no scenario-saving row in catalog.                                                                                     |
-| F15 offer/company/context       | JobPage/CompanyPage, ApplicationOfferPreview, JobDescription                        | Real detail/company compositions retained; C links to real route. NH-01 structural scan and NH-04 save fix have targeted evidence; other NH decisions remain open.                                          |
-| F16 filters/chips               | JobsPage, JobFiltersForm, ResponsivePanel                                           | C ResponsivePanel anatomy with isolated content; real filters/chips/search remain linked route, not copied controllers.                                                                                     |
-| F17 pages/map                   | JobPagination/pagination and LocalMap                                               | Actual map/paging/list owners retained and linked from C; no parallel simulation or generic primitive acceptance.                                                                                           |
-| F18 save/draft/submit           | Existing model/store/controllers with shared action presentation                    | Accepted actions do not replace persistence, consent or snapshot operations. C is visual, not a persistent save/submit simulation.                                                                          |
-| F19 CV/materials                | CvAttachment; [record API](../RECORDS.md)                                           | Extraction pending; requested PDF-link 2px lift/3px shadow recorded. C: row fixture PDF/custom text, not stack/iframe/full snapshot matrix.                                                                 |
-| F20 tabs/sheet                  | RecordSheet directly over Base UI Tabs with Button render                           | C actual RecordSheet with local note retention and tabs. Narrow long-tab wrapping fixed; no new ui/tabs wrapper.                                                                                            |
-| F21 stages/history              | ProcessTimeline, ApplicationRecord and role-specific controllers                    | C actual ProcessTimeline with labeled synthetic dates; real stages/history/role projection remain unchanged domain operations.                                                                              |
-| F22 stage/score facts           | Application presentation and MatchScore                                             | C MatchScore boundary examples. Illustrative scenario values, no generic severity mapping or real assessment claim.                                                                                         |
-| F23 empty/recovery              | Shell, RequireRole, feature empty messages, settings/store/storage                  | C shared Editaurus Empty/Notice, retry/cancel and real settings recovery link. Shared Empty/Notice and Shell errors now use self-scoped Editaurus messages; full recovery remains exercised on real routes. |
-| F24 decoration/marketing        | CandidateHero/HomeRoles/ConfettiBurst                                               | Home acceptance scoped above; motion and asset exceptions not blanket portable rules. No separate C; preserve reduced motion/text confirmation.                                                             |
-| F25 supporting primitives       | Badge/Label/Separator/Skeleton in `src/components/ui`                               | Files present, no direct product imports found in the inventory. Not evidence of approved loading/dark-mode flows or exact shadcn provenance; no C.                                                         |
+| Family                           | Owner / contract                                  | Current coverage and boundary                                                                                                                                                                                 |
+| -------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F01 foundations                  | `editaurus.css`, contextual CSS, `tokens.css`     | C palette, typography, panel/row/state principles. Contextual recipes retained; no global radius/focus rewrite.                                                                                               |
+| F02 primary/link                 | HeroButton/HeroLink, ui/Button                    | C enabled/submitted/unavailable/navigation. Native navigation semantics; marketing colors stay local.                                                                                                         |
+| F03 secondary/quiet/danger/back  | SecondaryButton, BackLink, scoped recipes         | C action hierarchy, danger preview, quiet/context links. No invented asynchronous loading flow.                                                                                                               |
+| F04 single-line                  | ui/Input, native search/number/file               | C editable/invalid/disabled. Browser validation and feature-specific error anatomy remain distinct.                                                                                                           |
+| F05 multiline                    | EditaurusTextarea/native Textarea                 | C rest/focus/invalid/disabled/long; answer/profile/editor/note consumers retain their own rules.                                                                                                              |
+| F06 field anatomy                | Feature labels/help/errors                        | C associated help/error. No universal Field wrapper or silent validation normalization.                                                                                                                       |
+| F07 closed search                | FormSelect/Base UI Combobox                       | C search/no-results/confirmation/clear/help; required confirmed-value validation on five employer fields. `describedBy`/`error` accepted locally; trigger/content classes do not style the searchable branch. |
+| F08 workplace                    | JobsPage/Base UI Autocomplete                     | Real-route guide/link. Free text and explicit search commit, separate from closed taxonomy.                                                                                                                   |
+| F09 sort                         | JobsPage/current sort owner                       | Listing-filter guide and real route. URL/page reset retained.                                                                                                                                                 |
+| F10 checkbox                     | EditaurusCheckbox/Base UI Checkbox                | C checked/unchecked/invalid/disabled. Actual candidate/employer names reference full visible labels. Indeterminate is not an application consent requirement.                                                 |
+| F11 feedback                     | Feature help/alert/status, Notice/store           | C feedback. Real import errors/completions remain operation-scoped; status does not imply successful persistence.                                                                                             |
+| F12 dialogs                      | ConfirmDialog/AlertDialog, ResponsivePanel/Dialog | C confirmation retry/cancel and mobile panel. Pending, close and return-focus remain production contracts.                                                                                                    |
+| F13 navigation                   | Shell, Router links, BackLink, CatalogNavigation  | C native links and section navigation/history/focus. URL-selected state is not a scrollspy.                                                                                                                   |
+| F14 rows/metadata                | JobCard, SalaryFact, CompanyLogo                  | C actual offer and missing salary. Row hover never paints the title pink; catalog rows do not save scenario data.                                                                                             |
+| F15 offer/company                | JobPage/CompanyPage/ApplicationOfferPreview       | Real routes and context links; company findings reconciled below.                                                                                                                                             |
+| F16 filters/chips                | JobsPage/JobFiltersForm/ResponsivePanel           | C six-part filter guide and shared dialog anatomy; presets open the real controller.                                                                                                                          |
+| F17 paging/map                   | JobPagination/LocalMap                            | Real list/map route links. No duplicate simulation.                                                                                                                                                           |
+| F18 save/draft/submit            | Model/store and feature controllers               | Real routes; catalog visual examples are not persistence/approval/submission operations.                                                                                                                      |
+| F19 CV/materials                 | CvAttachment, host record API                     | C matching PDF row/custom text. Actual stack/row/iframe and immutable snapshots stay in host APIs. Native links retain their contextual lift.                                                                 |
+| F20 tabs/sheet                   | RecordSheet/Base UI Tabs/Button render            | C actual tabs and locally retained note; narrow long-tab wrapping fixed. No parallel tabs wrapper.                                                                                                            |
+| F21 stages/history               | ProcessTimeline/ApplicationRecord/controllers     | C synthetic history, real domain stages/history in routes. No workflow mapping in the skill.                                                                                                                  |
+| F22 score facts                  | MatchScore/presentation                           | C boundary examples with numeric text. Scenario values are illustrative, not hiring recommendations.                                                                                                          |
+| F23 empty/recovery               | Empty/Notice, settings/store/storage              | C self-scoped messages and retry/cancel; real recovery links and executed recovery regressions.                                                                                                               |
+| F24 marketing/motion             | CandidateHero/HomeRoles/ConfettiBurst             | Real home/submission. Local exceptions and reduced-motion/text feedback retained; no portable marketing contract inferred.                                                                                    |
+| F25 unused supporting primitives | ui/Badge/Label/Separator/Skeleton                 | Present in source; no new consumer or acceptance of nonexistent loading/dark-mode flows. No catalog expansion required.                                                                                       |
 
-## Current rules and superseded alternatives
+## Accepted contextual rules
 
-This table resolves documented sequences; it does not delete the
-[historical decisions](decisions.md) or extend acceptance beyond their scope.
+| Area               | Current rule                                                                                                                | Boundary / superseded alternative                                                                    |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Answer             | Paper `#f4f0e5`, light `#fdf9ef` hover/focus; invalid `#f9e9d9` / `#faf1dd`, rose `#892746`; static inner bottom focus line | Earlier comparison shades/focus concepts are historical.                                             |
+| Consent            | Green contour/fill; invalid rest `#f9efd9`, hover/focus `#faf1dd`; disabled checked hover `#1b5148`                         | Distinct answer/consent invalid-rest shades accepted locally; no forced normalization.               |
+| Secondary/CV       | Light-paper hover; contextual secondary lift; CV 2px up/left, 3px green shadow, press shadow 1px                            | Older CV 3px/4px values and mint hover superseded. No generic shadow permission for all links.       |
+| Canvas/panels      | Base paper for frame/chrome/gutters; light paper, thin ink contour and 4px corners for framed content                       | Panel geometry does not prescribe every control.                                                     |
+| Taxonomy/workplace | Closed confirmed enum versus free-text suggestions with explicit search commit                                              | Earlier separate taxonomy popup search/readOnly selection superseded. Keep current Base UI behavior. |
+| Typography/palette | DM Sans interface/Fraunces accent; existing marketing Fraunces/Manrope/Caveat and HeroLink `#a8c7fa`                        | Accepted host exceptions. Rejected `#3156C9` remains outside the portable direction.                 |
+| Focus/portals      | Contextual form/search/select/tab/navigation focus and self-scoped portaled content                                         | No universal focus, shadow or radius token replacement.                                              |
 
-| Area               | Current recorded rule                                                                                                                                                 | Superseded / still open                                                                                                                                                                      |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Architecture       | Locally owned shadcn foundation using existing Base UI; editaurus governs style/states/usage                                                                          | The initial pilot's “no shadcn installation” was a stage boundary, not a current ban on the foundation decision. No new installation is authorized now.                                      |
-| Answer             | Paper rest `#f4f0e5`, `#fdf9ef` hover/focus, static inner ink focus line; invalid `#f9e9d9` rest, `#faf1dd` hover/focus, rose `#892746` contour/focus                 | Earlier always-light/focus-only/mint/nine-shade comparisons and earlier invalid shades are historical; extracted API acceptance remains pending.                                             |
-| Secondary/CV       | Light-paper hover `#fdf9ef`; secondary has its accepted separate lift. Prepared CV links use 2px up/left and 3px green shadow; current press shadow is 1px in source  | Mint hover and CV note's older 3px/4px values superseded. Generic permission for shadow on all secondary/file links or other products is not implied.                                        |
-| Consent            | Dark-green contour/checked fill; full-label hover; rose error contour, `#f9efd9` rest and `#faf1dd` hover/focus; disabled checked hover `#1b5148`                     | Specific requested corrections do not close pending component/API review. Preserve Base UI disabled attributes/behavior.                                                                     |
-| Workspace          | Base paper on frame/sidebar/topbar/mobile header/gutters; light-paper framed panels                                                                                   | Earlier light-paper chrome replaced by accepted paper correction; full chrome acceptance remains separate.                                                                                   |
-| Taxonomy           | Selected label selects on entry, typing filters closed options, confirmation replaces stable enum; X or Backspace/Delete clears; options/no-results popup below field | Separate popup search and selected-input readOnly superseded. In current search branch, FormSelect styling classes are hardcoded; passed trigger/content classes do not control that branch. |
-| Workplace          | Free-text Autocomplete plus suggestions; explicit search confirmation for replacement, clear preserves other applied filters                                          | Do not convert to taxonomy's closed-item commit behavior.                                                                                                                                    |
-| Typography/palette | DM Sans interface, Fraunces editorial accent; home marketing uses Fraunces/Manrope/Caveat. Existing HeroLink has pale-blue `#a8c7fa` exception                        | Marketing/reusable exception scope still needs explicit portable acceptance. This blue is not the specifically rejected `#3156C9`; no automatic removal or skill export.                     |
-| Foundations/focus  | Contextual form/search/select/tab/navigation treatment and portal-safe scope                                                                                          | No universal focus/radius/shadow rule inferred from v9 or default shadcn style. Measurements/deltas are recorded in foundations.md; contextual scope remains authoritative.                  |
+## Findings, evidence and remaining boundary
 
-## Evidence, findings and next action
+NH-01–05 and JRA-01/JRA-02 are resolved for their documented scopes; see
+[host status](../STATUS.md). Earlier task reports/JSON remain historical evidence.
+Required confirmed choices and full-label checkbox naming are implemented and
+covered by focused browser regressions. 3B closes their human visual/local-API
+acceptance; it does not establish spoken announcements.
 
-The decision history records accepted hero extraction, secondary action and form
-feedback, and later specific corrections; their older pending headers are
-superseded for those scopes. Candidate record-body acceptance is recorded in the
-workspace-chrome follow-up. The previous continuation explicitly recorded
-candidate-list/organization acceptance in its employer context (the employer
-candidate list, not automatic acceptance of every candidate workspace screen).
-Offer/company/footer acceptance was recorded in the prior guide. These are
-historical records, not new human approval in this stage.
-
-Open company findings keep stable IDs in [host status](../STATUS.md): changed
-definition-list/surface code requires current targeted evidence, and company rows
-still do not pass saved state. Documentation reconciliation closes none of them.
-Some visual descriptions in FEATURES/host documents remain legacy summaries;
-feature IDs and behavior remain useful, while this ledger governs current visual
-scope. Stage 2A reviewed FEATURES and did not alter its existing user changes.
-
-The [asset review](assets.md) records bundled fonts/art and remaining publication
-holds; presence or a recorded route acceptance does not grant broader rights.
-No local study/course asset was copied in this reconciliation.
-
-Next proposal: stage 2B foundation specification/measurement, with no automatic
-global token or primitive rewrite. Catalog updates and the external skill remain
-later batches. See [handoff](handoff.md) and the
-[stage 2A execution record](../../tasks/editaurus-stage-2a.md). Stop for the user’s
-next scope approval.
-
-## Information-page follow-up
-
-Methodology and operator case content now use scoped Editaurus ink/DM Sans and
-light-paper panels; methodology also uses the editorial public header/canvas.
-Their Polish content, role boundary and baseline download remain unchanged.
-Privacy and other unknown-route bodies retain their earlier migration status.
-Landing hero actions omit duplicate text underlining, retaining the quiet action's
-bottom rule. See [implementation evidence](../../tasks/editaurus-information-pages.md).
-
-Privacy and the shared NotFound owner have subsequently migrated to the same
-information recipe. All public routes, including unknown addresses, now use the
-editorial header/canvas; role-gated workspace routes retain their existing frame.
-No privacy text or fallback destination changed. See
-[privacy/not-found scope](../../tasks/editaurus-privacy-not-found.md).
+Stage 3C still requires a real reader/browser session. Browser keyboard/semantic
+checks and Axe are separate evidence. The
+[local closure record](../../tasks/editaurus-local-closure.md) records final checks,
+reader limitations and the remaining human checklist. Publication/asset holds in
+[assets](assets.md) remain. No external source/asset or course material was copied.
+The portable skill was updated in 2G; the 3E comparison needs only accepted generic
+deltas, not this host's routes, enums or workflows.

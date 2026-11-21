@@ -1,5 +1,11 @@
 # Record sheets and process timelines — host components
 
+> Current application status (2026-11-22): the [Editaurus ledger](editaurus/coverage.md)
+> records implemented routes and stage 3B human acceptance. Keep the behavior/API
+> contracts below; legacy visual measurements do not override migrated recipes.
+> NH-01–05 and JRA-01/JRA-02 are resolved for their recorded scopes in
+> [status](STATUS.md). Real-reader execution remains separate.
+
 > **Migration notice:** [editaurus](editaurus/README.md) is the visual target for migrated screens. Preserve the record, snapshot, focus, and process behavior documented here while changing presentation.
 
 These components implement the shared employer and candidate process-view composition. See the [host catalog](HOST-COMPONENTS.md) for return links, application preview, hover and motion, and [status](STATUS.md) for unresolved findings. Their original host adaptation used Poster People typography, paper/white/ink/pink and the r24 outlined reading surface; current editaurus scope is below. They are not a new release of the immutable v1 reference.
