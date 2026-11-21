@@ -76,6 +76,11 @@
   letter-spacing: -0.055em;
 }
 
+.editorial-job-title a {
+  --control-hover-bg: transparent;
+  --control-hover-text: var(--ed-ink);
+}
+
 .editorial-job-title a::after {
   position: absolute;
   inset: 0;

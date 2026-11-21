@@ -281,7 +281,7 @@
 }
 
 .editorial-category-tabs button,
-.editorial-listing .editorial-filter-trigger,
+:is(.editorial-listing, .editaurus-catalog) .editorial-filter-trigger,
 .editorial-listing .pp-filter-chip {
   display: inline-flex;
   align-items: center;

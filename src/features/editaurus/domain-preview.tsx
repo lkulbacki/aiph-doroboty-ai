@@ -88,12 +88,14 @@ export function DomainPreview() {
           <MatchScore key={score} score={score} />
         ))}
       </div>
-      <Link className="editaurus-catalog-link" to="/app/aplikacje">
-        Otwórz rzeczywiste aplikacje i historię
-      </Link>
-      <Link className="editaurus-catalog-link" to="/oferty?view=map">
-        Sprawdź listę, mapę, filtry i paginację
-      </Link>
+      <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+        <Link className="editaurus-catalog-link" to="/app/aplikacje">
+          Otwórz rzeczywiste aplikacje i historię
+        </Link>
+        <Link className="editaurus-catalog-link" to="/oferty?view=map">
+          Sprawdź listę, mapę, filtry i paginację
+        </Link>
+      </div>
     </section>
   );
 }
