@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { SecondaryButton } from "@/components/editaurus/secondary-button";
 import { ApplicationRecord } from "./application-record";
 import type { Application } from "./model";
 import { usePrototype } from "./store";
@@ -40,9 +40,9 @@ export function CandidateApplication({ application }: { application: Application
             <div className="record-withdrawal">
               <p>Czy na pewno chcesz wycofać aplikację?</p>
               <div className="record-actions">
-                <Button
+                <SecondaryButton
                   ref={confirmRef}
-                  variant="destructive"
+                  className="editaurus-danger-button"
                   onClick={() => {
                     if (run({ type: "withdraw", applicationId: application.id })) {
                       focusAfter.current = "status";
@@ -52,16 +52,15 @@ export function CandidateApplication({ application }: { application: Application
                   }}
                 >
                   Potwierdź wycofanie
-                </Button>
-                <Button
-                  variant="outline"
+                </SecondaryButton>
+                <SecondaryButton
                   onClick={() => {
                     focusAfter.current = "trigger";
                     setConfirming(false);
                   }}
                 >
                   Anuluj
-                </Button>
+                </SecondaryButton>
               </div>
             </div>
           ) : (
@@ -70,16 +69,15 @@ export function CandidateApplication({ application }: { application: Application
                 To kopia aplikacji z momentu wysłania. Późniejsze zmiany profilu jej nie zmieniają.
               </p>
               <div className="record-actions">
-                <Button
+                <SecondaryButton
                   ref={triggerRef}
-                  variant="outline"
                   onClick={() => {
                     focusAfter.current = "confirm";
                     setConfirming(true);
                   }}
                 >
                   Wycofaj aplikację
-                </Button>
+                </SecondaryButton>
               </div>
             </div>
           )

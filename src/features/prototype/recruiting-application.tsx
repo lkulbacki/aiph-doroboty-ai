@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { SecondaryButton } from "@/components/editaurus/secondary-button";
+import { EditaurusTextarea } from "@/components/editaurus/textarea";
 import { ApplicationRecord } from "./application-record";
 import { nextStages, stageLabels, type Application } from "./model";
 import { usePrototype } from "./store";
@@ -35,9 +35,9 @@ export function RecruitingApplication({ application }: { application: Applicatio
               <p className="record-caption">Notatka zapisze się w historii po zmianie etapu.</p>
               <div className="record-actions">
                 {availableStages.map((stage) => (
-                  <Button
+                  <SecondaryButton
                     key={stage}
-                    variant={stage === "rejected" ? "outline" : "default"}
+                    className={stage === "rejected" ? "editaurus-danger-button" : undefined}
                     onClick={() => {
                       if (run({ type: "stage", applicationId: application.id, stage, note })) {
                         setNote("");
@@ -47,7 +47,7 @@ export function RecruitingApplication({ application }: { application: Applicatio
                     }}
                   >
                     {stageLabels[stage]}
-                  </Button>
+                  </SecondaryButton>
                 ))}
               </div>
             </>
@@ -66,7 +66,7 @@ export function RecruitingApplication({ application }: { application: Applicatio
             <p className="record-caption" id="recruiting-note-hint">
               Widoczna tylko pracodawcy w tym scenariuszu.
             </p>
-            <Textarea
+            <EditaurusTextarea
               id="recruiting-note"
               aria-label="Notatka rekrutacyjna (widoczna pracodawcy)"
               aria-describedby="recruiting-note-hint"

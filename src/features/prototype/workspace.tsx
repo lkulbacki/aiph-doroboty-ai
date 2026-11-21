@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router";
 import { CheckCircle2, FileText } from "lucide-react";
+import { HeroLink } from "@/components/editaurus/hero-button";
 import { HeroButton } from "@/components/editaurus/hero-button";
 import { SecondaryButton } from "@/components/editaurus/secondary-button";
 import { EditaurusTextarea } from "@/components/editaurus/textarea";
 import { EditaurusCheckbox } from "@/components/editaurus/checkbox";
 import { ConfettiBurst, type ConfettiOrigin } from "@/components/confetti-burst";
 import { BackLink } from "@/components/back-link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { JobCard } from "@/features/jobs/job-card";
 import { ApplicationOfferPreview } from "@/features/jobs/application-offer-preview";
 import { usePrototype } from "./store";
 import { currentPerson, publishedJobs, stageLabels, MIN_APPLICATION_ANSWER_LENGTH } from "./model";
-import { PageTitle, Empty, NotFound, Notice } from "./shell";
+import { PageTitle, NotFound, Notice } from "./shell";
 import { CvAttachment } from "./cv-attachment";
 import { MatchScore } from "./match-score";
 import { RecruitingApplication } from "./recruiting-application";
@@ -40,18 +40,17 @@ export function PersonPicker() {
       : state.people;
   const safeNext = next && /^\/(?!\/)/.test(next) && !next.startsWith("/auth") ? next : null;
   return (
-    <section className="prototype-section max-w-4xl">
+    <section className="editaurus-surface editaurus-applications editaurus-person-picker">
       <h1>Wybierz osobę</h1>
-      <p className="mt-4 mb-8 text-muted-foreground">
+      <p className="editaurus-person-picker-description">
         Wybierz profil, z którego chcesz korzystać w prototypie. Hasło nie jest potrzebne.
       </p>
       <div className="grid gap-5 sm:grid-cols-2">
         {people.map((person) => (
-          <article key={person.id} className="prototype-panel">
-            <h2 className="text-xl">{person.name}</h2>
-            <p className="my-4 text-muted-foreground">{person.headline}</p>
-            <Button
-              variant="outline"
+          <article key={person.id} className="editaurus-panel editaurus-person-card">
+            <h2 className="editaurus-person-name">{person.name}</h2>
+            <p className="editaurus-person-headline">{person.headline}</p>
+            <SecondaryButton
               onClick={() => {
                 run({ type: "select_person", id: person.id });
                 navigate(
@@ -64,7 +63,7 @@ export function PersonPicker() {
               }}
             >
               Wejdź jako {person.name}
-            </Button>
+            </SecondaryButton>
           </article>
         ))}
       </div>
@@ -83,16 +82,20 @@ export function RequireRole({
   if (!person) return <PersonPicker />;
   if (role && person.role !== role)
     return (
-      <Empty>
-        <p className="mb-4">
-          Ten widok jest dostępny dla{" "}
-          {role === "candidate" ? "kandydata" : role === "employer" ? "pracodawcy" : "prowadzącego"}
-          .
-        </p>
-        <Link className={buttonVariants({ variant: "outline" })} to="/auth/sign-in">
-          Zmień osobę
-        </Link>
-      </Empty>
+      <section className="editaurus-surface editaurus-applications">
+        <div className="editaurus-panel editaurus-role-gate">
+          <p className="mb-4">
+            Ten widok jest dostępny dla{" "}
+            {role === "candidate"
+              ? "kandydata"
+              : role === "employer"
+                ? "pracodawcy"
+                : "prowadzącego"}
+            .
+          </p>
+          <SecondaryButton render={<Link to="/auth/sign-in" />}>Zmień osobę</SecondaryButton>
+        </div>
+      </section>
     );
   return children;
 }
@@ -105,7 +108,7 @@ export function WorkspaceHome() {
     candidate ? a.candidateId === person.id : a.companyId === person.companyId,
   );
   return (
-    <>
+    <section className="editaurus-applications editaurus-overview">
       <PageTitle>Witaj, {person.name.split(" ")[0]}</PageTitle>
       <div className="grid gap-5 sm:grid-cols-3">
         {[
@@ -122,24 +125,21 @@ export function WorkspaceHome() {
               .length,
           ],
         ].map(([label, value]) => (
-          <div className="prototype-panel" key={label}>
-            <p className="text-muted-foreground">{label}</p>
+          <div className="editaurus-panel editaurus-overview-stat" key={label}>
+            <p>{label}</p>
             <strong className="mt-3 block text-3xl">{value}</strong>
           </div>
         ))}
       </div>
       <div className="mt-8 flex flex-wrap gap-3">
-        <Link className={buttonVariants()} to={candidate ? "/oferty" : "/app/kandydaci"}>
+        <HeroLink to={candidate ? "/oferty" : "/app/kandydaci"}>
           {candidate ? "Przeglądaj oferty" : "Przejrzyj kandydatów"}
-        </Link>
-        <Link
-          className={buttonVariants({ variant: "outline" })}
-          to={candidate ? "/app/profil" : "/app/oferty"}
-        >
+        </HeroLink>
+        <SecondaryButton render={<Link to={candidate ? "/app/profil" : "/app/oferty"} />}>
           {candidate ? "Edytuj profil" : "Zarządzaj ofertami"}
-        </Link>
+        </SecondaryButton>
       </div>
-    </>
+    </section>
   );
 }
 export function ProfilePage({ preview = false }: { preview?: boolean }) {
@@ -163,51 +163,78 @@ export function ProfilePage({ preview = false }: { preview?: boolean }) {
       setMessage("Profil został zapisany.");
   }
   return (
-    <>
+    <section className="editaurus-applications editaurus-profile">
       <PageTitle
         action={
-          <Link
-            to={preview ? "/app/profil" : "/app/profil/podglad"}
-            className={buttonVariants({ variant: "outline" })}
-          >
+          <SecondaryButton render={<Link to={preview ? "/app/profil" : "/app/profil/podglad"} />}>
             {preview ? "Edytuj profil" : "Podgląd profilu"}
-          </Link>
+          </SecondaryButton>
         }
       >
         {preview ? person.name : "Twój profil"}
       </PageTitle>
       {preview ? (
-        <div className="prototype-panel space-y-4">
+        <div className="editaurus-panel editaurus-profile-panel space-y-4">
           <h2>{person.headline}</h2>
           <p>{person.location}</p>
           <p>{person.bio}</p>
         </div>
       ) : (
-        <form onSubmit={save} className="prototype-panel prototype-form">
+        <form
+          onSubmit={save}
+          className="editaurus-panel editaurus-profile-panel editaurus-profile-form"
+        >
           <Field label="Imię i nazwisko">
-            <Input name="name" required maxLength={200} defaultValue={person.name} />
+            <Input
+              className="editaurus-input"
+              name="name"
+              required
+              maxLength={200}
+              defaultValue={person.name}
+            />
           </Field>
           <Field label="Nagłówek zawodowy">
-            <Input name="headline" required maxLength={200} defaultValue={person.headline} />
+            <Input
+              className="editaurus-input"
+              name="headline"
+              required
+              maxLength={200}
+              defaultValue={person.headline}
+            />
           </Field>
           <Field label="Lokalizacja">
-            <Input name="location" required maxLength={200} defaultValue={person.location} />
+            <Input
+              className="editaurus-input"
+              name="location"
+              required
+              maxLength={200}
+              defaultValue={person.location}
+            />
           </Field>
           <Field label="O mnie">
-            <Textarea name="bio" maxLength={12000} defaultValue={person.bio} />
+            <EditaurusTextarea name="bio" maxLength={12000} defaultValue={person.bio} />
           </Field>
-          <Button type="submit">Zapisz profil</Button>
-          {message && <p role="status">{message}</p>}
+          <HeroButton type="submit">Zapisz profil</HeroButton>
+          {message && (
+            <p role="status" className="editaurus-form-status">
+              {message}
+            </p>
+          )}
         </form>
       )}
-      <section className="prototype-panel mt-6">
+      <section className="editaurus-panel editaurus-profile-panel mt-6">
         <h2 className="mb-4 flex items-center gap-2">
           <FileText className="size-5" />
           CV
         </h2>
-        <CvAttachment candidateId={person.id} fallbackText={person.cv} />
+        <CvAttachment
+          candidateId={person.id}
+          fallbackText={person.cv}
+          layout="row"
+          contextLabel="CV z Twojego profilu"
+        />
       </section>
-    </>
+    </section>
   );
 }
 export function SavedPage() {
@@ -217,19 +244,17 @@ export function SavedPage() {
     state.saved.some((x) => x.candidateId === person.id && x.jobId === job.id),
   );
   return (
-    <>
-      <PageTitle>Zapisane oferty</PageTitle>
+    <section className="editaurus-applications">
+      <h1>Zapisane oferty</h1>
       {jobs.length ? (
-        jobs.map((job) => <JobCard key={job.id} job={job} saved />)
+        jobs.map((job) => <JobCard key={job.id} job={job} saved variant="editorial" />)
       ) : (
-        <Empty>
+        <div className="editaurus-saved-empty">
           <p className="mb-4">Nie masz jeszcze zapisanych ofert.</p>
-          <Link className={buttonVariants({ variant: "outline" })} to="/oferty">
-            Przeglądaj oferty
-          </Link>
-        </Empty>
+          <SecondaryButton render={<Link to="/oferty" />}>Przeglądaj oferty</SecondaryButton>
+        </div>
       )}
-    </>
+    </section>
   );
 }
 export function ApplyPage() {
@@ -297,7 +322,7 @@ export function ApplyPage() {
   return (
     <section className="pp-container application-page">
       <BackLink to={`/oferty/${job.slug}`}>Wróć do oferty</BackLink>
-      <header className="application-header">
+      <header className="editaurus-surface application-header">
         <h1>Aplikuj na ofertę</h1>
         <p>Sprawdź ofertę i opowiedz, dlaczego pasujesz do tej roli.</p>
       </header>
@@ -306,7 +331,7 @@ export function ApplyPage() {
         <form
           noValidate
           onSubmit={submit}
-          className="record-sheet application-form editaurus-surface editaurus-application"
+          className="record-sheet application-form editaurus-surface editaurus-panel editaurus-application"
           aria-labelledby="application-form-title"
         >
           <header className="application-form-intro">
@@ -366,9 +391,9 @@ export function ApplyPage() {
                 onCheckedChange={(v) => setConsent(v)}
                 aria-invalid={consentInvalid || undefined}
                 aria-describedby={consentInvalid ? "application-consent-error" : undefined}
-                aria-label="Zatwierdzam treść i przesłanie aplikacji"
+                aria-labelledby="application-consent-label"
               />
-              <span>
+              <span id="application-consent-label">
                 Zatwierdzam treść aplikacji i przesłanie profilu oraz przykładowego CV pracodawcy.
               </span>
             </label>
@@ -434,45 +459,46 @@ export function ApplicationsPage({ employer = false }: { employer?: boolean }) {
         .includes(query.toLocaleLowerCase("pl")),
   );
   return (
-    <>
-      <PageTitle>{employer ? "Kandydaci" : "Moje aplikacje"}</PageTitle>
+    <section className="editaurus-applications" aria-labelledby="my-applications-title">
+      <h1 id="my-applications-title">{employer ? "Kandydaci" : "Moje aplikacje"}</h1>
       {params.has("wyslano") && (
-        <Notice>
-          <CheckCircle2 className="inline size-5" /> Aplikacja została wysłana.
-        </Notice>
+        <div role="status" className="editaurus-panel editaurus-applications-notice">
+          <CheckCircle2 size={18} aria-hidden="true" />
+          Aplikacja została wysłana.
+        </div>
       )}
-      <Field label={employer ? "Szukaj kandydata lub oferty" : "Szukaj oferty"}>
-        <Input value={query} onChange={(e) => setQuery(e.target.value)} />
-      </Field>
-      <div className="mt-6 space-y-4">
+      <label className="editaurus-applications-search">
+        <span>{employer ? "Szukaj kandydata lub oferty" : "Szukaj oferty"}</span>
+        <input value={query} onChange={(event) => setQuery(event.target.value)} />
+      </label>
+      <div className="editaurus-applications-results">
         {applications.length ? (
-          applications.map((a) => (
-            <article className="prototype-panel" key={a.id}>
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <Link
-                    className="text-xl font-semibold text-[var(--gui-link)]"
-                    to={`${employer ? "/app/kandydaci" : "/app/aplikacje"}/${a.id}`}
-                  >
-                    {employer ? a.candidateName : a.jobTitle}
+          applications.map((application) => (
+            <article className="editaurus-application-row" key={application.id}>
+              <div>
+                <h2>
+                  <Link to={`${employer ? "/app/kandydaci" : "/app/aplikacje"}/${application.id}`}>
+                    {employer ? application.candidateName : application.jobTitle}
                   </Link>
-                  <p className="my-3 text-muted-foreground">
-                    {employer
-                      ? a.jobTitle
-                      : state.companies.find((x) => x.id === a.companyId)?.name}
-                  </p>
-                  <p>{stageLabels[a.stage]}</p>
-                </div>
-                <MatchScore score={a.score} />
+                </h2>
+                <p>
+                  {employer
+                    ? application.jobTitle
+                    : state.companies.find((company) => company.id === application.companyId)?.name}
+                </p>
               </div>
-              {employer && <p className="mt-4 text-muted-foreground">{a.summary}</p>}
+              <p className="editaurus-application-stage">{stageLabels[application.stage]}</p>
+              <MatchScore score={application.score} />
+              {employer && <p className="editaurus-candidate-summary">{application.summary}</p>}
             </article>
           ))
         ) : (
-          <Empty>Brak aplikacji spełniających kryteria.</Empty>
+          <p role="status" className="editaurus-applications-empty">
+            Brak aplikacji spełniających kryteria.
+          </p>
         )}
       </div>
-    </>
+    </section>
   );
 }
 export function ApplicationDetail({ employer = false }: { employer?: boolean }) {
