@@ -235,8 +235,25 @@ test("unreadable save stays untouched while the user works in memory", async ({ 
   expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBe(
     '{"version":999}',
   );
-  await page.goto("/#/app/settings");
+  await page.setViewportSize({ width: 320, height: 844 });
+  const notice = page.getByRole("status");
+  await expect(notice).toHaveCSS("background-color", "rgb(253, 249, 239)");
+  await expect(notice).toHaveCSS("border-radius", "4px");
+  expect(await notice.evaluate((e) => e.scrollWidth <= e.clientWidth)).toBe(true);
+  const recovery = notice.getByRole("link", { name: "Ustawienia danych" });
+  await recovery.focus();
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  await expect(recovery).toBeFocused();
+  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
+  await expect(recovery).toHaveCSS("outline-style", "solid");
+  await expect(recovery).toHaveCSS("outline-width", "2px");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#\/app\/settings$/);
   await expect(page.getByRole("button", { name: "Pobierz poprzedni zapis" })).toBeVisible();
+  expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBe(
+    '{"version":999}',
+  );
 });
 test("storage denial keeps the app usable and offers export", async ({ page }) => {
   await page.addInitScript(() => {
@@ -264,6 +281,10 @@ test("map, hash deep links and unknown records work without external requests", 
     .getByRole("button")
     .first()
     .click();
+  const mapPanel = page.locator(".editorial-map-panel");
+  await expect(mapPanel).toHaveCSS("background-color", "rgb(253, 249, 239)");
+  await expect(mapPanel).toHaveCSS("border-top-width", "1px");
+  await expect(mapPanel).toHaveCSS("border-radius", "4px");
   await page.getByRole("link", { name: "Zobacz rolę", exact: true }).click();
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
@@ -279,8 +300,16 @@ test("mobile navigation, light-only appearance and keyboard person selection", a
   await anna.focus();
   await page.keyboard.press("Enter");
   await page.getByRole("button", { name: "Otwórz menu" }).click();
+  const menu = page.getByRole("navigation", { name: "Panel użytkownika" });
+  await menu.getByRole("link", { name: "Profil", exact: true }).focus();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("button", { name: "Otwórz menu" })).toBeFocused();
+  await expect(menu).toBeHidden();
+  await page.getByRole("button", { name: "Otwórz menu" }).click();
   await page.getByRole("link", { name: "Profil", exact: true }).click();
   await expect(page.getByLabel("Imię i nazwisko")).toBeVisible();
+  await expect(page.locator(".topbar")).toHaveCSS("background-color", "rgb(244, 240, 229)");
+  await expect(page.locator(".mobile-header .editorial-listing-logo")).toBeVisible();
   const footer = page.getByRole("navigation", { name: "Stopka", exact: true });
   await expect(footer).toHaveCount(1);
   await expect(footer.getByRole("link", { name: "Prywatność" })).toHaveAttribute(
@@ -299,6 +328,29 @@ test("mobile navigation, light-only appearance and keyboard person selection", a
   await page.screenshot({ path: "artifacts/settings-mobile-light.png", fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+test("editorial candidate applications keep search, score and mobile detail navigation", async ({
+  page,
+}) => {
+  await choose(page, "Marek Nowak");
+  await page.goto("/#/app/aplikacje");
+  await expect(page.getByRole("main")).toHaveCSS("background-color", "rgb(244, 240, 229)");
+  await expect(page.getByRole("heading", { level: 1, name: "Moje aplikacje" })).toBeVisible();
+  const row = page.locator(".editaurus-application-row");
+  await expect(row).toHaveCount(1);
+  await expect(row.locator(".match-score")).toContainText("Match Score:");
+  const search = page.getByRole("textbox", { name: "Szukaj oferty" });
+  await search.fill("niepasujące stanowisko");
+  await expect(page.getByRole("status")).toHaveText("Brak aplikacji spełniających kryteria.");
+  await search.fill("Product");
+  await expect(row).toHaveCount(1);
+  await page.setViewportSize({ width: 320, height: 800 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const link = row.getByRole("link", { name: "AI Product Manager", exact: true });
+  await link.focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#\/app\/aplikacje\/application-example$/);
+});
+
 test("core screens have no serious accessibility violations", async ({ page }) => {
   await page.goto("/#/oferty");
   let results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
@@ -350,7 +402,8 @@ test("public home and filters reflow at 320px with no external requests", async 
   const roles = hero.getByRole("button", { name: "Kogo szukamy" });
   await roles.hover();
   await expect(roles).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-  await expect(roles).toHaveCSS("text-decoration-line", "underline");
+  await expect(roles).toHaveCSS("text-decoration-line", "none");
+  await expect(offers).toHaveCSS("text-decoration-line", "none");
   await expect(roles).toHaveCSS("box-shadow", /-1px.*inset/);
   const dimensions = (button: HTMLElement) => [button.offsetWidth, button.offsetHeight];
   expect(await roles.evaluate(dimensions)).toEqual(await offers.evaluate(dimensions));
@@ -925,6 +978,8 @@ test("process sheet keeps notes across keyboard tabs and saves stage history wit
 }) => {
   await choose(page, "Karolina Wiśniewska");
   await page.goto("/#/app/kandydaci/application-example");
+  await expect(page.locator(".editaurus-record")).toHaveCount(1);
+  await expect(page.locator(".record-sheet")).toHaveCSS("border-radius", "4px");
   const note = page.getByLabel("Notatka rekrutacyjna (widoczna pracodawcy)");
   await expect(
     page.locator(".record-meta").getByText("Match Score: 72%", { exact: true }),
@@ -1045,7 +1100,18 @@ for (const width of [1280, 390]) {
     const offer = page.getByRole("complementary", { name: "AI Product Manager", exact: true });
     await expect(offer).toContainText("BrightLabs");
     await expect(offer).toContainText("Hybrydowo");
+    await expect(offer.getByText("Lead", { exact: true })).toHaveCSS(
+      "background-color",
+      "rgb(169, 220, 198)",
+    );
+    await expect(offer.getByText("Umowa o pracę", { exact: true })).toBeVisible();
+    await expect(offer).toHaveCSS("position", width > 850 ? "sticky" : "static");
     const form = page.getByRole("form", { name: "Twoja aplikacja", exact: true });
+    await expect(page.getByRole("main")).toHaveCSS("background-color", "rgb(244, 240, 229)");
+    for (const panel of [offer, form]) {
+      await expect(panel).toHaveCSS("background-color", "rgb(253, 249, 239)");
+      await expect(panel).toHaveCSS("border-top-width", "1px");
+    }
     const answer = form.getByLabel("Dlaczego pasujesz do tej roli?");
     const text = "Prowadziłam badania i wdrożenie automatyzacji obsługi zgłoszeń w produkcie B2B.";
     await answer.fill(text);
@@ -1054,6 +1120,7 @@ for (const width of [1280, 390]) {
     await description.focus();
     await page.keyboard.press("Enter");
     await expect(offer.locator("[data-job-description]")).toBeVisible();
+    await expect(offer).toHaveCSS("position", "static");
     await expect(answer).toHaveValue(text);
     await expect(form.getByRole("checkbox")).toBeChecked();
     await page.keyboard.press("Enter");
@@ -1096,7 +1163,7 @@ test("editaurus application form keeps focus and hero states within the pilot su
     radius: "0px",
     family: '"DM Sans", Arial, sans-serif',
   });
-  await expect(page.locator(".application-offer")).toHaveCSS("border-radius", "24px");
+  await expect(page.locator(".application-offer")).toHaveCSS("border-radius", "4px");
 
   await send.hover();
   const first = await send.evaluate((element) => [
@@ -1123,6 +1190,11 @@ test("editaurus hero action preview reuses the application component", async ({ 
   await choose(page, "Anna Kowalska");
   await page.goto("/#/design-system/editaurus");
   await expect(page.getByRole("heading", { name: "Główna akcja" })).toBeVisible();
+  await expect(page.getByRole("main")).toHaveCSS("background-color", "rgb(244, 240, 229)");
+  const card = page.locator(".editaurus-catalog-card").first();
+  await expect(card).toHaveCSS("background-color", "rgb(253, 249, 239)");
+  await expect(card).toHaveCSS("border-top-width", "1px");
+  await expect(card).toHaveCSS("border-radius", "4px");
   const active = page.getByRole("button", { name: "Wyślij aplikację", exact: true });
   await expect(active).toHaveCSS("font-family", '"DM Sans", Arial, sans-serif');
   await expect(active).toHaveCSS("text-align", "center");
@@ -1338,7 +1410,9 @@ test("editaurus consent preview matches the real form's required state", async (
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await choose(page, "Anna Kowalska");
   await page.goto("/#/aplikuj/ai-product-manager");
-  const consent = page.getByRole("checkbox", { name: "Zatwierdzam treść i przesłanie aplikacji" });
+  const consent = page.getByRole("checkbox", {
+    name: "Zatwierdzam treść aplikacji i przesłanie profilu oraz przykładowego CV pracodawcy.",
+  });
   await expect(consent).toHaveClass(/editaurus-checkbox/);
   await page.locator(".application-consent > span:last-child").hover();
   await expect(consent).toHaveCSS("background-color", "rgb(253, 249, 239)");
@@ -1511,6 +1585,15 @@ test("candidate record shares snapshot tabs while excluding employer notes and m
     page.getByRole("heading", { level: 1, name: record.jobTitle, exact: true }),
   ).toBeVisible();
   await expect(page.locator(".record-meta")).toContainText("Match Score: 72%");
+  await expect(page.locator("main")).toHaveClass(/editaurus-canvas/);
+  await expect(page.locator(".record-sheet")).toHaveCSS("background-color", "rgb(253, 249, 239)");
+  await expect(page.locator(".record-sheet")).toHaveCSS("border-radius", "4px");
+  await expect(page.locator(".record-sheet")).toHaveCSS("border-top-width", "1px");
+  await expect(page.locator(".record-footer")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(page.locator(".recruiting-header h1")).toHaveCSS(
+    "font-family",
+    '"DM Sans", Arial, sans-serif',
+  );
   await expect(page.locator("main")).not.toContainText(record.events[1].note);
   await expect(page.locator("main")).not.toContainText(record.sourceNotes);
   await expect(page.locator("main")).not.toContainText(record.generatedAnswer);
@@ -1519,6 +1602,10 @@ test("candidate record shares snapshot tabs while excluding employer notes and m
   await page.getByRole("tab", { name: "Odpowiedź", exact: true }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("tab", { name: "CV", exact: true })).toBeFocused();
+  await expect(page.getByRole("tab", { name: "CV", exact: true })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
   await expect(page.locator("iframe[title='Podgląd CV (PDF)']")).toHaveAttribute(
     "src",
     /^\.?\/cv\/marek-nowak-cv-v1\.pdf#view=FitH$/,
@@ -1584,3 +1671,528 @@ test("candidate snapshot supports custom CV and long content at desktop and mobi
     record.answer,
   );
 });
+
+test("editor taxonomy dropdowns filter closed options below the field and retain form values", async ({
+  page,
+}) => {
+  await choose(page, "Karolina Wiśniewska");
+  await page.goto("/#/app/oferty/nowa");
+  const category = page.getByRole("combobox", { name: "Kategoria", exact: true });
+  await category.evaluate((element) => element.scrollIntoView({ block: "center" }));
+  await category.click();
+  const popup = page.locator(".editorial-picker-menu");
+  await expect(popup.getByRole("combobox")).toHaveCount(0);
+  await expect(popup).toBeVisible();
+  await expect(popup).toBeInViewport({ ratio: 0.5 });
+  const menuAccessibility = await new AxeBuilder({ page })
+    .include(".editorial-picker-menu")
+    .analyze();
+  expect(menuAccessibility.violations).toEqual([]);
+  const fieldBox = await category.boundingBox();
+  const popupBox = await popup.boundingBox();
+  expect(popupBox!.y).toBeGreaterThanOrEqual(fieldBox!.y + fieldBox!.height);
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Wyczyść: Kategoria", exact: true }).click();
+  await expect(category).toBeEditable();
+  await category.fill("lea");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await page.getByRole("option", { name: "Lead", exact: true }).click();
+  expect(
+    await category.evaluate((element) => new FormData(element.closest("form")!).get("category")),
+  ).toBe("lead");
+  await page.getByRole("button", { name: "Wyczyść: Kategoria", exact: true }).click();
+  await category.fill("nieistniejąca");
+  await expect(page.getByText("Brak pasujących opcji.", { exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(category).not.toHaveValue("Lead");
+  await expect(category).toBeFocused();
+  await page.setViewportSize({ width: 320, height: 850 });
+  const level = page.getByRole("combobox", { name: "Poziom", exact: true });
+  await page.getByRole("button", { name: "Wyczyść: Poziom", exact: true }).click();
+  await level.fill("sen");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  await expect(level).toHaveValue("Senior");
+  expect(
+    await level.evaluate((element) => new FormData(element.closest("form")!).get("seniority")),
+  ).toBe("senior");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test("editor and listing selections can be replaced by typing or cleared with Backspace", async ({
+  page,
+}) => {
+  await choose(page, "Karolina Wiśniewska");
+  await page.goto("/#/app/oferty/nowa");
+  const category = page.getByRole("combobox", { name: "Kategoria", exact: true });
+  await category.click();
+  expect(
+    await category.evaluate((element: HTMLInputElement) =>
+      element.value.slice(element.selectionStart ?? 0, element.selectionEnd ?? 0),
+    ),
+  ).toBe("Build");
+  await page.keyboard.type("app");
+  await expect(page.getByRole("option", { name: "Apply", exact: true })).toBeVisible();
+  await page.keyboard.press("Enter");
+  await expect(category).toHaveValue("Apply");
+  expect(
+    await category.evaluate((element) => new FormData(element.closest("form")!).get("category")),
+  ).toBe("apply");
+  await category.click();
+  await page.keyboard.press("Backspace");
+  await expect(category).toHaveValue("");
+  await category.fill("lea");
+  await page.getByRole("option", { name: "Lead", exact: true }).click();
+  await expect(category).toHaveValue("Lead");
+  await page.goto("/#/oferty?location=Warszawa&category=lead");
+  const location = page.getByRole("combobox", { name: "Miejsce pracy", exact: true });
+  await location.click();
+  expect(
+    await location.evaluate((element: HTMLInputElement) =>
+      element.value.slice(element.selectionStart ?? 0, element.selectionEnd ?? 0),
+    ),
+  ).toBe("Warszawa");
+  await page.keyboard.press("Backspace");
+  await expect(location).toHaveValue("");
+  await expect(location).toBeFocused();
+  await expect(page).not.toHaveURL(/location=/);
+  await expect(page).toHaveURL(/category=lead/);
+  await location.fill("Warszawa");
+  await page.getByRole("option", { name: "Warszawa", exact: true }).click();
+  await page.getByRole("button", { name: "Szukaj", exact: true }).click();
+  await location.click();
+  await page.keyboard.type("Wrocław");
+  await expect(location).toHaveValue("Wrocław");
+  await page.getByRole("option", { name: "Wrocław", exact: true }).click();
+  await page.getByRole("button", { name: "Szukaj", exact: true }).click();
+  await expect(page).toHaveURL(/location=Wroc/);
+  await expect(page).toHaveURL(/category=lead/);
+});
+
+test("action catalog preserves navigation semantics and never resets the scenario", async ({
+  page,
+}) => {
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/design-system/editaurus");
+  const saved = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
+  const actions = page.getByRole("region", { name: "Nawigacja i pozostałe akcje" });
+  const navigate = actions.getByRole("link", {
+    name: "Przeglądaj wszystkie dostępne oferty pracy",
+  });
+  await expect(navigate).toHaveAttribute("href", "#/oferty");
+  await expect(navigate).not.toHaveAttribute("role", "button");
+  const unavailable = actions.getByRole("button", { name: "Opublikuj ofertę" });
+  await expect(unavailable).toBeDisabled();
+  await expect(unavailable).toHaveAccessibleDescription("Najpierw zatwierdź opis oferty.");
+  await expect(unavailable).toHaveCSS("background-color", "rgb(234, 232, 222)");
+  await expect(page.getByRole("button", { name: "Wysłano!" })).toHaveCSS(
+    "background-color",
+    "rgb(16, 61, 53)",
+  );
+  const danger = actions.getByRole("button", { name: "Sprawdź wygląd akcji resetowania" });
+  await danger.focus();
+  await page.keyboard.press("Space");
+  await expect(actions.getByRole("status")).toHaveText(
+    "Podgląd: dane scenariusza pozostają bez zmian.",
+  );
+  await page.keyboard.press("Enter");
+  expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBe(saved);
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const control of await actions.locator("a, button").all()) {
+      expect(
+        await control.evaluate((element) => {
+          const card = element.closest("article")!.getBoundingClientRect();
+          const box = element.getBoundingClientRect();
+          return box.left >= card.left && box.right <= card.right;
+        }),
+      ).toBe(true);
+    }
+  }
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(
+    await navigate.evaluate((element) =>
+      Math.max(...getComputedStyle(element).transitionDuration.split(",").map(parseFloat)),
+    ),
+  ).toBeLessThan(0.001);
+  await page.emulateMedia({ forcedColors: "active" });
+  await navigate.focus();
+  await expect(navigate).toHaveCSS("outline-style", "solid");
+  await page.keyboard.press("Space");
+  await expect(page).toHaveURL(/#\/design-system\/editaurus$/);
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#\/oferty$/);
+  await page.goBack();
+  // React Router must leave modified native navigation to the browser.
+  expect(
+    await navigate.evaluate((element) => {
+      const event = new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+        ctrlKey: true,
+      });
+      let preventedByRouter = true;
+      // Observe after React's root listener, then stop native navigation from
+      // this untrusted synthetic event; real new-tab behavior is checked below.
+      document.addEventListener(
+        "click",
+        (nativeEvent) => {
+          preventedByRouter = nativeEvent.defaultPrevented;
+          nativeEvent.preventDefault();
+        },
+        { once: true },
+      );
+      element.dispatchEvent(event);
+      return preventedByRouter;
+    }),
+  ).toBe(false);
+  const popupPromise = page.context().waitForEvent("page");
+  await navigate.click({ button: "middle" });
+  const popup = await popupPromise;
+  await expect(popup).toHaveURL(/#\/oferty$/);
+  await popup.close();
+  await actions.getByRole("link", { name: "Wróć do ofert" }).click();
+  await expect(page).toHaveURL(/#\/oferty$/);
+  expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBe(saved);
+});
+
+test("catalog field editing stays local and modified CV never exposes the prepared PDF", async ({
+  page,
+}) => {
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/design-system/editaurus");
+  const saved = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
+  const field = page.getByLabel("Nagłówek zawodowy", { exact: true });
+  await field.fill("Przykładowa treść, która nie zmienia profilu");
+  await expect(page.getByLabel("Tytuł oferty — błąd")).toHaveAccessibleDescription(
+    "Wpisz tytuł oferty.",
+  );
+  await expect(page.getByLabel("Pole nieaktywne", { exact: true })).toBeDisabled();
+  const custom = page.locator(".editaurus-catalog-card").filter({
+    has: page.getByRole("heading", { name: "Własna treść CV", exact: true }),
+  });
+  await expect(custom.locator("a, iframe")).toHaveCount(0);
+  await expect(custom).toContainText("Przykładowe CV");
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    expect(
+      await field.evaluate((e) => {
+        const bounds = e.getBoundingClientRect();
+        const card = e.closest("article")!.getBoundingClientRect();
+        return bounds.left >= card.left && bounds.right <= card.right;
+      }),
+    ).toBe(true);
+    await expect(custom).toContainText("Dodatkowy akapit zachowuje podział wierszy.");
+  }
+  expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBe(saved);
+  await page.reload();
+  await expect(field).toHaveValue("Projektantka produktów AI");
+});
+
+test("catalog choices and failed confirmation remain isolated and recoverable", async ({
+  page,
+}) => {
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/design-system/editaurus");
+  const saved = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
+  const choice = page.getByRole("combobox", { name: "Obszar podglądu", exact: true });
+  await choice.fill("zzzz");
+  await expect(page.getByText("Brak pasujących opcji.", { exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await choice.fill("Dostarczanie");
+  await page
+    .getByRole("option", { name: "Dostarczanie rozwiązań i współpraca z zespołem" })
+    .click();
+  await expect(page.getByText(/Wybrana wartość: delivery/)).toBeVisible();
+  await choice.focus();
+  await page.keyboard.press("Backspace");
+  await expect(page.getByText(/Wybrana wartość: brak/)).toBeVisible();
+  await page.keyboard.press("Escape");
+  const trigger = page.getByRole("button", { name: "Otwórz potwierdzenie podglądu" });
+  await trigger.click();
+  await page.getByRole("button", { name: "Potwierdź podgląd", exact: true }).click();
+  await expect(page.getByRole("alertdialog")).toBeVisible();
+  await expect(page.getByRole("alertdialog").getByRole("alert")).toContainText(
+    "zachowano otwarty dialog",
+  );
+  await page.getByRole("button", { name: "Ponów podgląd", exact: true }).click();
+  await expect(page.getByRole("alertdialog")).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("button", { name: "Filtry podglądu" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("button", { name: "Filtry podglądu" })).toBeFocused();
+  expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBe(saved);
+});
+
+test("company candidate saving persists and company semantics have no serious Axe findings", async ({
+  page,
+}) => {
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/firmy/brightlabs");
+  const save = page.getByRole("button", { name: "Zapisz ofertę: AI Product Manager", exact: true });
+  await expect(save).toHaveAttribute("aria-pressed", "false");
+  await save.click();
+  await expect(save).toBeFocused();
+  await page.reload();
+  await expect(save).toHaveAttribute("aria-pressed", "true");
+  await save.click();
+  await page.reload();
+  await expect(save).toHaveAttribute("aria-pressed", "false");
+  const results = await new AxeBuilder({ page }).include("main").analyze();
+  expect(
+    results.violations.filter((v) => ["serious", "critical"].includes(v.impact ?? "")),
+  ).toEqual([]);
+  await choose(page, "Karolina Wiśniewska");
+  await page.goto("/#/firmy/brightlabs");
+  await expect(save).toHaveCount(0);
+});
+
+test("catalog record tabs preserve local notes without scenario writes", async ({ page }) => {
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/design-system/editaurus");
+  const saved = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
+  await page.getByLabel("Notatka tylko w podglądzie").fill("Lokalna notatka testowa");
+  await page.setViewportSize({ width: 320, height: 844 });
+  expect(await page.locator(".record-tabs").evaluate((e) => e.scrollWidth <= e.clientWidth)).toBe(
+    true,
+  );
+  await page.getByRole("tab", { name: "Historia podglądu" }).click();
+  await expect(page.getByText("Przekazano do oceny", { exact: true })).toBeVisible();
+  await page.getByRole("tab", { name: "Treść podglądu" }).click();
+  await expect(page.getByLabel("Notatka tylko w podglądzie")).toHaveValue(
+    "Lokalna notatka testowa",
+  );
+  expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBe(saved);
+});
+
+test("employer draft action opens its editor while published offers stay public", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const scenario = initialState();
+  const job = scenario.jobs.find((job) => job.slug === "ai-product-manager")!;
+  job.publicationStatus = "draft";
+  await page.evaluate(({ key, scenario }) => localStorage.setItem(key, JSON.stringify(scenario)), {
+    key: STORAGE_KEY,
+    scenario,
+  });
+  await page.reload();
+  await choose(page, "Karolina Wiśniewska");
+  await page.goto("/#/app/oferty");
+  const row = page
+    .locator("article")
+    .filter({ has: page.getByRole("heading", { name: job.title, exact: true }) });
+  await expect(row.getByRole("link", { name: "Zobacz ofertę", exact: true })).toHaveCount(0);
+  const edit = row.getByRole("link", { name: "Edytuj szkic", exact: true });
+  await expect(edit).toHaveAttribute("href", `#/app/oferty/${job.id}`);
+  await page.setViewportSize({ width: 320, height: 844 });
+  await edit.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByLabel("Nazwa stanowiska")).toHaveValue(job.title);
+  await page.reload();
+  await expect(page.getByLabel("Nazwa stanowiska")).toHaveValue(job.title);
+  await page.goto(`/#/oferty/${job.slug}`);
+  await expect(page.getByRole("heading", { name: "Nie znaleziono strony" })).toBeVisible();
+  await page.goto("/#/app/oferty");
+  await page.getByRole("link", { name: "Zobacz ofertę", exact: true }).first().click();
+  await expect(page.getByRole("heading", { name: "Nie znaleziono strony" })).toHaveCount(0);
+  await expect(page).toHaveURL(/#\/oferty\//);
+  await page.goto("/#/app/oferty");
+  await page.screenshot({ path: "artifacts/employer-draft-navigation-mobile.png", fullPage: true });
+});
+
+test("employer salary labels retain imported currency kind and period on publication", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const scenario = initialState();
+  const job = scenario.jobs.find((job) => job.slug === "ai-product-manager")!;
+  Object.assign(job, {
+    salaryCurrency: "EUR",
+    salaryKind: "net",
+    salaryPeriod: "year",
+    salaryMin: 60000,
+    salaryMax: 90000,
+  });
+  await page.evaluate(({ key, scenario }) => localStorage.setItem(key, JSON.stringify(scenario)), {
+    key: STORAGE_KEY,
+    scenario,
+  });
+  await page.reload();
+  await choose(page, "Karolina Wiśniewska");
+  await page.goto(`/#/app/oferty/${job.id}`);
+  await expect(page.getByLabel("Wynagrodzenie od (EUR netto / rok)", { exact: true })).toHaveValue(
+    "60000",
+  );
+  await expect(page.getByLabel("Wynagrodzenie do (EUR netto / rok)", { exact: true })).toHaveValue(
+    "90000",
+  );
+  await page.setViewportSize({ width: 320, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page
+    .getByLabel("Wynagrodzenie od (EUR netto / rok)", { exact: true })
+    .scrollIntoViewIfNeeded();
+  await page.screenshot({ path: "artifacts/employer-salary-basis-mobile.png" });
+  await page.getByRole("checkbox", { name: /Zatwierdzam treść oferty/ }).check();
+  await page.getByRole("button", { name: "Opublikuj ofertę", exact: true }).click();
+  await expect(page).toHaveURL(/#\/app\/oferty$/);
+  await page.reload();
+  const saved = await page.evaluate(
+    ({ key, id }) =>
+      JSON.parse(localStorage.getItem(key)!).jobs.find((job: { id: string }) => job.id === id),
+    { key: STORAGE_KEY, id: job.id },
+  );
+  expect(saved).toMatchObject({
+    salaryCurrency: "EUR",
+    salaryKind: "net",
+    salaryPeriod: "year",
+    salaryMin: 60000,
+    salaryMax: 90000,
+  });
+  await page.goto("/#/app/oferty/nowa");
+  await expect(
+    page.getByLabel("Wynagrodzenie od (PLN brutto / mies.)", { exact: true }),
+  ).toBeVisible();
+});
+
+test("republication preserves multiple locations and imported pin until location changes", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const scenario = initialState();
+  const job = scenario.jobs.find((job) => job.slug === "ai-product-manager")!;
+  job.locations = ["Wrocław", "Warszawa"];
+  job.coordinates = { latitude: 51.11, longitude: 17.04 };
+  await page.evaluate(({ key, scenario }) => localStorage.setItem(key, JSON.stringify(scenario)), {
+    key: STORAGE_KEY,
+    scenario,
+  });
+  await page.reload();
+  await choose(page, "Karolina Wiśniewska");
+  for (const changed of [false, true]) {
+    await page.goto(`/#/app/oferty/${job.id}`);
+    await expect(page.getByLabel("Lokalizacja", { exact: true })).toHaveValue("Wrocław / Warszawa");
+    if (changed) await page.getByLabel("Lokalizacja", { exact: true }).fill("Nieznana miejscowość");
+    await page.getByRole("checkbox", { name: /Zatwierdzam treść oferty/ }).check();
+    await page.getByRole("button", { name: "Opublikuj ofertę", exact: true }).click();
+    await expect(page).toHaveURL(/#\/app\/oferty$/);
+    await page.reload();
+    const saved = await page.evaluate(
+      ({ key, id }) =>
+        JSON.parse(localStorage.getItem(key)!).jobs.find((job: { id: string }) => job.id === id),
+      { key: STORAGE_KEY, id: job.id },
+    );
+    expect(saved.locations).toEqual(changed ? ["Nieznana miejscowość"] : job.locations);
+    if (changed) expect(saved.coordinates).toBeUndefined();
+    else expect(saved.coordinates).toEqual(job.coordinates);
+  }
+});
+
+test("offer conditions revoke approval without publishing or changing saved data", async ({
+  page,
+}) => {
+  await choose(page, "Karolina Wiśniewska");
+  const job = initialState().jobs.find((job) => job.slug === "ai-product-manager")!;
+  await page.goto(`/#/app/oferty/${job.id}`);
+  const saved = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
+  const approval = page.getByRole("checkbox", { name: /Zatwierdzam treść oferty/ });
+  const publish = page.getByRole("button", { name: "Opublikuj ofertę", exact: true });
+  for (const [label, value] of [
+    ["Lokalizacja", "Poznań"],
+    ["Wynagrodzenie od (PLN brutto / mies.)", "23000"],
+    ["Wynagrodzenie do (PLN brutto / mies.)", "30000"],
+  ]) {
+    await approval.check();
+    await expect(publish).toBeEnabled();
+    await page.getByLabel(label, { exact: true }).fill(value);
+    await expect(approval).not.toBeChecked();
+    await expect(publish).toBeDisabled();
+  }
+  await page.setViewportSize({ width: 320, height: 844 });
+  for (const [label, option] of [
+    ["Kategoria", "Build"],
+    ["Funkcja", "Engineering"],
+    ["Tryb pracy", "Zdalnie"],
+    ["Poziom", "Junior"],
+    ["Umowa", "B2B"],
+  ]) {
+    await approval.check();
+    await page.getByRole("combobox", { name: label, exact: true }).fill(option);
+    await page.getByRole("option", { name: option, exact: true }).click();
+    await expect(approval).not.toBeChecked();
+    await expect(publish).toBeDisabled();
+  }
+  await approval.check();
+  await page.getByRole("button", { name: "Wyczyść: Kategoria", exact: true }).click();
+  await page.keyboard.press("Escape");
+  await expect(approval).not.toBeChecked();
+  await expect(publish).toBeDisabled();
+  expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBe(saved);
+  await page.reload();
+  await expect(page.getByLabel("Lokalizacja", { exact: true })).toHaveValue(
+    job.locations.join(" / "),
+  );
+  await expect(approval).not.toBeChecked();
+});
+
+for (const width of [1280, 390]) {
+  test(`required employer choice validates confirmed value at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await choose(page, "Karolina Wiśniewska");
+    await page.goto("/#/app/oferty/nowa");
+    const category = page.getByRole("combobox", { name: "Kategoria", exact: true });
+    await expect(category).toHaveAttribute("aria-required", "true");
+    await page.getByRole("button", { name: "Wyczyść: Kategoria", exact: true }).click();
+    await category.fill("nieistniejąca");
+    await page.keyboard.press("Tab");
+    await expect(category).toHaveAttribute("aria-invalid", "true");
+    await expect(category).toHaveAccessibleDescription("Wybierz opcję z listy.");
+    expect(await category.evaluate((el) => (el as HTMLInputElement).checkValidity())).toBe(false);
+    await page.screenshot({ path: `artifacts/required-choice-invalid-${width}.png` });
+    await category.fill("lea");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await expect(category).toHaveValue("Lead");
+    await expect(category).not.toHaveAttribute("aria-invalid", "true");
+    expect(await category.evaluate((el) => (el as HTMLInputElement).checkValidity())).toBe(true);
+    expect(await category.evaluate((el) => new FormData(el.closest("form")!).get("category"))).toBe(
+      "lead",
+    );
+    await page.screenshot({ path: `artifacts/required-choice-${width}.png` });
+  });
+}
+
+for (const width of [1280, 390]) {
+  test(`approval checkbox has exactly its visible name at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await choose(page, "Anna Kowalska");
+    await page.goto("/#/aplikuj/ai-product-manager");
+    const consent = page.getByRole("checkbox", {
+      name: "Zatwierdzam treść aplikacji i przesłanie profilu oraz przykładowego CV pracodawcy.",
+      exact: true,
+    });
+    await expect(consent).toHaveCount(1);
+    await page.locator("#application-consent-label").click();
+    await expect(consent).toBeChecked();
+    await consent.focus();
+    await page.keyboard.press("Space");
+    await expect(consent).not.toBeChecked();
+    await choose(page, "Karolina Wiśniewska");
+    await page.goto("/#/app/oferty/nowa");
+    const approval = page.getByRole("checkbox", {
+      name: "Zatwierdzam treść oferty do publikacji.",
+      exact: true,
+    });
+    await expect(approval).toHaveCount(1);
+    await page.locator("#job-approval-label").click();
+    await expect(approval).toBeChecked();
+    await approval.focus();
+    await page.keyboard.press("Space");
+    await expect(approval).not.toBeChecked();
+    await expect(
+      page.getByRole("button", { name: "Opublikuj ofertę", exact: true }),
+    ).toBeDisabled();
+  });
+}

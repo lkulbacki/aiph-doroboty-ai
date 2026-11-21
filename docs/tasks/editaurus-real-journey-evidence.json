@@ -1,0 +1,569 @@
+{
+  "date": "2026-11-21",
+  "routes": [
+    {
+      "person": "public",
+      "route": "/",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "AI samo sięnie zatrudni.",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-0.png"
+    },
+    {
+      "person": "public",
+      "route": "/oferty",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "AI samo sięnie zatrudni.",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-1.png"
+    },
+    {
+      "person": "public",
+      "route": "/oferty?view=map",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "AI samo sięnie zatrudni.",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-2.png"
+    },
+    {
+      "person": "public",
+      "route": "/oferty/ai-product-manager",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "AI Product Manager",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-3.png"
+    },
+    {
+      "person": "public",
+      "route": "/firmy/brightlabs",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "BrightLabs",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-4.png"
+    },
+    {
+      "person": "public",
+      "route": "/metodologia",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Nie każda praca z chatbotem jest pracą z AI.",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-5.png"
+    },
+    {
+      "person": "public",
+      "route": "/polityka-prywatnosci",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Prywatność prototypu",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-6.png"
+    },
+    {
+      "person": "public",
+      "route": "/design-system/editaurus",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Akcje i komponenty formularza",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-7.png"
+    },
+    {
+      "person": "public",
+      "route": "/nieznany-adres",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Nie znaleziono strony",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-8.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Witaj, Anna",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-9.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/profil",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Twój profil",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-10.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/profil/podglad",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Anna Kowalska",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-11.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/onboarding",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Twój profil",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-12.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/zapisane",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Zapisane oferty",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-13.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/aplikacje",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Moje aplikacje",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-14.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/aplikuj/ai-product-manager",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Aplikuj na ofertę",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-1280-15.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/settings",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Ustawienia prototypu",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-1280-16.png"
+    },
+    {
+      "person": "Marek Nowak",
+      "route": "/app/aplikacje/application-example",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "AI Product Manager",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-17.png"
+    },
+    {
+      "person": "Marek Nowak",
+      "route": "/app/aplikacje/application-example/wyslano",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "AI Product Manager",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-18.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Witaj, Karolina",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-19.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/oferty",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Moje oferty",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-20.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/oferty/nowa",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Nowa oferta",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-1280-21.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/oferty/20000000-0000-4000-8000-000000000001",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Edytuj ofertę",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-22.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/organizacja",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Twoja organizacja",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-1280-23.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/kandydaci",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Kandydaci",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-1280-24.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/kandydaci/application-example",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Marek Nowak",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-1280-25.png"
+    },
+    {
+      "person": "Prowadzący",
+      "route": "/app/case",
+      "viewport": 1280,
+      "scroll": 1280,
+      "heading": "Materiały case study",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-1280-26.png"
+    },
+    {
+      "person": "public",
+      "route": "/",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "AI samo sięnie zatrudni.",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-0.png"
+    },
+    {
+      "person": "public",
+      "route": "/oferty",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "AI samo sięnie zatrudni.",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-1.png"
+    },
+    {
+      "person": "public",
+      "route": "/oferty?view=map",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "AI samo sięnie zatrudni.",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-2.png"
+    },
+    {
+      "person": "public",
+      "route": "/oferty/ai-product-manager",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "AI Product Manager",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-3.png"
+    },
+    {
+      "person": "public",
+      "route": "/firmy/brightlabs",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "BrightLabs",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-4.png"
+    },
+    {
+      "person": "public",
+      "route": "/metodologia",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Nie każda praca z chatbotem jest pracą z AI.",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-5.png"
+    },
+    {
+      "person": "public",
+      "route": "/polityka-prywatnosci",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Prywatność prototypu",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-6.png"
+    },
+    {
+      "person": "public",
+      "route": "/design-system/editaurus",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Akcje i komponenty formularza",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-7.png"
+    },
+    {
+      "person": "public",
+      "route": "/nieznany-adres",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Nie znaleziono strony",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-8.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Witaj, Anna",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-9.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/profil",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Twój profil",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-10.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/profil/podglad",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Anna Kowalska",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-11.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/onboarding",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Twój profil",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-12.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/zapisane",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Zapisane oferty",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-13.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/aplikacje",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Moje aplikacje",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-14.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/aplikuj/ai-product-manager",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Aplikuj na ofertę",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-390-15.png"
+    },
+    {
+      "person": "Anna Kowalska",
+      "route": "/app/settings",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Ustawienia prototypu",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-390-16.png"
+    },
+    {
+      "person": "Marek Nowak",
+      "route": "/app/aplikacje/application-example",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "AI Product Manager",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-17.png"
+    },
+    {
+      "person": "Marek Nowak",
+      "route": "/app/aplikacje/application-example/wyslano",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "AI Product Manager",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-18.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Witaj, Karolina",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-19.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/oferty",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Moje oferty",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-20.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/oferty/nowa",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Nowa oferta",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-390-21.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/oferty/20000000-0000-4000-8000-000000000001",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Edytuj ofertę",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-22.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/organizacja",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Twoja organizacja",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-390-23.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/kandydaci",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Kandydaci",
+      "violations": [],
+      "axeExecuted": false,
+      "screenshot": "artifacts/audit-route-390-24.png"
+    },
+    {
+      "person": "Karolina Wiśniewska",
+      "route": "/app/kandydaci/application-example",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Marek Nowak",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-390-25.png"
+    },
+    {
+      "person": "Prowadzący",
+      "route": "/app/case",
+      "viewport": 390,
+      "scroll": 390,
+      "heading": "Materiały case study",
+      "violations": [],
+      "axeExecuted": true,
+      "screenshot": "artifacts/audit-route-390-26.png"
+    }
+  ],
+  "feedback": [
+    {
+      "observation": "import-persona-feedback-observation",
+      "statuses": []
+    },
+    {
+      "observation": "recovery-feedback-observation",
+      "alerts": [
+        "Nieprawidłowy plik lub nieobsługiwana wersja danych. Dotychczasowy stan pozostaje bez zmian."
+      ],
+      "statuses": ["Dane zostały zaimportowane."]
+    },
+    {
+      "observation": "import-persona-feedback-observation",
+      "statuses": []
+    },
+    {
+      "observation": "recovery-feedback-observation",
+      "alerts": [
+        "Nieprawidłowy plik lub nieobsługiwana wersja danych. Dotychczasowy stan pozostaje bez zmian."
+      ],
+      "statuses": ["Dane zostały zaimportowane."]
+    }
+  ]
+}

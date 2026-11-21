@@ -1,0 +1,93 @@
+# Editaurus consolidation — stage 2 completion
+
+Date: 2026-11-21. User authorization: complete all remaining second-stage batches
+in sequence. Previous 2A–2D records remain unchanged historical execution evidence.
+
+## Delivered sequence
+
+- 2A: application authority/coverage and acceptance reconciliation.
+- 2B: foundation measurements, contextual recipes and upstream delta gates.
+- 2C: production action/navigation examples with native-semantic preflight.
+- 2D: existing header/fields, consent/CV/feedback contracts and mismatch specimen.
+- [2E](editaurus-stage-2e.md): remaining choice scope plus dialogs, host empty and
+  recovery examples. Existing search/map/recovery controllers remain linked real
+  routes. Failure/retry stays local and never imports/resets scenario data.
+- [2F](editaurus-stage-2f.md): actual offer/pay/record/history/score owners in
+  catalog; fixed company candidate save binding and narrow long-tab wrapping.
+- [2G](editaurus-stage-2g.md): external portable skill updated last, with accepted
+  visual/integration guidance and explicit historical source boundary.
+
+The catalog is `http://127.0.0.1:3001/#/design-system/editaurus`. It is broader but
+still a partial catalog: real domain operations and a full variant/state matrix
+are not replaced by local examples. The application remains the product contract;
+locally owned shadcn/Base UI is its foundation, editaurus its visual recipes and
+the skill only accepted portable guidance. No second set of primitives was added.
+
+## Acceptance and remaining decisions
+
+Work authorization is not blanket visual/API acceptance. The ledger retains
+pending route/variant acceptance, the checkbox/answer error shade distinction,
+picker invalid/required associations, host recovery appearance and marketing
+exceptions. No complete independent mobile/forced-color/reduced-motion/screen-reader
+matrix for every component/route was claimed. Existing automated mode/role/data
+checks and manual samples are reported as such, not universal certification.
+
+NH-01 has a fresh targeted structural Axe check for tested CompanyPage main
+content. NH-04 has functional save/focus/reload/removal/employer-exclusion evidence.
+NH-02 light-paper company panel visual acceptance, NH-03 long/missing identity/
+boundary review and NH-05 demonstrative context decision remain open individually.
+No deployment, publishing, course release approval or rights grant follows.
+
+The skill is shared through the existing Codex/Claude symlinks. Historical HTML,
+images, archived instructions and immutable Poster People kit remain unchanged.
+No receiving project's code migrates automatically. No exact upstream registry
+revision was certified: no primitive source replacement/API migration was needed;
+that gate remains mandatory before a future replacement.
+
+## Final validation and preservation
+
+Final `./scripts/verify` passed after the salary context and narrow-tab corrections:
+formatting, immutable 67-file kit integrity and six kit tests, ESLint, TypeScript,
+28 unit tests, baseline 120 journeys, static build and **53/53 Chromium tests
+(26.8 seconds)**. Existing Zod annotation/chunk-size/color-environment warnings
+remain. The company regression passed both the targeted Axe scan and save/role
+checks. The catalog regression passed at 320px with wrapped tabs and retained local
+notes. Earlier 2E and pre-correction 2F gates are recorded in their own tasks.
+No dedicated automated header test was added.
+
+Manual browser review showed confirmation cancel/Escape focus return, company
+candidate save controls, desktop/390/320 record/history and missing salary.
+It found and corrected a legacy salary badge caused by missing production CSS
+context, and tab overflow from long labels. Final manual tab dimensions were
+239px client/239px scroll, versus the initial 239/306. The corrected desktop pay
+sample has plain bold metadata rather than the legacy pill. Viewport was reset;
+no manual scenario operation or recruiting record was submitted. The existing
+local Vite server remains available for review.
+
+Skill-creator's quick_validate passed using temporary uv/PyYAML. System Python's
+initial missing-yaml failure is recorded, not hidden. Active and historical
+reference links resolve. Generic library-screen reasoning review and source
+comparison confirmed domain-independent wording; no second app was built.
+
+SHA checks against the 368-file start snapshot found nine changed baseline files
+(coverage, record CSS, FEATURES, GUI, STATUS, handoff, catalog page, marketplace,
+appended E2E tests) and eight added files (two preview compositions, two component
+contracts, three batch tasks and this completion task). The other 359 baseline
+files are unchanged, including previous reports, dirty configuration/dependency
+files, source owners outside this scope and the immutable kit. Changes inside
+existing edited files were reviewed as focused additions; existing user work was
+retained. Ignored build/test artifacts were regenerated by the gate.
+
+The external skill snapshot confirms only SKILL.md and the historical style
+reference changed, with one new accepted-adaptations reference. The other five
+package files, including original HTML/PNG and archived instructions/README,
+are byte-identical. Existing Codex/Claude symlinks were not edited. No material
+was transferred into the public application or historical kit.
+
+Final local-link, Prettier and diff-whitespace checks passed. Separate review
+covered React local-state ownership, stable keys, no extra effects/network/persistent
+controllers, render/role boundaries, isolated preview mutations, company candidate
+scope, shared narrow record consumers and documentation authority. No application
+manifest/lockfile or upstream primitive changed. No commit, push, merge, deploy
+or publication occurred. Stage 2 execution is complete; outstanding human decisions
+and verification limits remain in the ledger rather than being marked accepted.
