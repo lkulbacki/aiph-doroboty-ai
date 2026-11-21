@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import landingLogoOutline from "@/features/editaurus/assets/logo-poziome-kontur.svg";
 import landingLogo from "@/features/editaurus/assets/logo-poziome-na-zielonym.svg";
+import { HeroLink } from "@/components/editaurus/hero-button";
 import { BrandMark } from "@/features/public/brand-mark";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { currentPerson } from "./model";
@@ -29,7 +30,7 @@ const navigation = [
 
 export function Notice({ children }: { children: ReactNode }) {
   return (
-    <div role="status" className="prototype-notice">
+    <div role="status" className="editaurus-surface editaurus-message editaurus-message-info">
       {children}
     </div>
   );
@@ -43,16 +44,14 @@ export function PageTitle({ children, action }: { children: ReactNode; action?: 
   );
 }
 export function Empty({ children }: { children: ReactNode }) {
-  return <div className="prototype-panel">{children}</div>;
+  return <div className="editaurus-surface editaurus-message">{children}</div>;
 }
 export function NotFound() {
   return (
-    <section className="prototype-section">
+    <section className="editaurus-surface editaurus-information editaurus-methodology">
       <h1>Nie znaleziono strony</h1>
       <p className="my-5">Ten adres nie prowadzi do dostępnej oferty lub aplikacji.</p>
-      <Link className={buttonVariants()} to="/oferty">
-        Wróć do ofert
-      </Link>
+      <HeroLink to="/oferty">Wróć do ofert</HeroLink>
     </section>
   );
 }
@@ -69,23 +68,51 @@ const employerNav = [
   ["/app/organizacja", "Organizacja", Building2],
 ] as const;
 export function Shell() {
-  const { state, issue, error, clearError } = usePrototype();
+  const { state, issue, error, clearFeedback } = usePrototype();
   const person = currentPerson(state);
   const { pathname } = useLocation();
-  const editorialMarketplace =
-    pathname === "/oferty" || pathname.startsWith("/oferty/") || pathname.startsWith("/firmy/");
+  const personPickerPage =
+    pathname.startsWith("/auth/") || (pathname.startsWith("/app") && !person);
+  const applicationPage = pathname.startsWith("/aplikuj/");
+  const editorialCanvas =
+    !pathname.startsWith("/app") ||
+    pathname === "/polityka-prywatnosci" ||
+    pathname === "/metodologia" ||
+    applicationPage ||
+    personPickerPage ||
+    pathname === "/design-system/editaurus" ||
+    pathname === "/app/settings";
+  const editorialHeader =
+    !pathname.startsWith("/app") ||
+    pathname === "/polityka-prywatnosci" ||
+    pathname === "/metodologia" ||
+    pathname === "/design-system/editaurus" ||
+    pathname === "/oferty" ||
+    pathname.startsWith("/oferty/") ||
+    pathname.startsWith("/firmy/") ||
+    personPickerPage ||
+    applicationPage;
   const workspace = pathname.startsWith("/app") && person;
+  const candidateApplications =
+    (pathname === "/app/aplikacje" ||
+      pathname.startsWith("/app/aplikacje/") ||
+      pathname === "/app/zapisane" ||
+      pathname === "/app" ||
+      pathname === "/app/profil" ||
+      pathname === "/app/profil/podglad") &&
+    person?.role === "candidate";
   const [menuAt, setMenuAt] = useState<string | null>(null);
+  const menuTrigger = useRef<HTMLButtonElement>(null);
   const main = useRef<HTMLElement>(null);
   const lastPath = useRef(pathname);
   useEffect(() => {
     if (lastPath.current !== pathname) {
-      clearError();
+      clearFeedback();
       main.current?.focus();
       window.scrollTo(0, 0);
       lastPath.current = pathname;
     }
-  }, [pathname, clearError]);
+  }, [pathname, clearFeedback]);
   const nav =
     person?.role === "employer"
       ? employerNav
@@ -105,7 +132,7 @@ export function Shell() {
         )}
       </>
       {error && (
-        <p className="prototype-error" role="alert">
+        <p className="editaurus-surface editaurus-message editaurus-message-error" role="alert">
           {error}
         </p>
       )}
@@ -127,13 +154,13 @@ export function Shell() {
         Przejdź do treści
       </a>
       {workspace ? (
-        <div className="app-frame">
-          <div className="mobile-header">
-            <Link to="/" className="brand">
-              <BrandMark />
-              DoRoboty.ai
+        <div className="app-frame editaurus-workspace">
+          <div className="mobile-header editaurus-surface">
+            <Link to="/" className="brand" aria-label="DoRoboty.ai — strona główna">
+              <span className="editorial-listing-logo" aria-hidden="true" />
             </Link>
             <Button
+              ref={menuTrigger}
               aria-label={menuAt === pathname ? "Zamknij menu" : "Otwórz menu"}
               aria-expanded={menuAt === pathname}
               aria-controls="workspace-nav"
@@ -145,14 +172,16 @@ export function Shell() {
             </Button>
           </div>
           <aside
-            className={`sidebar ${menuAt === pathname ? "sidebar-open" : ""}`}
+            className={`sidebar editaurus-surface ${menuAt === pathname ? "sidebar-open" : ""}`}
             onKeyDown={(e) => {
-              if (e.key === "Escape") setMenuAt(null);
+              if (e.key === "Escape") {
+                setMenuAt(null);
+                menuTrigger.current?.focus();
+              }
             }}
           >
-            <Link className="brand" to="/">
-              <BrandMark />
-              DoRoboty.ai
+            <Link className="brand" to="/" aria-label="DoRoboty.ai — strona główna">
+              <span className="editorial-listing-logo" aria-hidden="true" />
             </Link>
             <div className="workspace-label">
               <span className="workspace-avatar">{person.name[0]}</span>
@@ -182,6 +211,7 @@ export function Shell() {
                 <Settings className="size-4" />
                 Ustawienia
               </NavLink>
+              <div className="workspace-nav-divider" role="separator" />
               <Link className="nav-link" to="/oferty">
                 Wszystkie oferty
               </Link>
@@ -191,7 +221,7 @@ export function Shell() {
             </nav>
           </aside>
           <div className="workspace">
-            <div className="topbar">
+            <div className="topbar editaurus-surface">
               <span>
                 {person.role === "candidate"
                   ? "Strefa kandydata"
@@ -201,7 +231,23 @@ export function Shell() {
               </span>
               <Link to="/auth/sign-in">{person.name}</Link>
             </div>
-            <main id="main" ref={main} tabIndex={-1} className="main-content outline-none">
+            <main
+              id="main"
+              ref={main}
+              tabIndex={-1}
+              className={cn(
+                "main-content outline-none",
+                (candidateApplications ||
+                  pathname === "/app/settings" ||
+                  pathname === "/app" ||
+                  pathname === "/app/oferty" ||
+                  pathname.startsWith("/app/oferty/") ||
+                  pathname.startsWith("/app/kandydaci/") ||
+                  pathname === "/app/kandydaci" ||
+                  pathname === "/app/organizacja") &&
+                  "editaurus-surface editaurus-canvas",
+              )}
+            >
               {content}
             </main>
           </div>
@@ -212,7 +258,7 @@ export function Shell() {
             className={
               pathname === "/"
                 ? "candidate-home-header editaurus-surface"
-                : editorialMarketplace
+                : editorialHeader
                   ? "editorial-listing-header editaurus-surface"
                   : "bg-background/95 shadow-[var(--gui-divider-bottom-shadow)] backdrop-blur supports-[backdrop-filter]:bg-background/80"
             }
@@ -234,7 +280,7 @@ export function Shell() {
                       height={318}
                     />
                   </span>
-                ) : editorialMarketplace ? (
+                ) : editorialHeader ? (
                   <span className="editorial-listing-logo" aria-hidden="true" />
                 ) : (
                   <>
@@ -319,7 +365,12 @@ export function Shell() {
               </nav>
             </div>
           </header>
-          <main id="main" ref={main} tabIndex={-1} className="outline-none">
+          <main
+            id="main"
+            ref={main}
+            tabIndex={-1}
+            className={cn("outline-none", editorialCanvas && "editaurus-surface editaurus-canvas")}
+          >
             {content}
           </main>
         </>

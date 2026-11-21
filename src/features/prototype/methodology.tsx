@@ -16,7 +16,7 @@ const criteria = [
 
 export default function MethodologyPage() {
   return (
-    <article className="mx-auto max-w-5xl px-5 py-14 lg:px-8 lg:py-20">
+    <article className="editaurus-surface editaurus-information editaurus-methodology">
       <p className="text-xs font-medium tracking-[var(--gui-tracking-xl)] text-muted-foreground">
         Nasze kryteria
       </p>
@@ -29,14 +29,14 @@ export default function MethodologyPage() {
       </p>
       <div className="mt-12 grid gap-5 sm:grid-cols-2">
         {criteria.map(([title, body], index) => (
-          <section key={title} className="rounded-xl bg-card p-6">
+          <section key={title} className="editaurus-panel p-6">
             <span className="text-xs font-medium text-muted-foreground">0{index + 1}</span>
             <h2 className="mt-3 text-xl font-semibold">{title}</h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{body}</p>
           </section>
         ))}
       </div>
-      <section className="mt-12 rounded-xl bg-muted/40 p-7">
+      <section className="editaurus-panel mt-12 p-7">
         <h2 className="text-2xl font-semibold">Weryfikacja nie jest rekomendacją</h2>
         <p className="mt-3 text-base leading-relaxed text-muted-foreground">
           Sprawdzamy źródło i kompletność informacji. Kandydat nadal powinien sam ocenić firmę,

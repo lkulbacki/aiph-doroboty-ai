@@ -1,9 +1,9 @@
 import { PageTitle } from "./shell";
 export function CasePage() {
   return (
-    <>
+    <div className="editaurus-surface editaurus-information">
       <PageTitle>Materiały case study</PageTitle>
-      <section className="prototype-panel prototype-form">
+      <section className="editaurus-panel editaurus-information-panel">
         <h2>Etap początkowy</h2>
         <p>
           Zespół chce zwiększyć liczbę ukończonych aplikacji. Sprawdź, gdzie użytkownicy rezygnują i
@@ -14,13 +14,13 @@ export function CasePage() {
           zmieniają tych wyników.
         </p>
         <a
-          className="text-[var(--gui-link)] underline"
+          className="editaurus-catalog-link"
           href={`${import.meta.env.BASE_URL}case/baseline.csv`}
           download
         >
           Pobierz dane etapu początkowego
         </a>
       </section>
-    </>
+    </div>
   );
 }

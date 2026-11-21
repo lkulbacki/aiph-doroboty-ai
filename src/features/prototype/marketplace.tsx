@@ -79,7 +79,7 @@ function LocalMap({ jobs }: { jobs: JobWithCompany[] }) {
           </Button>
         ))}
       </div>
-      <div className="prototype-panel">
+      <div className="editaurus-panel editorial-map-panel">
         {job ? (
           <>
             <h2>{job.title}</h2>
@@ -228,6 +228,23 @@ export function JobsPage() {
                   <span>Miejsce pracy</span>
                   <Autocomplete.Input
                     ref={workplaceInput}
+                    aria-label="Miejsce pracy"
+                    onFocus={(event) => event.currentTarget.select()}
+                    onClick={(event) => {
+                      if (event.currentTarget.value === filters.location)
+                        event.currentTarget.select();
+                    }}
+                    onKeyDown={(event) => {
+                      if (
+                        (event.key === "Backspace" || event.key === "Delete") &&
+                        filters.location &&
+                        event.currentTarget.value === filters.location
+                      ) {
+                        event.preventDefault();
+                        pendingWorkplaceFocus.current = true;
+                        change("location", "");
+                      }
+                    }}
                     maxLength={80}
                     placeholder="Miasto lub region"
                   />
@@ -488,7 +505,7 @@ export function JobPage() {
               <span>{job.summary}</span>
             </div>
           </header>
-          <aside className="editorial-offer-sidebar">
+          <aside className="editaurus-panel editorial-offer-sidebar">
             <div className="editorial-offer-pay">
               <p className="editorial-offer-eyebrow">Wynagrodzenie</p>
               <SalaryFact job={job} showContract={false} />
@@ -595,6 +612,7 @@ export function JobPage() {
 export function CompanyPage() {
   const { slug } = useParams();
   const { state } = usePrototype();
+  const person = currentPerson(state);
   const company = state.companies.find((x) => x.slug === slug);
   if (!company) return <NotFound />;
   const jobs = publishedJobs(state).filter((x) => x.companyId === company.id);
@@ -611,9 +629,14 @@ export function CompanyPage() {
               <p className="editorial-offer-eyebrow">Profil firmy</p>
             </div>
             <h1>{company.name}</h1>
-            <p className="editorial-offer-hero-bottom">{company.summary}</p>
+            <p className="editorial-offer-hero-bottom">
+              {company.summary.trim() || "Firma nie dodała jeszcze podsumowania."}
+            </p>
           </header>
-          <aside className="editorial-offer-sidebar" aria-label="Informacje o firmie">
+          <aside
+            className="editaurus-panel editorial-offer-sidebar"
+            aria-label="Informacje o firmie"
+          >
             <h2 className="editorial-offer-eyebrow">Informacje o firmie</h2>
             <dl className="editorial-offer-terms">
               <div>
@@ -643,10 +666,14 @@ export function CompanyPage() {
           <section className="editorial-offer-employer" aria-labelledby="company-about">
             <h2 id="company-about">O firmie</h2>
             <div className="editorial-offer-company-copy">
-              <p>{company.description}</p>
+              <p>{company.description.trim() || "Firma nie dodała jeszcze opisu."}</p>
             </div>
           </section>
         </div>
+        <p className="editaurus-form-help">
+          Profil i oferty zawierają dane demonstracyjne do ćwiczeń. To prototyp, a nie rzeczywista
+          rekrutacja.
+        </p>
         <section className="editorial-offer-related" aria-labelledby="company-roles">
           <div className="editorial-offer-related-heading">
             <h2 id="company-roles">Otwarte role</h2>
@@ -657,7 +684,18 @@ export function CompanyPage() {
           {jobs.length > 0 ? (
             <div>
               {jobs.map((job) => (
-                <JobCard key={job.id} job={job} variant="editorial" />
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  variant="editorial"
+                  saved={
+                    person?.role === "candidate"
+                      ? state.saved.some(
+                          (item) => item.candidateId === person.id && item.jobId === job.id,
+                        )
+                      : undefined
+                  }
+                />
               ))}
             </div>
           ) : (

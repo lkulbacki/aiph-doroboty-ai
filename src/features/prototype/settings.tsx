@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent } from "react";
-import { Button } from "@/components/ui/button";
+import { SecondaryButton } from "@/components/editaurus/secondary-button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { usePrototype } from "./store";
 import { serializeState, MAX_IMPORT_BYTES } from "./storage";
@@ -16,16 +16,16 @@ export function downloadText(name: string, text: string, type = "application/jso
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 export function SettingsPage() {
-  const { state, reset, importState, original } = usePrototype();
+  const { state, reset, importState, original, recoveryMessage, clearFeedback } = usePrototype();
   const [pending, setPending] = useState<"reset" | "import" | null>(null);
   const [raw, setRaw] = useState("");
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
   async function readFile(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
     setError("");
     if (!file) return;
+    clearFeedback();
     if (file.size > MAX_IMPORT_BYTES) {
       setError("Plik jest za duży (maksymalnie 2 MB).");
       return;
@@ -40,29 +40,27 @@ export function SettingsPage() {
   function confirm() {
     if (pending === "reset") {
       reset();
-      setMessage("Przywrócono scenariusz początkowy.");
-    } else if (importState(raw)) {
-      setMessage("Dane zostały zaimportowane.");
+    } else if (pending === "import") {
+      importState(raw);
     }
     setPending(null);
   }
   return (
-    <>
+    <section className="editaurus-surface editaurus-applications editaurus-settings">
       <PageTitle>Ustawienia prototypu</PageTitle>
-      <section className="prototype-panel prototype-form">
+      <section className="editaurus-panel editaurus-settings-panel">
         <h2>Dane scenariusza</h2>
         <p>
           Zmiany są zapisane tylko w tej przeglądarce. Wysłanie linku innej osobie nie przenosi
           Twoich danych. Eksport pozwala przekazać scenariusz lub zachować kopię przed resetem.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Button
-            variant="outline"
+          <SecondaryButton
             onClick={() => downloadText("doroboty-scenariusz.json", serializeState(state))}
           >
             Eksportuj dane
-          </Button>
-          <Button variant="outline" render={<label />}>
+          </SecondaryButton>
+          <SecondaryButton render={<label />}>
             Importuj dane
             <input
               className="sr-only"
@@ -71,29 +69,39 @@ export function SettingsPage() {
               aria-label="Importuj plik scenariusza"
               onChange={readFile}
             />
-          </Button>
+          </SecondaryButton>
           {original !== null && (
-            <Button
-              variant="outline"
+            <SecondaryButton
               onClick={() =>
                 downloadText("doroboty-zapis-do-odzyskania.txt", original, "text/plain")
               }
             >
               Pobierz poprzedni zapis
-            </Button>
+            </SecondaryButton>
           )}
         </div>
-        <Button variant="destructive" onClick={() => setPending("reset")}>
+        <SecondaryButton
+          className="editaurus-danger-button"
+          onClick={() => {
+            clearFeedback();
+            setError("");
+            setPending("reset");
+          }}
+        >
           Resetuj scenariusz
-        </Button>
+        </SecondaryButton>
         {error && (
-          <p className="error-message" role="alert">
+          <p className="editaurus-form-error" role="alert">
             {error}
           </p>
         )}
-        {message && <p role="status">{message}</p>}
+        {recoveryMessage && (
+          <p role="status" className="editaurus-form-status">
+            {recoveryMessage}
+          </p>
+        )}
       </section>
-      <section className="prototype-panel prototype-form mt-6">
+      <section className="editaurus-panel editaurus-settings-panel mt-6">
         <h2>O prototypie</h2>
         <p>
           Wybór osoby zastępuje logowanie. Propozycje AI, Match Score i podsumowania odtwarzają
@@ -101,6 +109,7 @@ export function SettingsPage() {
         </p>
       </section>
       <ConfirmDialog
+        appearance="editaurus"
         open={pending !== null}
         onOpenChange={(v) => {
           if (!v) setPending(null);
@@ -111,14 +120,14 @@ export function SettingsPage() {
         pending={false}
         onConfirm={confirm}
       />
-    </>
+    </section>
   );
 }
 export function PrivacyPage() {
   return (
-    <section className="prototype-section max-w-4xl">
+    <section className="editaurus-surface editaurus-information editaurus-methodology">
       <h1>Prywatność prototypu</h1>
-      <div className="mt-6 space-y-5">
+      <div className="editaurus-panel editaurus-information-panel mt-6">
         <p>
           Ta wersja służy do ćwiczeń i testów interfejsu. Nie wpisuj prawdziwych danych osobowych
           ani poufnych informacji.

@@ -13,12 +13,14 @@ function useStore() {
   const [state, setState] = useState(loaded.state);
   const [issue, setIssue] = useState(loaded.issue);
   const [error, setError] = useState("");
+  const [recoveryMessage, setRecoveryMessage] = useState("");
   const [blocked, setBlocked] = useState(loaded.blocked);
   const latest = useRef(state);
   function commit(next: State, replace = false) {
     latest.current = next;
     setState(next);
     setError("");
+    setRecoveryMessage("");
     if (blocked && !replace) return;
     try {
       saveState(browserStorage(), next);
@@ -42,9 +44,11 @@ function useStore() {
     }
   }
   function importState(raw: string) {
+    setRecoveryMessage("");
     try {
       const next = parseState(raw);
       commit(next, true);
+      setRecoveryMessage("Dane zostały zaimportowane.");
       return true;
     } catch (e) {
       setError((e as Error).message);
@@ -62,8 +66,15 @@ function useStore() {
     original: loaded.original,
     run,
     importState,
-    clearError: () => setError(""),
-    reset: () => commit(initialState(), true),
+    recoveryMessage,
+    clearFeedback: () => {
+      setError("");
+      setRecoveryMessage("");
+    },
+    reset: () => {
+      commit(initialState(), true);
+      setRecoveryMessage("Przywrócono scenariusz początkowy.");
+    },
   };
 }
 type Store = ReturnType<typeof useStore>;
