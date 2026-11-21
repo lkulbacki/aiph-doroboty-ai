@@ -1,6 +1,9 @@
 # Form feedback — editaurus
 
-Status: implemented in candidate application form and partial component preview; awaiting human review.
+Status: candidate application feedback and its partial preview are recorded as
+accepted in [decisions](../decisions.md). This supersedes the earlier pending
+header; it does not approve every storage/settings/recovery message as a universal
+component. See the [current ledger](../coverage.md).
 
 The real form in `src/features/prototype/workspace.tsx` owns all messages, counts, validation, focus and draft status. Scoped visual classes in `src/app/editaurus.css` do not change their meaning or timing.
 

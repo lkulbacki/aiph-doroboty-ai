@@ -1,30 +1,113 @@
-# editaurus — migration guide
+# editaurus — application contract and migration guide
 
-Status: target direction and the candidate application **form** pilot accepted on 2026-11-14. The home includes the candidate hero, the animated role section and a latest-offers trial. See the [continuation note](handoff.md) for current review scope. Offer detail has been accepted. The company profile is in editaurus review. The application’s embedded offer preview remains Poster People. This guide is a durable project entry point, not a claim that the full component library or public showcase exists.
+Editaurus is the target visual contract for this application. **shadcn/ui is the
+component foundation; editaurus defines its appearance, variants, states and usage.**
+Use the existing Base UI-compatible implementation and preserve accepted visuals
+and behavior. See the [current coverage/acceptance ledger](coverage.md) before
+choosing a route or component; it replaces stale “current slice” summaries.
 
-## Authority and boundaries
+The [foundation report](foundations.md) records current values, browser samples,
+portal boundaries and the proposed bounded action pilot; its proposals are not
+implemented token changes.
 
-- editaurus is the target visual language for new and explicitly migrated screens. The current app still has a Poster People host adaptation. Its [integration guide](../README.md), [owner map](../IMPLEMENTATION.md), [components](../HOST-COMPONENTS.md), [records](../RECORDS.md), [checks](../VERIFICATION.md), and [open findings](../STATUS.md) describe the code and behavior to preserve. The immutable `../agent-kit` remains a historical reference. Its test checks only the integrity of that reference.
-- Use the exact Editorial v9 concept and the local design-system component study as research inputs. They currently live outside this repository and **are not runtime or build dependencies**. Before implementing a visual rule, record its value, rationale, variants, states, and relevant evidence in this repository so a new checkout can work without those local files or an old chat. Do not copy the full study, prototypes, or reference assets wholesale.
-- The source's fictional jobs, dialog-only applications, and standalone controllers do not replace the app's real routes, example data, Zod validation, Base UI controls, or local state transitions. Keep the `render` API and HashRouter. Preserve applicant CV snapshots, draft/submit, employer stages, filters, map, import/export/reset, and recovery.
-- Migrate by named route or shared component. Keep one coherent visual language within a migrated surface. When changing a shared primitive or token, list and inspect every affected consumer, including portals and role-specific screens. Unmigrated screens may remain Poster People until their own stage; do not style them accidentally through a global override.
-- Verify a new pattern on a real user task before accepting it into the documented component API and state examples. Documentation or a visually complete landing alone does not prove the application works.
+## Authority and architecture
 
-## Initial visual contract to carry into the first pilot
+1. The user’s current instructions and project product/security boundaries apply
+   first. This repository records the application’s editaurus contract. The
+   [decision history](decisions.md) retains prior stages; later explicit
+   corrections supersede earlier values without erasing the history.
+2. `src/components/ui` remains the single locally owned shadcn-compatible
+   foundation over Base UI/native HTML. Existing `components.json` uses
+   `base-nova`; local wrappers have modifications and are not all certified as
+   identical to an upstream revision. Preserve Base UI’s `render` API and current
+   exports. Do not reinitialize, run CLI overwrite, add dependencies or create a
+   second primitive implementation to claim shadcn adoption.
+3. `src/components/editaurus` and scoped host visual recipes specify editaurus
+   states and presentation. Keep accepted paper/ink/type/interaction treatments
+   rather than reverting to the default shadcn theme. Consolidating tokens or
+   introducing a missing wrapper requires a separately approved component slice.
+4. Shared host compositions and `src/features` own application behavior. Preserve
+   React/TypeScript/Vite, HashRouter, Zod, local state transitions, saved jobs,
+   drafts/consent/submit, immutable submitted CV and identity, recruiting stages,
+   list/map/filter/sort/pagination, import/export/reset and recovery. A similarly
+   named shadcn component does not replace these domain contracts.
+5. `src/features/editaurus/components-page.tsx` demonstrates the same production
+   owners with local-only synthetic examples. It is a partial catalog, not a
+   second control implementation or evidence that every variant is accepted.
+6. The portable editaurus skill receives only accepted reusable rules after
+   real-screen verification and catalog alignment. Domain routes, enums,
+   CV matching, recruitment operations and exceptions stay in this repo. The
+   skill/local studies are not runtime/build dependencies.
 
-Editorial v9 uses ink `#102e2a`, dark green `#103d35`, paper `#f4f0e5`, Build pink `#f282b7`, Apply yellow `#f1f36a`, and Lead mint `#a9dcc6`. DM Sans is the interface and headline face; Fraunces italic is the editorial accent. The application form bundles DM Sans and its OFL license. The home hero trial preserves the landing’s Fraunces, Manrope and Caveat typography.
+The shadcn decision authorizes the architectural direction, not an automatic
+component replacement. Prefer its Base UI branch, compare local APIs/behavior
+and record an exact upstream revision before a proposed replacement. Assess
+navigation semantics individually: current upstream guidance and local
+`Button render={<Link />}` usage need comparison against the installed version;
+keep render composition for non-link primitive integrations. The
+[stage 1 inventory](../../tasks/editaurus-stage-1-inventory.md) records the dated
+upstream comparison and per-family cost/risk, not universal conformance.
 
-The approved form-field focus treatment is a **static 3 px inner bottom line**: ink on light fields and paper on a dark CV control. Text fields and selects show it on click and keyboard focus; radio labels show it for keyboard focus. Forced-colors mode needs a full visible `Highlight` outline. The hero button has two offset outlined layers and movement on hover/focus/press; the accent pair changes on a new hover, while touch does not randomize it. These are visual decisions to implement and verify, not claims about the current UI.
+## Visual contract and scope
 
-Use existing Base UI primitives first. A second component library, including shadcn/ui, needs a concrete gap and explicit cost/benefit decision. Keep marketing compositions (centaurs, plans, role theater, interactive footer) separate from reusable job-marketplace controls.
+Core palette: ink `#102e2a`, dark green `#103d35`, base paper `#f4f0e5`, pink
+`#f282b7`, yellow `#f1f36a`, mint `#a9dcc6`. DM Sans is the interface/heavy headline
+face and Fraunces italic the editorial accent. Local font use and publication
+boundaries are recorded in [assets](assets.md). The home retains a deliberate
+marketing composition using Fraunces/Manrope/Caveat; it is not a silent change to
+interface defaults or a portable rule accepted for every product.
 
-## Coverage and next step
+Page/workspace canvases use base paper. Framed panels use light paper `#fdf9ef`,
+a 1 px ink border and 4 px corners. Flat offer rows use separators and category
+interaction colors. Form controls have their own contours and states; panel
+geometry does not imply a universal 1 px/4 px control treatment.
 
-| Area                                      | Current owner                                                                                                                      | editaurus coverage                                                                                                                                                  |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Candidate application                     | `src/features/prototype/workspace.tsx`, `src/app/application.css`, `src/components/ui`, `src/features/prototype/cv-attachment.tsx` | Form pilot accepted on `/#/aplikuj/:slug`: answer, consent, feedback, CV link and actions. Offer preview and page chrome remain Poster People.                      |
-| Public home, listings, offer, company     | `src/features/prototype/home.tsx`, `marketplace.tsx`, `src/features/jobs`, `src/app/marketplace*.css`                              | Home hero, role section, latest offers and full listing use editaurus. The offer detail is accepted. The company profile is in review.                              |
-| Candidate/employer workspaces and editors | `workspace.tsx`, `employer.tsx`, `application-record.tsx`, records components                                                      | Not migrated                                                                                                                                                        |
-| Public component/state showcase           | `src/features/editaurus/components-page.tsx`                                                                                       | Hero, secondary and answer-field previews at `/#/design-system/editaurus`; broader showcase remains to build. All use the same React components as the application. |
+The accepted form focus treatment uses a static 3 px inner bottom line, ink for
+valid light fields and dark rose for invalid fields, with a full `Highlight`
+outline in forced colors. Search/sort and tab/navigation focus are contextual
+patterns, not automatically the same form-field state. Hero actions have two
+outlined accent layers and hover/focus/press states; non-touch hover changes the
+pair, touch keeps it. Secondary actions and CV links have separately recorded
+lift states. See the ledger’s current-rule table and the component notes:
+[hero](components/hero-action.md), [secondary](components/secondary-action.md),
+[answer](components/answer-field.md), [checkbox](components/consent-checkbox.md),
+[CV](components/cv-row.md) and [feedback](components/form-feedback.md).
 
-See [decisions](decisions.md), [asset review](assets.md), [hero action](components/hero-action.md), [secondary action](components/secondary-action.md) and the provisional [answer field](components/answer-field.md). Each stage belongs in `docs/tasks/` with its scope, observed screen states, automated checks, open findings, and a short handoff. Update `FEATURES.md` in the same change if behavior changes. Run `./scripts/verify` and a separate review pass for implementation stages.
+Specific style corrections and a route’s acceptance do not automatically approve
+an extracted API, every shared consumer or a portable skill update. Keep missing
+acceptance explicit, including the marketing pale-blue hero-link palette and
+reusable secondary/CV-shadow exceptions.
+
+## Host contracts and historical material
+
+The host [integration guide](../README.md), [owner map](../IMPLEMENTATION.md),
+[component catalog](../HOST-COMPONENTS.md), [records](../RECORDS.md),
+[verification checklist](../VERIFICATION.md) and [findings](../STATUS.md) retain
+behavior/API evidence. Preserve their focus, route, data, salary units,
+CV snapshot, reading-order and recovery contracts. Legacy Geist Serif,
+pink salary pill and rounded-panel measurements do not set migrated visuals.
+
+The immutable `../agent-kit` is historical. Its check verifies reference integrity,
+not editaurus. Editorial v9 and local studies are research inputs, not functional
+requirements to replace real routes with demo dialogs/controllers. Record a
+portable rule, rationale, states and evidence before adopting it. Do not copy
+local studies, course materials, full prototypes or assets without provenance and
+publication terms; the [asset holds](assets.md) remain in effect.
+
+## Preview, validation and next scope
+
+Run Node.js 24 and `npm run dev` on port 3001. Open
+`/#/design-system/editaurus` for the partial state catalog and real routes listed
+in the ledger. The separate `npm run design-system:dev` on 8952 is Poster People.
+
+Migrate by explicit route/component scope. Keep a coherent treatment within that
+surface and inspect all shared consumers, portals, desktop/mobile, keyboard/focus,
+long/missing content, errors and recovery. Verify new patterns on real tasks
+before accepting their component documentation/catalog examples. Implementation
+stages run `./scripts/verify` and a separate review; report actual execution and
+remaining limits. Review FEATURES and update it for behavior changes in the same
+change, without treating source coverage as test/deployment evidence.
+
+[Handoff](handoff.md) names the current stop point. Documentation reconciliation
+is complete in stage 2A; foundation measurements and catalog/code/skill work need
+separate approval. There is no deployment or publication authorization.

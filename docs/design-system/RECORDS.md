@@ -2,7 +2,33 @@
 
 > **Migration notice:** [editaurus](editaurus/README.md) is the visual target for migrated screens. Preserve the record, snapshot, focus, and process behavior documented here while changing presentation.
 
-These components implement the shared employer and candidate process-view composition. See the [host catalog](HOST-COMPONENTS.md) for return links, application preview, hover and motion, and [status](STATUS.md) for unresolved findings. They extend the React host using Poster People typography, paper/white/ink/pink, existing controls and the r24 outlined reading surface. They are not a new release of the immutable v1 reference.
+These components implement the shared employer and candidate process-view composition. See the [host catalog](HOST-COMPONENTS.md) for return links, application preview, hover and motion, and [status](STATUS.md) for unresolved findings. Their original host adaptation used Poster People typography, paper/white/ink/pink and the r24 outlined reading surface; current editaurus scope is below. They are not a new release of the immutable v1 reference.
+
+## Current visual authority
+
+Use the [editaurus ledger](editaurus/coverage.md) for current candidate/employer
+coverage and acceptance. APIs, role projection, snapshots, tab/note lifetime and
+focus rules below remain behavioral contracts. Poster People type/radii and the
+older employer history-left geometry describe the earlier adaptation; current
+scoped editaurus records place history beside the right of materials on desktop.
+Candidate record-body acceptance does not accept the later employer migration or
+every shared component variant. The current guide's panel rules govern migrated
+surfaces, without changing these record APIs.
+
+## Shared editaurus scope
+
+Candidate detail at `/#/app/aplikacje/:id` and employer detail at
+`/#/app/kandydaci/:id` apply the scoped
+`editaurus-record` adaptation in `src/app/editaurus-record.css`. It reuses the APIs
+below and changes no snapshots, tabs, history projection or operations. Its sheet
+uses light paper, 1 px ink borders and 4 px corners; desktop history is on the
+right and mobile history follows materials. Candidate withdrawal/cancel reuse
+SecondaryButton; confirmed withdrawal uses a rose danger treatment. The employer
+record reuses the same sheet/history layout, with the existing note editor and
+stage actions in the shared field and secondary/danger action styles. Candidate
+record-body acceptance is recorded; employer migration and later shared variants
+remain review pending. See the [current ledger](editaurus/coverage.md) and
+[continuation](editaurus/handoff.md).
 
 ## RecordSheet
 

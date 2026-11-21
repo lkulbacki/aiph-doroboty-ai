@@ -1,6 +1,9 @@
 # Hero action — first implemented editaurus component
 
-Status: implemented on the real candidate application form and at `/#/design-system/editaurus`; accepted pilot, extracted variant awaiting human review.
+Status: the application pilot, extracted HeroButton and its partial preview were
+accepted on 2026-11-14, as recorded in [decisions](../decisions.md). This supersedes
+the earlier pending header. HeroLink marketing palettes and unavailable-publication
+variants have separate scope/status in the [current ledger](../coverage.md).
 
 ## Ownership and use
 

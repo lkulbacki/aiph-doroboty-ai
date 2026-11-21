@@ -8,6 +8,17 @@ This directory contains the complete immutable 67-file v1 agent kit and the rece
 
 **Required companions:** [host implementation rules](IMPLEMENTATION.md), [React host component catalog](HOST-COMPONENTS.md), [record/CV APIs](RECORDS.md), [application acceptance checklist](VERIFICATION.md) and [integration status/open findings](STATUS.md). They capture the prevention rules from A01–A08/R01–R04 and the implemented process, application, score, navigation and motion extensions. Read them before changing UI or declaring a finding closed.
 
+## Current application scope
+
+The [editaurus coverage/acceptance ledger](editaurus/coverage.md) is the current
+route/component index. Many public and workspace surfaces are already migrated;
+this guide is not a claim that the whole running app remains Poster People.
+Use the [editaurus architecture](editaurus/README.md) for the locally owned shadcn
+foundation over existing Base UI. Keep this guide's data/route/focus/API contracts;
+its source values and anatomical prescriptions describe legacy adaptation where
+not explicitly superseded. The historical kit does not override accepted
+editaurus visuals or supply application controllers.
+
 ## Read in this order
 
 1. Root [AGENTS.md](../../AGENTS.md), [BRIEF.md](../../BRIEF.md) and the relevant [FEATURES.md](../../FEATURES.md) entries: preserve the frontend-only product contract.

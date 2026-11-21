@@ -1,5 +1,30 @@
 # editaurus decisions and open questions
 
+## Current authority — stage 2A, 2026-11-21
+
+The user selected **shadcn/ui as the component foundation**, with editaurus defining
+accepted appearance, variants, states and usage. Use the existing Base UI-compatible
+implementation and render composition, with one locally owned foundation in
+`src/components/ui`. Keep accepted application visuals, domain operations and
+HashRouter. No reinitialization, CLI overwrite, dependency addition or parallel
+primitive set is authorized by this decision.
+
+The user approved the stage 1 report's proposed documentation-only stage 2A.
+This records architecture and reconciles coverage; it does not accept all pending
+screens/APIs, begin implementation/catalog work or authorize an external skill
+update. See the [current coverage/acceptance ledger](coverage.md) and
+[handoff](handoff.md) for the next stop point.
+
+The entries below are retained decision history. Their scope is the stage named
+at the time. Later explicit corrections supersede earlier values: light paper
+replaces mint action hover; final error shades replace the earlier comparisons;
+base paper replaces light workspace chrome; inline typing replacement replaces
+popup search/readOnly taxonomy fields. The ledger records the resulting current
+rules without erasing those earlier choices. In particular, the first pilot's
+no-installation boundary is not a current rejection of shadcn as the foundation.
+Recorded pilot/style acceptance is not blanket acceptance of extracted APIs,
+marketing exceptions, every shared consumer or portable skill rules.
+
 ## Accepted for this fork — 2026-11-14
 
 1. editaurus is the target visual language across the application, introduced in small, reviewed stages. Poster People remains the visible implementation where migration has not happened and its immutable kit stays in the repository as historical reference.
@@ -41,7 +66,7 @@
 
 - Exact scope, copy, and destination of the landing's employer plans and guarantee; the current app has no payment or purchased publication flow.
 - Whether the landing's local `.txt` offer-draft download should remain a separate marketing tool or connect to the existing employer editor.
-- Packaging of Fraunces with a redistributable font file and accompanying license for a later affected scope. DM Sans is bundled for the pilot; see [asset review](assets.md).
+- Historical packaging question: Fraunces files and accompanying OFL text are now bundled, as recorded in [asset review](assets.md). The original pilot used DM Sans. Check exact asset/use/provenance before any broader transfer; presence does not grant publication rights for unrelated landing material.
 - Publication terms for the adapted 21st.dev footer; see [asset review](assets.md).
 - The public showcase URL and hosting. No deployment is authorized by this decision.
 
@@ -83,3 +108,86 @@
 ## Form feedback accepted
 
 - The candidate application now uses scoped editaurus help, error and saved-draft status styles. Validation text, alert/status semantics, counts, focus, draft persistence and submit behavior remain owned by the real form. The partial preview shows static visual examples only.
+
+## Candidate submitted record — pending visual acceptance
+
+- Candidate-only ApplicationRecord uses DM Sans and the established paper canvas /
+  light-paper 1 px, 4 px reading sheet. Materials sit left of actual history and
+  summary on desktop; below 950 px, materials precede the history.
+- Reuse Base UI tabs with a quiet paper hover, ink selected underline and explicit
+  keyboard outline. Reuse existing CV actions and secondary withdrawal/cancel
+  buttons. Confirmation uses the existing rose error palette to distinguish the
+  destructive action, preserving the diagonal partial press.
+- Snapshot fields, role-filtered history, MatchScore, PDF matching, withdrawal and
+  focus restoration remain owned by the existing controllers. Employer styling
+  and workspace chrome are not migrated by this decision. This composition awaits
+  human review on the actual candidate screen before expansion into the showcase.
+
+## Workspace chrome — follow-up review
+
+The user accepted the candidate record body and requested matching navigation.
+The shared workspace header/sidebar now uses the existing centaur wordmark, DM Sans,
+light paper, thin ink dividers, 4 px controls and dark-green active navigation.
+Inactive hover uses base paper; selected hover lightens the green to `#1b5148`.
+All role menus keep their existing destinations and persona data. Scope styles to
+chrome elements, without inheriting the new typography into unmigrated route bodies.
+Mobile Escape restores the menu-trigger focus. Human visual review is pending.
+
+## Workspace paper surfaces — accepted correction
+
+The user selected base paper `#f4f0e5` for the workspace sidebar, topbar and mobile
+header. Framed content panels keep light paper `#fdf9ef`. This supersedes the
+earlier light-paper chrome decision. Control states are unchanged.
+
+## Workspace gutters
+
+Base paper #f4f0e5 covers the full workspace frame and column, including margins
+outside centered route content. A max-width main is not the canvas owner. Light
+paper #fdf9ef remains reserved for content panels and existing control states.
+
+## Candidate profile — pending review
+
+The profile editor and preview reuse light-paper panels, shared secondary/hero
+actions and the CV row. Single-line inputs extend the existing textarea state
+family, using 44 px minimum height and the same inner bottom focus line. Native
+required validation retains browser messages/focus; `:user-invalid` uses the
+accepted rose border and paper error colors. Save and snapshot behavior is unchanged.
+
+## Scenario settings — pending review
+
+Shared data settings reuse paper panels and secondary actions. ConfirmDialog adds
+an explicit editaurus appearance for this route only, including its portal.
+The existing withdrawal rose action treatment is shared as `editaurus-danger-button`
+with reset/import confirmation. Preserve all data operations and Base UI focus.
+
+## Publication disabled state
+
+Job-editor publication uses the same inactive palette as the AI proposal action:
+fill #eae8de, text/contour #50605b. This conveys the shared unavailable state;
+normal action hierarchy returns when enabled. The application submitted-success
+button retains its separate green state. Approval still enables publication and
+editing approved content revokes approval.
+
+## Searchable editor taxonomy menus
+
+Editor category/function/work mode/seniority/contract fields reuse the listing
+paper popup treatment with a below-trigger position. A search field at the top
+filters the closed option collection. Selection remains a stable domain value;
+typing a query does not create an option. Empty search has an explicit message,
+Escape restores trigger focus and the selected label remains visible in the field.
+Free-text job location remains available without imposing a closed city list.
+
+## Inline taxonomy search — user correction
+
+This supersedes the separate popup-search composition. The main field displays a
+selected label, with X to clear it. An empty/unselected field is editable and
+filters the closed collection; the popup contains only options or no-results text.
+Retain stable option serialization and below-field positioning.
+
+## Replace a selected value by typing
+
+This supersedes the selected-input read-only rule. Taxonomy inputs select their
+current text on entry; typing searches without first using X, and confirming an
+option replaces the selected enum. Backspace/Delete clears an unchanged selected
+label using the existing Clear operation. Listing workplace uses the same text
+selection and clearing, preserving other URL filters and search confirmation.

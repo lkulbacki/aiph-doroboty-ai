@@ -1,8 +1,8 @@
 # Design-system integration status
 
-> **Migration notice (2026-11-14):** The status below describes the existing Poster People implementation and its open defects. [editaurus](editaurus/README.md) is now the target for new and migrated screens; no application screen has been migrated by this documentation decision.
+> **Current scope (2026-11-21):** [Editaurus coverage and acceptance](editaurus/coverage.md) is the current route/component ledger. The implementation evidence below retains the earlier Poster People snapshot and stable finding IDs; it is not a claim that current screens are all legacy. The [editaurus guide](editaurus/README.md) records shadcn/Base UI architecture and visual authority.
 
-This is a receiving-application snapshot as of November 2, 2026. The immutable reference remains Poster People v1.0.0 (67 files). User-requested host implementation/documentation does not imply a new source-kit release, publishing or approval of every application screen.
+The historical receiving-application snapshot below dates from November 2, 2026; current finding dispositions were reconciled on November 21. The immutable reference remains Poster People v1.0.0 (67 files). User-requested host implementation/documentation does not imply a new source-kit release, publishing or approval of every application screen.
 
 Engineering task paths below refer to the full development repository and are deliberately not distributed in participant packages. All current component contracts and open findings are self-contained in this directory; task history and ignored screenshots are optional supporting evidence.
 
@@ -25,20 +25,52 @@ Candidate submitted detail now also uses the shared ApplicationRecord compositio
 
 ## Open company-page findings
 
-The Northstar Health audit (`docs/tasks/northstar-company-design-audit.md`) was read-only. The following findings are **open**, not fixed by the later confetti work or this documentation update:
+The Northstar Health audit (`docs/tasks/northstar-company-design-audit.md`) was read-only. Its original findings are retained below. Current code has changed since that audit, but **none is closed by this documentation reconciliation**. Assess migrated visual criteria against editaurus rather than restoring legacy white surfaces merely to match an old finding.
 
-| ID    | Remaining issue                                                                                                 |
-| ----- | --------------------------------------------------------------------------------------------------------------- |
-| NH-01 | Invalid definition-list structure; targeted Axe scan reports serious `definition-list` and `dlitem` violations. |
-| NH-02 | Company information surface lacks the expected white fill and visible ink contour.                              |
-| NH-03 | Header identity fallback lacks a visible contour and uses the older large treatment.                            |
-| NH-04 | Company cards omit save toggles even for an active candidate because the saved state is not supplied.           |
-| NH-05 | Company/profile footer lacks the demonstrative-data context present in C08/C12.                                 |
+| ID    | Original finding                                                                                                                | Current disposition / closure evidence still needed                                                                                                                                                             |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| NH-01 | Invalid definition-list structure; the historical targeted Axe scan reported serious `definition-list` and `dlitem` violations. | Structural finding verified on 2026-11-21: targeted CompanyPage main-content Axe regression reports no serious/critical findings. This closes NH-01 for the tested current route, not whole-site accessibility. |
+| NH-02 | Company information surface lacked expected white fill and visible ink contour.                                                 | Runtime reviewed at 320/850/851/1280px: current paper/ink/4px panel retains contour and fits. Human visual acceptance remains separate; see company-boundaries task.                                            |
+| NH-03 | Header identity fallback lacked a visible contour and used the older large treatment.                                           | Missing/failed local logo and 200-character unbroken identity exercised at 320/850/851/1280px; visible contour, wrapping and keyboard navigation verified. Human acceptance remains separate.                   |
+| NH-04 | Company cards omitted candidate save toggles because saved state was not supplied.                                              | Functionally closed in 2F: CompanyPage supplies candidate-specific saved state. Targeted toggle/focus/reload/removal and employer-exclusion regression passed. Visual/API acceptance remains separate.          |
+| NH-05 | Company/profile footer lacked the demonstrative-data context present in C08/C12.                                                | Missing prototype context corrected on the company route with explicit demonstrative-data wording. Runtime content check passed; wording/human visual acceptance remains separate.                              |
 
 The full company-page layout is not a canonical v1 screen. Container alignment, contextual BackLink and richer empty-state recovery are documented host recommendations; do not convert them into invented source requirements. The audit does not require the compact source profile's H2 size or illustration on every full company page.
 
 ## Evidence boundaries
 
-The latest completed implementation gate, including the shared candidate record, ran 27 unit tests and 34 Chromium journeys, plus formatting, source-kit integrity/six kit tests, lint, types, packet and static build. Those counts are dated execution evidence, not a permanent acceptance guarantee or a claim about future changes. The current task records its own execution separately.
+The historical implementation snapshot, including the shared candidate record, recorded 27 unit tests and 34 Chromium journeys, plus formatting, source-kit integrity/six kit tests, lint, types, packet and static build. Those counts are dated evidence, not the current test inventory. Later execution is recorded in the [stage 1 report](../tasks/editaurus-stage-1-inventory.md) and [stage 2A task](../tasks/editaurus-stage-2a.md); those runs do not imply visual acceptance or close unasserted findings.
 
-A green gate does not close NH-01: the existing general accessibility journeys do not scan that company-page structure. Add targeted company accessibility/save regressions when fixing it. The older audit (`docs/tasks/poster-people-design-system-audit.md`), re-audit (`docs/tasks/poster-people-design-system-reaudit.md`) and subsequent task evidence remain historical records; do not erase them or infer a new closure from a documentation edit. Ignored artifacts support local review but are not the sole portable specification.
+The 2F gate includes targeted company accessibility/save regressions; the individual dispositions above apply only to their verified scope. General accessibility journeys alone would not close NH-01. The older audit (`docs/tasks/poster-people-design-system-audit.md`), re-audit (`docs/tasks/poster-people-design-system-reaudit.md`) and subsequent task evidence remain historical records; do not erase them or infer a new closure from a documentation edit. Ignored artifacts support local review but are not the sole portable specification.
+
+## Real-journey audit — 2026-11-21
+
+The [completed journey audit](../tasks/editaurus-real-journey-audit.md) adds terminal
+hire/rejection, organization save, actual export-file recovery and route samples
+to the existing regressions. Its functional scope is complete; visual/API and
+company decisions above are not accepted automatically.
+
+| ID     | Confirmed open finding                                                                                                                                                         | Next bounded action                                                                                                          |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| JRA-01 | After a successful same-person import, a subsequent invalid import preserves data and alerts failure but leaves the old success status visible. Confirmed at 1280px and 390px. | Supersede prior operation feedback when starting another import/reset; preserve original data and failure/recovery behavior. |
+| JRA-02 | A successful import that changes the active persona restores data but loses its success announcement when the keyed settings view remounts. Confirmed at both widths.          | Retain completion feedback across the persona remount without removing per-person form isolation.                            |
+
+These are feedback defects, not failed data restoration. The audit's 12 targeted
+main-content Axe samples reported zero WCAG A/AA violations; that is not whole-site
+accessibility certification. The audit observation JSON records actual results.
+
+## Sequential boundary reviews
+
+See [company boundaries](../tasks/editaurus-company-boundaries.md) for executed
+company evidence and the subsequent media-mode control review. Earlier open
+required-choice/checkbox findings have focused follow-up tasks; do not treat their
+historical audit observations as a statement that the fixes are still missing.
+Import feedback findings remain deferred at the user’s explicit request.
+
+## Import feedback follow-up
+
+The user reopened JRA-01/JRA-02 after the earlier deferral. The
+[import feedback fix](../tasks/editaurus-import-feedback.md) moves transient
+completion above the persona-keyed outlet and clears old feedback on the next
+recovery attempt or navigation. Historical audit JSON remains original evidence,
+not a post-fix observation. See the task for actual regression results.

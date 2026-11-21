@@ -4,6 +4,16 @@
 
 Read with the [project guide](README.md), [host catalog](HOST-COMPONENTS.md), [current status](STATUS.md), immutable [component API](agent-kit/components/API.md) and [human reference](agent-kit/reference/components.md). These are project integration rules, not a replacement v1 kit or a new reference release. Use the [acceptance checklist](VERIFICATION.md) before claiming completion.
 
+## Current migration scope
+
+Consult [current editaurus coverage and acceptance](editaurus/coverage.md) and the
+[architecture](editaurus/README.md) before applying the historical visual rules
+below. Existing shadcn-compatible wrappers over Base UI remain the single
+foundation; code presence and base-nova configuration are not per-file upstream
+conformance. Legacy offset-shadow/radius/salary prescriptions do not override
+accepted editaurus action lifts, panel geometry or salary typography. Behavioral
+contracts below, including routes, focus and snapshots, remain in force.
+
 ## Start from anatomy, then adapt
 
 For each affected route, list the source families, required parts, host data and state, shared consumers and any missing design decision in the task record. Compare the complete source page before editing. Matching colors, fonts and radii alone does not constitute adoption.
@@ -79,7 +89,7 @@ The selected process-view concept adds two reusable host components, documented 
 
 ## Candidate application composition
 
-The application page (`/#/aplikuj/:slug`) reuses the outlined `record-sheet` recipe for an offer-context column and one form sheet. [ApplicationOfferPreview](../../src/features/jobs/application-offer-preview.tsx) composes CompanyLogo, SalaryFact and JobDescription using actual published job data; it is not a second JobCard or control library. Its native named disclosure expands the complete description in place, preserving form state. [application.css](../../src/app/application.css) owns page geometry and scoped reading/form spacing. At <=850px context precedes the form; both surfaces retain r24, one ink contour, source typography and complete wrapping. The preview is sticky only while collapsed on wide screens, so expanded long descriptions remain naturally scrollable. The CV section is integrated into the form with CvAttachment's row/context label and full custom-text fallback; do not nest a generic panel inside the form. Preserve existing answer/draft/consent/role/snapshot flows and H2/H3 hierarchy.
+The application page (`/#/aplikuj/:slug`) places an editaurus offer-context panel beside one outlined form sheet. [ApplicationOfferPreview](../../src/features/jobs/application-offer-preview.tsx) composes CompanyLogo, SalaryFact and JobDescription using actual published job data; it is not a second JobCard or control library. Its native named disclosure expands the complete description in place, preserving form state. [application.css](../../src/app/application.css) owns page geometry and scoped reading/form spacing. At <=850px context precedes the form; both surfaces use the editaurus 4 px corners, ink contours, paper colors and DM Sans with complete wrapping. The preview is sticky only while collapsed on wide screens, so expanded long descriptions remain naturally scrollable. The CV section is integrated into the form with CvAttachment's row/context label and full custom-text fallback; do not nest a generic panel inside the form. Preserve existing answer/draft/consent/role/snapshot flows and H2/H3 hierarchy.
 
 Offer action spacing belongs to the host marketplace adaptation: React links/buttons need the same 10px sibling separation as the source `.button` actions. Do not rely on reference class names absent from the receiving markup.
 

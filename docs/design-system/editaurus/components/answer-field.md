@@ -23,7 +23,7 @@ Status: implemented on `/#/aplikuj/:slug` and in the component preview at `/#/de
 | Forced colors              | Full 2 px `Highlight` focus outline with 2 px offset.                                                                                                                                                                    |
 | Long content/mobile        | Text wraps within the field, with no horizontal page overflow at 390 px.                                                                                                                                                 |
 
-The source prototype's optional 2,000-character demo answer and PDF upload do not replace the fork's current validation or CV flow. Other text-field and select variants remain future work; verify them on real screens before extending this family.
+The source prototype's optional 2,000-character demo answer and PDF upload do not replace the fork's current validation or CV flow. Single-line profile/editor fields are now demonstrated through the existing Input owner; see [stage 2D contracts](fields-and-feedback.md). Select variants remain a separate review slice.
 
 The preview shows only the accepted `#fdf9ef` treatment: paper at rest, lighter paper from hover through focus. The invalid background is `#f9e9d9` at rest and `#faf1dd` on hover/focus; disabled keeps its neutral background.
 
