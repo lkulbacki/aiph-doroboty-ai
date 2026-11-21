@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { EditaurusTextarea } from "@/components/editaurus/textarea";
+import { HeroButton, HeroLink } from "@/components/editaurus/hero-button";
+import { SecondaryButton } from "@/components/editaurus/secondary-button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
+import { EditaurusCheckbox } from "@/components/editaurus/checkbox";
 import { FormSelect } from "@/components/ui/form-select";
 import {
   categoryLabels,
@@ -15,54 +16,54 @@ import {
 import { currentPerson, jobSchema } from "./model";
 import { usePrototype } from "./store";
 import { Field } from "./workspace";
-import { Empty, NotFound, PageTitle } from "./shell";
+import { NotFound, PageTitle } from "./shell";
 
 export function EmployerJobs() {
   const { state } = usePrototype();
   const person = currentPerson(state)!;
   const jobs = state.jobs.filter((x) => x.companyId === person.companyId);
   return (
-    <>
-      <PageTitle
-        action={
-          <Link to="/app/oferty/nowa" className={buttonVariants()}>
-            Dodaj ofertę
-          </Link>
-        }
-      >
+    <section className="editaurus-applications editaurus-employer-jobs">
+      <PageTitle action={<HeroLink to="/app/oferty/nowa">Dodaj ofertę</HeroLink>}>
         Moje oferty
       </PageTitle>
-      <div className="space-y-4">
+      <div className="editaurus-employer-job-list">
         {jobs.length ? (
           jobs.map((job) => (
-            <article key={job.id} className="prototype-panel">
-              <div className="flex flex-wrap justify-between gap-4">
+            <article key={job.id} className="editaurus-employer-job">
+              <div className="editaurus-employer-job-inner">
                 <div>
-                  <Link
-                    className="text-xl font-semibold text-[var(--gui-link)]"
-                    to={`/app/oferty/${job.id}`}
-                  >
-                    {job.title}
-                  </Link>
-                  <p className="mt-3 text-muted-foreground">
+                  <h2>
+                    <Link to={`/app/oferty/${job.id}`}>{job.title}</Link>
+                  </h2>
+                  <p className="editaurus-employer-job-meta">
                     {state.applications.filter((x) => x.jobId === job.id).length} aplikacji ·{" "}
                     {job.publicationStatus === "published" ? "Opublikowana" : "Szkic"}
                   </p>
                 </div>
-                <Link
-                  to={`/oferty/${job.slug}`}
-                  className={buttonVariants({ variant: "outline", size: "sm" })}
+                <SecondaryButton
+                  render={
+                    <Link
+                      to={
+                        job.publicationStatus === "published"
+                          ? `/oferty/${job.slug}`
+                          : `/app/oferty/${job.id}`
+                      }
+                    />
+                  }
                 >
-                  Zobacz ofertę
-                </Link>
+                  {job.publicationStatus === "published" ? "Zobacz ofertę" : "Edytuj szkic"}
+                </SecondaryButton>
               </div>
             </article>
           ))
         ) : (
-          <Empty>Nie masz jeszcze ofert. Dodaj pierwszą ofertę.</Empty>
+          <p className="editaurus-applications-empty">
+            Nie masz jeszcze ofert. Dodaj pierwszą ofertę.
+          </p>
         )}
       </div>
-    </>
+    </section>
   );
 }
 export function EmployerJobEditor() {
@@ -76,6 +77,10 @@ export function EmployerJobEditor() {
   const [description, setDescription] = useState(existing?.description ?? "");
   const [source, setSource] = useState(existing?.sourceBrief ?? "");
   const [generated, setGenerated] = useState(existing?.generatedDescription ?? "");
+  const salaryCurrency = existing?.salaryCurrency ?? "PLN";
+  const salaryPeriod = existing?.salaryPeriod ?? "month";
+  const salaryKind = existing?.salaryKind ?? "gross";
+  const salaryBasis = `${salaryCurrency} ${salaryKind === "net" ? "netto" : "brutto"} / ${salaryPeriod === "year" ? "rok" : "mies."}`;
   const [approved, setApproved] = useState(false);
   const [error, setError] = useState("");
   if (id !== "nowa" && !existing) return <NotFound />;
@@ -88,6 +93,8 @@ export function EmployerJobEditor() {
     }
     const data = new FormData(e.currentTarget);
     const newId = existing?.id ?? crypto.randomUUID();
+    const location = String(data.get("location")).trim();
+    const locationUnchanged = existing && location === existing.locations.join(" / ").trim();
     const parsed = jobSchema.safeParse({
       id: newId,
       slug: existing?.slug ?? `oferta-${newId}`,
@@ -100,23 +107,25 @@ export function EmployerJobEditor() {
       category: data.get("category"),
       function: data.get("function"),
       remoteStatus: data.get("remoteStatus"),
-      locations: [String(data.get("location")).trim()],
+      locations: locationUnchanged ? existing.locations : [location],
       seniority: data.get("seniority"),
       contract: data.get("contract"),
       salaryMin: data.get("salaryMin") ? Number(data.get("salaryMin")) : undefined,
       salaryMax: data.get("salaryMax") ? Number(data.get("salaryMax")) : undefined,
-      salaryCurrency: existing?.salaryCurrency ?? "PLN",
-      salaryPeriod: existing?.salaryPeriod ?? "month",
-      salaryKind: existing?.salaryKind ?? "gross",
-      coordinates: (
-        {
-          warszawa: { latitude: 52.2297, longitude: 21.0122 },
-          kraków: { latitude: 50.0647, longitude: 19.945 },
-          wrocław: { latitude: 51.1079, longitude: 17.0385 },
-          gdańsk: { latitude: 54.352, longitude: 18.6466 },
-          poznań: { latitude: 52.4064, longitude: 16.9252 },
-        } as Record<string, { latitude: number; longitude: number }>
-      )[String(data.get("location")).trim().toLocaleLowerCase("pl")],
+      salaryCurrency,
+      salaryPeriod,
+      salaryKind,
+      coordinates: locationUnchanged
+        ? existing.coordinates
+        : (
+            {
+              warszawa: { latitude: 52.2297, longitude: 21.0122 },
+              kraków: { latitude: 50.0647, longitude: 19.945 },
+              wrocław: { latitude: 51.1079, longitude: 17.0385 },
+              gdańsk: { latitude: 54.352, longitude: 18.6466 },
+              poznań: { latitude: 52.4064, longitude: 16.9252 },
+            } as Record<string, { latitude: number; longitude: number }>
+          )[location.toLocaleLowerCase("pl")],
       publicationStatus: "published",
       publishedAt: existing?.publishedAt ?? new Date().toISOString(),
       expiryAt: existing?.expiryAt ?? "2099-12-31T23:59:59.000Z",
@@ -136,11 +145,15 @@ export function EmployerJobEditor() {
     if (run({ type: "publish", job: parsed.data })) navigate("/app/oferty");
   }
   return (
-    <>
+    <section className="editaurus-applications editaurus-profile editaurus-job-editor">
       <PageTitle>{existing ? "Edytuj ofertę" : "Nowa oferta"}</PageTitle>
-      <form className="prototype-form" onSubmit={publish}>
+      <form
+        className="editaurus-panel editaurus-profile-panel editaurus-profile-form"
+        onSubmit={publish}
+      >
         <Field label="Nazwa stanowiska">
           <Input
+            className="editaurus-input"
             required
             maxLength={200}
             value={title}
@@ -151,7 +164,7 @@ export function EmployerJobEditor() {
           />
         </Field>
         <Field label="Brief — kogo szukasz i do jakiego zadania?">
-          <Textarea
+          <EditaurusTextarea
             maxLength={12000}
             value={source}
             onChange={(e) => {
@@ -162,9 +175,8 @@ export function EmployerJobEditor() {
           />
         </Field>
         <div>
-          <Button
+          <SecondaryButton
             type="button"
-            variant="outline"
             disabled={source.trim().length < 20 || title.trim().length < 3}
             onClick={() => {
               setGenerated(
@@ -174,15 +186,14 @@ export function EmployerJobEditor() {
             }}
           >
             Przygotuj opis z AI
-          </Button>
+          </SecondaryButton>
         </div>
         {generated && (
-          <section className="prototype-panel">
+          <section className="editaurus-job-proposal">
             <h2 className="mb-4">Propozycja opisu</h2>
             <p className="whitespace-pre-wrap">{generated}</p>
-            <Button
+            <SecondaryButton
               type="button"
-              variant="outline"
               className="mt-5"
               onClick={() => {
                 setDescription(generated);
@@ -191,11 +202,11 @@ export function EmployerJobEditor() {
               }}
             >
               Użyj propozycji
-            </Button>
+            </SecondaryButton>
           </section>
         )}
         <Field label="Krótkie podsumowanie">
-          <Textarea
+          <EditaurusTextarea
             required
             minLength={10}
             maxLength={12000}
@@ -207,7 +218,7 @@ export function EmployerJobEditor() {
           />
         </Field>
         <Field label="Opis oferty">
-          <Textarea
+          <EditaurusTextarea
             required
             minLength={30}
             maxLength={12000}
@@ -230,46 +241,67 @@ export function EmployerJobEditor() {
           ).map(([name, label, values, value]) => (
             <Field key={name} label={label}>
               <FormSelect
+                required
+                searchable
+                triggerClassName="editaurus-select-trigger"
+                contentClassName="editaurus-surface editaurus-select-menu"
                 name={name}
                 ariaLabel={label}
                 defaultValue={value}
+                onValueChange={() => setApproved(false)}
                 options={Object.entries(values).map(([value, label]) => ({ value, label }))}
               />
             </Field>
           ))}
           <Field label="Lokalizacja">
             <Input
+              className="editaurus-input"
               name="location"
+              onChange={() => setApproved(false)}
               required
               maxLength={200}
               defaultValue={existing?.locations.join(" / ") ?? "Warszawa"}
             />
           </Field>
-          <Field label="Wynagrodzenie od (PLN brutto / mies.)">
-            <Input name="salaryMin" type="number" min="0" defaultValue={existing?.salaryMin} />
+          <Field label={`Wynagrodzenie od (${salaryBasis})`}>
+            <Input
+              className="editaurus-input"
+              name="salaryMin"
+              onChange={() => setApproved(false)}
+              type="number"
+              min="0"
+              defaultValue={existing?.salaryMin}
+            />
           </Field>
-          <Field label="Wynagrodzenie do (PLN brutto / mies.)">
-            <Input name="salaryMax" type="number" min="0" defaultValue={existing?.salaryMax} />
+          <Field label={`Wynagrodzenie do (${salaryBasis})`}>
+            <Input
+              className="editaurus-input"
+              name="salaryMax"
+              onChange={() => setApproved(false)}
+              type="number"
+              min="0"
+              defaultValue={existing?.salaryMax}
+            />
           </Field>
         </div>
-        <label className="flex items-start gap-3">
-          <Checkbox
+        <label className="application-consent flex items-start gap-3">
+          <EditaurusCheckbox
             checked={approved}
             onCheckedChange={setApproved}
-            aria-label="Zatwierdzam treść oferty"
+            aria-labelledby="job-approval-label"
           />
-          <span>Zatwierdzam treść oferty do publikacji.</span>
+          <span id="job-approval-label">Zatwierdzam treść oferty do publikacji.</span>
         </label>
         {error && (
-          <p role="alert" className="error-message">
+          <p role="alert" className="editaurus-form-error">
             {error}
           </p>
         )}
-        <Button type="submit" disabled={!approved}>
+        <HeroButton type="submit" disabled={!approved}>
           Opublikuj ofertę
-        </Button>
+        </HeroButton>
       </form>
-    </>
+    </section>
   );
 }
 export function CompanyEditor() {
@@ -290,21 +322,38 @@ export function CompanyEditor() {
       setMessage("Dane firmy zostały zapisane.");
   }
   return (
-    <>
+    <section className="editaurus-applications editaurus-profile">
       <PageTitle>Twoja organizacja</PageTitle>
-      <form className="prototype-panel prototype-form" onSubmit={save}>
+      <form
+        className="editaurus-panel editaurus-profile-panel editaurus-profile-form"
+        onSubmit={save}
+      >
         <Field label="Nazwa firmy">
-          <Input name="name" required maxLength={200} defaultValue={company.name} />
+          <Input
+            className="editaurus-input"
+            name="name"
+            required
+            maxLength={200}
+            defaultValue={company.name}
+          />
         </Field>
         <Field label="Opis firmy">
-          <Textarea name="description" maxLength={12000} defaultValue={company.description} />
+          <EditaurusTextarea
+            name="description"
+            maxLength={12000}
+            defaultValue={company.description}
+          />
         </Field>
-        <Button type="submit">Zapisz dane firmy</Button>
-        {message && <p role="status">{message}</p>}
-        <Link className="text-[var(--gui-link)]" to={`/firmy/${company.slug}`}>
+        <HeroButton type="submit">Zapisz dane firmy</HeroButton>
+        {message && (
+          <p role="status" className="editaurus-form-status">
+            {message}
+          </p>
+        )}
+        <SecondaryButton render={<Link to={`/firmy/${company.slug}`} />}>
           Zobacz profil firmy
-        </Link>
+        </SecondaryButton>
       </form>
-    </>
+    </section>
   );
 }
