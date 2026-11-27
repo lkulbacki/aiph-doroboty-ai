@@ -19,6 +19,9 @@ import { CvAttachment } from "./cv-attachment";
 import { MatchScore } from "./match-score";
 import { RecruitingApplication } from "./recruiting-application";
 import { CandidateApplication } from "./candidate-application";
+import { analyzeRecording } from "./project-ai-client";
+import { MAX_RECORDING_SECONDS, type Recording, type ProjectVoice } from "./project-ai";
+import { ProjectVoiceRecorder } from "./project-voice-recorder";
 
 export function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -267,6 +270,15 @@ export function ApplyPage() {
   const notes = draft?.notes ?? "";
   const generated = draft?.generated ?? "";
   const [answer, setAnswer] = useState(draft?.answer ?? "");
+  const draftProjectResponse =
+    draft?.projectResponse?.question === job?.projectQuestion ? draft?.projectResponse : undefined;
+  const [projectAnswer, setProjectAnswer] = useState(draftProjectResponse?.answer ?? "");
+  const [recording, setRecording] = useState(draftProjectResponse?.recording);
+  const [recordingBusy, setRecordingBusy] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [voiceError, setVoiceError] = useState("");
+  const analysisRequest = useRef<AbortController | null>(null);
+  const voiceResult = useRef<{ recording: Recording; voice: ProjectVoice } | null>(null);
   const [consent, setConsent] = useState(false);
   const [message, setMessage] = useState("");
   const [attempted, setAttempted] = useState(false);
@@ -275,6 +287,7 @@ export function ApplyPage() {
   const submittedOnce = useRef(false);
   const [submitted, setSubmitted] = useState(false);
   const [confettiOrigin, setConfettiOrigin] = useState<ConfettiOrigin | null>(null);
+  useEffect(() => () => analysisRequest.current?.abort(), []);
   useEffect(() => {
     if (!submitted) return;
     const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 900;
@@ -297,9 +310,9 @@ export function ApplyPage() {
         </Link>
       </section>
     );
-  function submit(e: FormEvent) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
-    if (submittedOnce.current) return;
+    if (submittedOnce.current || analysisRequest.current || recordingBusy || !job) return;
     setAttempted(true);
     if (answerLength < MIN_APPLICATION_ANSWER_LENGTH) {
       answerInput.current?.focus();
@@ -309,7 +322,41 @@ export function ApplyPage() {
       document.getElementById("application-consent")?.focus();
       return;
     }
-    if (run({ type: "submit", jobId: job!.id, notes, generated, answer, consent })) {
+    let voice: ProjectVoice | undefined;
+    if (recording) {
+      setVoiceError("");
+      if (voiceResult.current?.recording === recording) {
+        voice = voiceResult.current.voice;
+      } else {
+        const controller = new AbortController();
+        analysisRequest.current = controller;
+        setAnalyzing(true);
+        try {
+          voice = { ...recording, ...(await analyzeRecording(recording, controller.signal)) };
+          if (controller.signal.aborted) return;
+          voiceResult.current = { recording, voice };
+        } catch (error) {
+          if (!controller.signal.aborted)
+            setVoiceError(error instanceof Error ? error.message : "Spróbuj wysłać ponownie.");
+          return;
+        } finally {
+          analysisRequest.current = null;
+          if (!controller.signal.aborted) setAnalyzing(false);
+        }
+      }
+    }
+    if (
+      run({
+        type: "submit",
+        jobId: job.id,
+        notes,
+        generated,
+        answer,
+        projectAnswer,
+        consent,
+        voice,
+      })
+    ) {
       submittedOnce.current = true;
       setSubmitted(true);
       if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -356,7 +403,7 @@ export function ApplyPage() {
           >
             <Field label="Dlaczego pasujesz do tej roli?">
               <EditaurusTextarea
-                disabled={submitted}
+                disabled={submitted || analyzing}
                 ref={answerInput}
                 required
                 minLength={MIN_APPLICATION_ANSWER_LENGTH}
@@ -382,21 +429,81 @@ export function ApplyPage() {
                 : `Minimum ${MIN_APPLICATION_ANSWER_LENGTH} znaków. Obecnie: ${answerLength}.`}
             </p>
           </section>
+          {job.projectQuestion && (
+            <section
+              className="project-response-card application-answer"
+              aria-labelledby="application-project-title"
+            >
+              <h3 id="application-project-title">Odpowiedź projektowa</h3>
+              <p className="project-response-prompt">{job.projectQuestion}</p>
+              <p id="application-project-help" className="application-help">
+                Możesz opisać projekt bez ujawniania poufnych informacji. Odpowiedź jest opcjonalna.
+                Nagranie trwa do {MAX_RECORDING_SECONDS} sekund.
+              </p>
+              <ProjectVoiceRecorder
+                recording={recording}
+                disabled={submitted || analyzing}
+                onBusyChange={setRecordingBusy}
+                onChange={(next) => {
+                  setRecording(next);
+                  setConsent(false);
+                  setVoiceError("");
+                  voiceResult.current = null;
+                }}
+              />
+              {!recording && (
+                <details open={Boolean(draftProjectResponse?.answer)}>
+                  <summary className="project-response-disclosure">Wpisz odpowiedź</summary>
+                  <Field label="Odpowiedź pisemna (opcjonalnie)">
+                    <EditaurusTextarea
+                      disabled={submitted || recordingBusy}
+                      maxLength={12000}
+                      aria-describedby="application-project-help"
+                      value={projectAnswer}
+                      onChange={(e) => {
+                        setProjectAnswer(e.target.value);
+                        setConsent(false);
+                      }}
+                    />
+                  </Field>
+                </details>
+              )}
+            </section>
+          )}
           <div className="application-form-section application-submit">
             <label className="application-consent">
               <EditaurusCheckbox
                 id="application-consent"
-                disabled={submitted}
+                disabled={submitted || analyzing}
                 checked={consent}
                 onCheckedChange={(v) => setConsent(v)}
                 aria-invalid={consentInvalid || undefined}
-                aria-describedby={consentInvalid ? "application-consent-error" : undefined}
+                aria-describedby={
+                  [
+                    consentInvalid && "application-consent-error",
+                    recording && "application-voice-disclosure",
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || undefined
+                }
                 aria-labelledby="application-consent-label"
               />
               <span id="application-consent-label">
                 Zatwierdzam treść aplikacji i przesłanie profilu oraz przykładowego CV pracodawcy.
               </span>
             </label>
+            {recording && (
+              <p id="application-voice-disclosure" className="application-help">
+                Po wybraniu „Wyślij aplikację” nagranie trafi do OpenRouter w celu transkrypcji i
+                przygotowania podsumowania. Pracodawca zobaczy nagranie, transkrypcję i
+                podsumowanie.
+              </p>
+            )}
+            {voiceError && (
+              <p className="editaurus-form-error" role="alert">
+                {voiceError}
+              </p>
+            )}
             {consentInvalid && (
               <p
                 id="application-consent-error"
@@ -410,18 +517,28 @@ export function ApplyPage() {
               <HeroButton
                 ref={sendButton}
                 type="submit"
-                disabled={submitted}
+                disabled={submitted || analyzing || recordingBusy}
                 className="application-send"
               >
                 {submitted && <CheckCircle2 aria-hidden="true" />}
-                {submitted ? "Wysłano!" : "Wyślij aplikację"}
+                {submitted ? "Wysłano!" : analyzing ? "Przetwarzamy nagranie…" : "Wyślij aplikację"}
               </HeroButton>
               <SecondaryButton
                 type="button"
-                disabled={submitted}
+                disabled={submitted || analyzing || recordingBusy}
                 className="application-draft"
                 onClick={() => {
-                  if (run({ type: "draft", jobId: job.id, notes, generated, answer }))
+                  if (
+                    run({
+                      type: "draft",
+                      jobId: job.id,
+                      notes,
+                      generated,
+                      answer,
+                      projectAnswer,
+                      recording,
+                    })
+                  )
                     setMessage("Szkic został zapisany.");
                 }}
               >
@@ -431,13 +548,19 @@ export function ApplyPage() {
             <p
               role="status"
               className={
-                submitted || !message ? "sr-only" : "application-save-status editaurus-form-status"
+                submitted || (!message && !analyzing)
+                  ? "sr-only"
+                  : "application-save-status editaurus-form-status"
               }
             >
-              {submitted ? "Wysłano aplikację. Otwieramy listę Twoich aplikacji." : message}
+              {submitted
+                ? "Wysłano aplikację. Otwieramy listę Twoich aplikacji."
+                : analyzing
+                  ? "Trwa transkrypcja i przygotowanie podsumowania."
+                  : message}
             </p>
             <p className="application-help">
-              Prototyp: aplikacja zostaje w tym przeglądarkowym scenariuszu.
+              Zgłoszenie zapisze się w tym przeglądarkowym scenariuszu.
             </p>
           </div>
         </form>

@@ -1,6 +1,13 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { initialState, transition, type Action, type State } from "./model";
-import { parseState, readState, saveState, type StoragePort } from "./storage";
+import {
+  MAX_IMPORT_BYTES,
+  serializeState,
+  parseState,
+  readState,
+  saveState,
+  type StoragePort,
+} from "./storage";
 function browserStorage(): StoragePort | null {
   try {
     return window.localStorage;
@@ -32,7 +39,16 @@ function useStore() {
   }
   function run(action: Action) {
     try {
-      commit(transition(latest.current, action));
+      const next = transition(latest.current, action);
+      if (
+        ((action.type === "draft" && action.recording) ||
+          (action.type === "submit" && action.voice)) &&
+        new TextEncoder().encode(serializeState(next)).length > MAX_IMPORT_BYTES
+      )
+        throw new Error(
+          "Zapis scenariusza przekroczyłby 2 MB. Skróć nagranie lub wpisz odpowiedź.",
+        );
+      commit(next);
       return true;
     } catch (e) {
       setError(

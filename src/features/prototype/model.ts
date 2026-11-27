@@ -2,6 +2,12 @@ import { z } from "zod";
 import marketplace from "./data/marketplace.json" with { type: "json" };
 import people from "./data/people.json" with { type: "json" };
 import type { JobWithCompany } from "@/features/jobs/types";
+import {
+  projectVoiceSchema,
+  recordingSchema,
+  type ProjectVoice,
+  type Recording,
+} from "./project-ai";
 
 const id = z
   .string()
@@ -10,6 +16,11 @@ const id = z
   .regex(/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/);
 const shortText = z.string().trim().min(1).max(200);
 const text = z.string().trim().max(12000);
+const projectQuestionSchema = text.min(1);
+const projectResponseSchema = z.object({
+  question: projectQuestionSchema,
+  answer: text,
+});
 export const MIN_APPLICATION_ANSWER_LENGTH = 20;
 const companySchema = z.object({
   id,
@@ -31,8 +42,9 @@ export const jobSchema = z
     slug: id,
     companyId: id,
     title: shortText,
-    summary: text.min(10),
-    description: text.min(30),
+    summary: text,
+    description: text,
+    projectQuestion: projectQuestionSchema.optional(),
     category: z.enum(["build", "apply", "lead"]),
     function: z.enum(["product", "engineering", "data", "design", "marketing", "operations"]),
     remoteStatus: z.enum(["onsite", "hybrid", "remote"]),
@@ -53,6 +65,12 @@ export const jobSchema = z
     verificationStatus: z.enum(["unverified", "editorial", "employer_verified"]),
     sourceBrief: text.optional(),
     generatedDescription: text.optional(),
+  })
+  .refine((job) => job.publicationStatus === "draft" || job.summary.length >= 10, {
+    path: ["summary"],
+  })
+  .refine((job) => job.publicationStatus === "draft" || job.description.length >= 30, {
+    path: ["description"],
   })
   .refine(
     (job) =>
@@ -113,6 +131,9 @@ const applicationSchema = z.object({
   candidateName: shortText,
   cv: text.min(20),
   answer: text.min(MIN_APPLICATION_ANSWER_LENGTH),
+  projectResponse: projectResponseSchema
+    .extend({ voice: projectVoiceSchema.optional() })
+    .optional(),
   sourceNotes: text,
   generatedAnswer: text,
   score: z.number().int().min(0).max(100),
@@ -129,6 +150,9 @@ const draftSchema = z.object({
   notes: text,
   generated: text,
   answer: text,
+  projectResponse: projectResponseSchema
+    .extend({ recording: recordingSchema.optional() })
+    .optional(),
 });
 export const stateSchema = z
   .object({
@@ -136,6 +160,7 @@ export const stateSchema = z
     activePersonId: id.nullable(),
     companies: z.array(companySchema).min(1).max(200),
     jobs: z.array(jobSchema).min(1).max(1000),
+    jobRevisions: z.array(jobSchema).max(1000).optional(),
     people: z.array(personSchema).min(1).max(100),
     applications: z.array(applicationSchema).max(2000),
     saved: z.array(z.object({ candidateId: id, jobId: id })).max(5000),
@@ -160,6 +185,20 @@ export const stateSchema = z
       if (p.role === "employer" && (!p.companyId || !companyIds.has(p.companyId)))
         problem("Unknown employer company");
     for (const j of s.jobs) if (!companyIds.has(j.companyId)) problem("Unknown job company");
+    const revisionIds = new Set<string>();
+    for (const revision of s.jobRevisions ?? []) {
+      const job = jobs.get(revision.id);
+      if (
+        !job ||
+        job.publicationStatus === "draft" ||
+        revision.publicationStatus !== "draft" ||
+        job.companyId !== revision.companyId ||
+        job.slug !== revision.slug ||
+        revisionIds.has(revision.id)
+      )
+        problem("Invalid job revision");
+      revisionIds.add(revision.id);
+    }
     const keys = new Set<string>();
     for (const a of s.applications) {
       const key = `${a.candidateId}:${a.jobId}`;
@@ -197,22 +236,22 @@ export const stateSchema = z
 export type State = z.infer<typeof stateSchema>;
 export type Person = State["people"][number];
 export type Application = State["applications"][number];
+type ApplicationInput = {
+  jobId: string;
+  notes: string;
+  generated: string;
+  answer: string;
+  projectAnswer?: string;
+};
 export type Action =
   | { type: "select_person"; id: string | null }
   | { type: "profile"; value: z.infer<typeof profileSchema> }
   | { type: "toggle_saved"; jobId: string }
-  | { type: "draft"; jobId: string; notes: string; generated: string; answer: string }
-  | {
-      type: "submit";
-      jobId: string;
-      notes: string;
-      generated: string;
-      answer: string;
-      consent: boolean;
-    }
+  | ({ type: "draft"; recording?: Recording } & ApplicationInput)
+  | ({ type: "submit"; consent: boolean; voice?: ProjectVoice } & ApplicationInput)
   | { type: "stage"; applicationId: string; stage: Stage; note: string }
   | { type: "withdraw"; applicationId: string }
-  | { type: "publish"; job: z.infer<typeof jobSchema> }
+  | { type: "publish" | "save_job_draft"; job: z.infer<typeof jobSchema> }
   | { type: "company"; name: string; description: string };
 
 export function initialState(): State {
@@ -286,37 +325,58 @@ export function transition(
     const index = s.saved.findIndex((x) => x.candidateId === p.id && x.jobId === action.jobId);
     if (index >= 0) s.saved.splice(index, 1);
     else s.saved.push({ candidateId: p.id, jobId: action.jobId });
-  } else if (action.type === "draft") {
+  } else if (action.type === "draft" || action.type === "submit") {
     const p = candidate();
-    const draft = draftSchema.parse({ candidateId: p.id, ...action });
-    s.drafts = s.drafts.filter((x) => !(x.candidateId === p.id && x.jobId === action.jobId));
-    s.drafts.push(draft);
-  } else if (action.type === "submit") {
-    const p = candidate();
-    const job = s.jobs.find((x) => x.id === action.jobId && x.publicationStatus === "published");
-    if (!job) return fail("Oferta nie jest dostępna.");
-    if (!action.consent) fail("Zatwierdź treść i zgodę na przesłanie aplikacji.");
-    if (s.applications.some((x) => x.candidateId === p.id && x.jobId === job.id))
-      fail("Aplikacja na tę ofertę została już wysłana.");
-    s.applications.push(
-      applicationSchema.parse({
-        id: newId,
-        candidateId: p.id,
-        jobId: job.id,
-        companyId: job.companyId,
-        jobTitle: job.title,
-        candidateName: p.name,
-        cv: p.cv,
-        answer: action.answer,
-        sourceNotes: action.notes,
-        generatedAnswer: action.generated,
-        score: p.exampleScore,
-        summary: p.exampleSummary,
-        stage: "submitted",
-        events: [{ stage: "submitted", at: now, note: "" }],
-      }),
-    );
+    const job = s.jobs.find((x) => x.id === action.jobId);
+    if (!job || (action.type === "submit" && job.publicationStatus !== "published"))
+      return fail("Oferta nie jest dostępna.");
+    const projectResponse =
+      job.publicationStatus === "published" && job.projectQuestion
+        ? { question: job.projectQuestion, answer: action.projectAnswer ?? "" }
+        : undefined;
     s.drafts = s.drafts.filter((x) => !(x.candidateId === p.id && x.jobId === job.id));
+    if (action.type === "draft") {
+      s.drafts.push(
+        draftSchema.parse({
+          candidateId: p.id,
+          ...action,
+          ...(projectResponse && {
+            projectResponse: {
+              ...projectResponse,
+              ...(action.recording && { recording: action.recording }),
+            },
+          }),
+        }),
+      );
+    } else {
+      if (!action.consent) fail("Zatwierdź treść i zgodę na przesłanie aplikacji.");
+      if (s.applications.some((x) => x.candidateId === p.id && x.jobId === job.id))
+        fail("Aplikacja na tę ofertę została już wysłana.");
+      s.applications.push(
+        applicationSchema.parse({
+          id: newId,
+          candidateId: p.id,
+          jobId: job.id,
+          companyId: job.companyId,
+          jobTitle: job.title,
+          candidateName: p.name,
+          cv: p.cv,
+          answer: action.answer,
+          ...(projectResponse && {
+            projectResponse: {
+              ...projectResponse,
+              ...(action.voice && { answer: "", voice: action.voice }),
+            },
+          }),
+          sourceNotes: action.notes,
+          generatedAnswer: action.generated,
+          score: p.exampleScore,
+          summary: p.exampleSummary,
+          stage: "submitted",
+          events: [{ stage: "submitted", at: now, note: "" }],
+        }),
+      );
+    }
   } else if (action.type === "stage" || action.type === "withdraw") {
     const application = s.applications.find((x) => x.id === action.applicationId);
     if (!application) return fail("Nie znaleziono aplikacji.");
@@ -335,15 +395,23 @@ export function transition(
     }
     application.stage = stage;
     application.events.push({ stage, at: now, note: action.type === "stage" ? action.note : "" });
-  } else if (action.type === "publish") {
+  } else if (action.type === "publish" || action.type === "save_job_draft") {
     const p = employer();
     const job = jobSchema.parse(action.job);
     if (job.companyId !== p.companyId) fail("Wybierz ofertę własnej firmy.");
     const index = s.jobs.findIndex((x) => x.id === job.id);
-    if (index >= 0) {
-      if (s.jobs[index].companyId !== p.companyId) fail("Nie można zmienić tej oferty.");
-      s.jobs[index] = job;
-    } else s.jobs.unshift(job);
+    const existing = s.jobs[index];
+    if (existing && existing.companyId !== p.companyId) fail("Nie można zmienić tej oferty.");
+    if (action.type === "save_job_draft" && job.publicationStatus !== "draft")
+      fail("Zapisz ofertę jako szkic.");
+    const revisions = s.jobRevisions?.filter((x) => x.id !== job.id) ?? [];
+    if (action.type === "save_job_draft" && existing && existing.publicationStatus !== "draft") {
+      s.jobRevisions = [...revisions, job];
+    } else {
+      if (s.jobRevisions) s.jobRevisions = revisions;
+      if (existing) s.jobs[index] = job;
+      else s.jobs.unshift(job);
+    }
   } else if (action.type === "company") {
     const p = employer();
     Object.assign(

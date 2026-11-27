@@ -1,9 +1,10 @@
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { fileURLToPath } from "node:url";
 import { readFile } from "node:fs/promises";
 import { extname } from "node:path";
+import { projectAiPlugin } from "./src/server/project-ai-plugin";
 
 function localLandingPreview(): Plugin {
   const folder = new URL("./artifacts/landing/", import.meta.url);
@@ -52,8 +53,13 @@ function localLandingPreview(): Plugin {
   };
 }
 
-export default defineConfig({
-  plugins: [localLandingPreview(), react(), tailwindcss()],
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    localLandingPreview(),
+    projectAiPlugin(loadEnv(mode, process.cwd(), "OPENROUTER_")),
+    react(),
+    tailwindcss(),
+  ],
   base: "./",
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
-});
+}));

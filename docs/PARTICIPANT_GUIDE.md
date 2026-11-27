@@ -19,7 +19,7 @@ Open http://127.0.0.1:3001. If Node or registry access is blocked by your organi
 4. Record review, invitation, conversation and the next decision.
 5. Return to Anna and inspect the application history.
 
-Karolina and Tomasz see their respective companies in the interface; this is role simulation. All data is local and synthetic. CVs are prepared text examples, not real uploads. AI proposals and scores simulate the scenario.
+Karolina and Tomasz see their respective companies in the interface; this is role simulation. All data is local and synthetic. CVs are prepared text examples, not real uploads. The description helper and Match Score use prepared examples. See the README for optional OpenRouter setup for project questions and voice responses.
 
 ## Save, share and recover
 

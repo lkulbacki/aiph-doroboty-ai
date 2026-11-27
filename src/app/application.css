@@ -151,6 +151,8 @@
 }
 .application-answer .field > span {
   font-size: 15px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 .application-answer textarea {
   min-height: 180px;
