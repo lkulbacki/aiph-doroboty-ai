@@ -54,6 +54,30 @@ check provider spending before restarting and set an account budget separately.
 These attempt limits do not guarantee a currency spending ceiling. A static copy of `dist/` supports manual
 questions and written answers.
 
+## Vercel hosting
+
+Use Node.js 24, the Vite preset, `npm ci`, `npm run build` and output directory
+`dist` (also recorded in `vercel.json`). Import the intended Git repository and
+select `main` as the production branch. Hash routes need no SPA rewrite.
+
+Set `OPENROUTER_API_KEY` as a server-side Secret for Production and Preview;
+optional model overrides are listed in `.env.example`. Redeploy after changing
+variables. Never prefix the key with `VITE_`. The two `api/project-ai` entries
+run as Node.js Functions, share the existing schemas and provider operations,
+and allow up to 120 seconds for transcription followed by summarization.
+
+Hosted AI endpoints are public prototype operations. The origin check rejects
+cross-origin browser requests; it is not authentication. Hosted requests have
+no global attempt counter. For this experiment the owner uses an OpenRouter
+key capped at $1 without automatic renewal; configure the provider budget
+before enabling hosted AI. The local Vite process limits described above do
+not apply across Vercel instances. No additional rate-limit service is required.
+
+First deploy `main` unchanged, then review a branch Preview before merging AI
+hosting changes. Verify questions, voice, provider-error recovery and microphone
+permission on HTTPS using synthetic data. A successful build does not establish
+that the hosted AI provider works. Browser scenarios remain device-local.
+
 ## Build and verify
 
 ```sh

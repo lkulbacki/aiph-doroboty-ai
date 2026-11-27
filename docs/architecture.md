@@ -1,6 +1,6 @@
 # Architecture
 
-One React/TypeScript application is built by Vite into static files. HashRouter renders routes under /#/; route parameters created in the browser require no hosting rewrites. New and changed UI uses local CSS tokens and Base UI primitives under the [Editaurus contract](design-system/editaurus/README.md). Vite dev and preview offer an optional local OpenRouter proxy for question suggestions and voice analysis. The proxy validates the bounded payload and holds the provider key. Scenario data is stored by the browser.
+One React/TypeScript application is built by Vite into static files. HashRouter renders routes under /#/; route parameters created in the browser require no hosting rewrites. New and changed UI uses local CSS tokens and Base UI primitives under the [Editaurus contract](design-system/editaurus/README.md). Vite dev and preview offer an optional local OpenRouter proxy for question suggestions and voice analysis. On Vercel, root api/project-ai entries expose the same provider operations through Node.js Functions with bounded JSON, same-origin browser checks and shared Zod schemas. The proxy validates the bounded payload and holds the provider key. Scenario data is stored by the browser.
 
 ## Data flow
 
@@ -29,3 +29,5 @@ npm run check and ./scripts/verify run formatting, design-system reference integ
 The store holds a Web Locks writer lock for its tab lifetime. This keeps the synchronous domain transition API and prevents concurrent full-scenario writes by cooperating tabs. A second tab rejects domain actions, import and reset; it can take over after the writer closes and it reloads. Snapshot comparison detects intervening writes outside this protocol. Unsupported Web Locks environments reject writes rather than falling back to an unsafe localStorage lock. No scenario schema migration or cross-tab merge is introduced.
 
 Each Vite proxy instance shares an in-memory gate across question and voice actions: one active request, 10 attempts per fixed minute and 100 attempts per process. A finally block releases the active slot on success, validation errors and provider failures. These limits survive client disconnects within the process, but reset on restart and do not establish a provider currency budget.
+
+Hosted AI is public and relies on the owner-configured OpenRouter key budget ($1 for this experiment). Local process attempt limits are not applied as a distributed Vercel limit. The key remains in server environment variables; Functions allow 120 seconds for the sequential voice operations.

@@ -17,6 +17,8 @@ if (fs.existsSync(target) && fs.readdirSync(target).length)
   throw new Error("Output directory must be empty; no existing files will be removed.");
 verifyPacket(root);
 const entries = [
+  "api",
+  "vercel.json",
   "src",
   "public",
   "tests",
