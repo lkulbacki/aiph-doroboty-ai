@@ -27,6 +27,7 @@ export function readState(storage: StoragePort | null) {
         "Zapis w przeglądarce jest niedostępny. Zmiany zachowasz przez eksport w ustawieniach.",
       blocked: false,
       original: null,
+      snapshot: null,
     };
   let raw: string | null = null;
   try {
@@ -36,6 +37,7 @@ export function readState(storage: StoragePort | null) {
       issue: "",
       blocked: false,
       original: null,
+      snapshot: raw,
     };
   } catch {
     return {
@@ -44,10 +46,18 @@ export function readState(storage: StoragePort | null) {
         "Nie udało się odczytać zapisu. Dotychczasowe dane nie zostaną nadpisane. Pobierz je w ustawieniach, a następnie zaimportuj poprawny plik lub zresetuj scenariusz.",
       blocked: true,
       original: raw,
+      snapshot: raw,
     };
   }
 }
-export function saveState(storage: StoragePort | null, state: State) {
+export class StorageConflictError extends Error {
+  constructor() {
+    super(
+      "Scenariusz zmienił się w innej karcie. Zachowaj treść formularza i odśwież tę kartę przed dalszą pracą.",
+    );
+  }
+}
+export function saveState(storage: StoragePort | null, state: State, expectedRaw?: string | null) {
   if (!storage)
     throw new Error(
       "Zapis w przeglądarce jest niedostępny. Wyeksportuj zmiany przed zamknięciem strony.",
@@ -55,6 +65,8 @@ export function saveState(storage: StoragePort | null, state: State) {
   const raw = serializeState(state);
   if (new TextEncoder().encode(raw).length > MAX_IMPORT_BYTES)
     throw new Error("Dane przekraczają 2 MB. Wyeksportuj je, aby zachować zmiany.");
+  if (expectedRaw !== undefined && storage.getItem(STORAGE_KEY) !== expectedRaw)
+    throw new StorageConflictError();
   try {
     storage.setItem(STORAGE_KEY, raw);
   } catch {

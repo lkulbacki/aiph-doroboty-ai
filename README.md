@@ -30,7 +30,7 @@ npm run dev
 
 Open http://127.0.0.1:3001. The baseline workflow runs without configuration. Package installation requires access to the npm registry.
 
-Select Anna or Marek as a candidate, Karolina or Tomasz as an employer, or the instructor. Publish a job, apply, switch person and record the employer decision. Changes survive reload in this browser. Settings provide export, import and reset. The job-description helper and Match Score use prepared examples. Use example CVs and synthetic scenario data.
+Select Anna or Marek as a candidate, Karolina or Tomasz as an employer, or the instructor. Publish a job, apply, switch person and record the employer decision. Changes survive reload in this browser. Settings provide export, import and reset. Keep one editing tab per browser origin: other tabs are read-only. Close the editing tab and reload another tab to hand over. Writes require a current browser with Web Locks on localhost/127.0.0.1 or HTTPS. The job-description helper and Match Score use prepared examples. Use example CVs and synthetic scenario data.
 
 ### EXP-01 with OpenRouter
 

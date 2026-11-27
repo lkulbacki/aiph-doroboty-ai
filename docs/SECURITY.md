@@ -9,3 +9,5 @@ Render imported text through React text nodes, validate imports with shared Zod 
 ## Local cost and write safeguards
 
 Both local AI endpoints share a single active request, 10 attempts per fixed minute and a 100-attempt Vite-process budget. Failed/invalid attempts after body parsing also count. Rejected calls return 429, with Retry-After for a temporary limit. Limits reset when the server restarts; they are not a provider spending cap. Set provider account budgets separately and review usage before restarting.
+
+Web Locks give one tab per origin exclusive ownership of scenario writes. Other tabs remain read-only and must reload after the writer closes to take over. Without Web Locks, writes fail closed. A snapshot check additionally rejects storage changed by older app versions or external scripts; it does not claim coordination with arbitrary code that ignores the lock. Preserve unsaved form text before reloading. Storage denial/quota recovery still keeps in-memory state available for export.

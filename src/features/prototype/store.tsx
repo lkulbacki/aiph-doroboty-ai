@@ -2,10 +2,12 @@ import { createContext, useContext, useEffect, useRef, useState, type ReactNode 
 import { initialState, transition, type Action, type State } from "./model";
 import {
   MAX_IMPORT_BYTES,
-  serializeState,
+  STORAGE_KEY,
+  StorageConflictError,
   parseState,
   readState,
   saveState,
+  serializeState,
   type StoragePort,
 } from "./storage";
 function browserStorage(): StoragePort | null {
@@ -23,19 +25,69 @@ function useStore() {
   const [recoveryMessage, setRecoveryMessage] = useState("");
   const [blocked, setBlocked] = useState(loaded.blocked);
   const latest = useRef(state);
+  const snapshot = useRef(loaded.snapshot);
+  const writer = useRef(false);
+  useEffect(() => {
+    let disposed = false;
+    let release: (() => void) | undefined;
+    const unavailable = () => {
+      if (!disposed)
+        setIssue(
+          "Zapis jest zablokowany: ta przeglądarka nie udostępnia blokady kart. Otwórz prototyp w aktualnej przeglądarce pod adresem localhost lub 127.0.0.1.",
+        );
+    };
+    if (!navigator.locks) {
+      unavailable();
+      return;
+    }
+    // StrictMode cleans up its first effect before this microtask acquires a lock.
+    void Promise.resolve()
+      .then(async () => {
+        if (disposed) return;
+        await navigator.locks.request(STORAGE_KEY, { ifAvailable: true }, async (lock) => {
+          if (disposed) return;
+          if (!lock) {
+            setIssue(
+              "Scenariusz jest otwarty do zapisu w innej karcie. Ta karta służy tylko do podglądu. Zamknij tamtą kartę i odśwież tę, aby kontynuować.",
+            );
+            return;
+          }
+          writer.current = true;
+          await new Promise<void>((resolve) => {
+            release = resolve;
+          });
+        });
+      })
+      .catch(unavailable);
+    return () => {
+      disposed = true;
+      writer.current = false;
+      release?.();
+    };
+  }, []);
   function commit(next: State, replace = false) {
-    latest.current = next;
-    setState(next);
+    if (!writer.current) {
+      setError(
+        "Nie można zapisać w tej karcie. Zamknij inną kartę prototypu i odśwież tę stronę. Zachowaj treść formularza przed odświeżeniem.",
+      );
+      return false;
+    }
     setError("");
     setRecoveryMessage("");
-    if (blocked && !replace) return;
-    try {
-      saveState(browserStorage(), next);
-      setIssue("");
-      if (replace) setBlocked(false);
-    } catch (e) {
-      setIssue((e as Error).message);
+    if (!blocked || replace) {
+      try {
+        saveState(browserStorage(), next, snapshot.current);
+        snapshot.current = serializeState(next);
+        setIssue("");
+        if (replace) setBlocked(false);
+      } catch (e) {
+        setIssue((e as Error).message);
+        if (e instanceof StorageConflictError) return false;
+      }
     }
+    latest.current = next;
+    setState(next);
+    return true;
   }
   function run(action: Action) {
     try {
@@ -48,8 +100,7 @@ function useStore() {
         throw new Error(
           "Zapis scenariusza przekroczyłby 2 MB. Skróć nagranie lub wpisz odpowiedź.",
         );
-      commit(next);
-      return true;
+      return commit(next);
     } catch (e) {
       setError(
         e instanceof Error && e.name !== "ZodError"
@@ -63,7 +114,7 @@ function useStore() {
     setRecoveryMessage("");
     try {
       const next = parseState(raw);
-      commit(next, true);
+      if (!commit(next, true)) return false;
       setRecoveryMessage("Dane zostały zaimportowane.");
       return true;
     } catch (e) {
@@ -88,7 +139,7 @@ function useStore() {
       setRecoveryMessage("");
     },
     reset: () => {
-      commit(initialState(), true);
+      if (!commit(initialState(), true)) return;
       setRecoveryMessage("Przywrócono scenariusz początkowy.");
     },
   };

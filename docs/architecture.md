@@ -26,4 +26,6 @@ npm run check and ./scripts/verify run formatting, design-system reference integ
 
 ## Local concurrency and optional AI limits
 
+The store holds a Web Locks writer lock for its tab lifetime. This keeps the synchronous domain transition API and prevents concurrent full-scenario writes by cooperating tabs. A second tab rejects domain actions, import and reset; it can take over after the writer closes and it reloads. Snapshot comparison detects intervening writes outside this protocol. Unsupported Web Locks environments reject writes rather than falling back to an unsafe localStorage lock. No scenario schema migration or cross-tab merge is introduced.
+
 Each Vite proxy instance shares an in-memory gate across question and voice actions: one active request, 10 attempts per fixed minute and 100 attempts per process. A finally block releases the active slot on success, validation errors and provider failures. These limits survive client disconnects within the process, but reset on restart and do not establish a provider currency budget.
