@@ -78,6 +78,25 @@ hosting changes. Verify questions, voice, provider-error recovery and microphone
 permission on HTTPS using synthetic data. A successful build does not establish
 that the hosted AI provider works. Browser scenarios remain device-local.
 
+## Optional PostHog analytics
+
+Set `VITE_POSTHOG_KEY` (public project token) and `VITE_POSTHOG_HOST`
+(`https://eu.i.posthog.com` for EU) for the desired Vercel build environment,
+then deploy the analytics code. These values are public browser configuration;
+never use a PostHog Personal API Key. Production builds with both variables send
+initial/hash-route `$pageview` events and `prototype_action_completed` with the
+successful domain action type. The `route` property contains a route template,
+not record IDs, slugs or query parameters. Use `route` in PostHog breakdowns.
+
+Development and builds without configuration send nothing. Autocapture,
+recordings, person profiles, surveys and feature flags are disabled. Events
+exclude scenario data, form text, audio, titles, URLs and referrers. Anonymous
+identity lives in memory until reload; Do Not Track is respected. Browser/network
+metadata still reaches the ingestion service. Blocked analytics never prevents
+the scenario workflow. To disable analytics, remove the key and rebuild.
+
+Local checks do not verify event receipt in the owner's PostHog dashboard.
+
 ## Build and verify
 
 ```sh
