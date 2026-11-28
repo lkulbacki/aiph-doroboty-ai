@@ -1,5 +1,8 @@
+import { useEffect, useRef } from "react";
+import { usePostHog } from "@posthog/react";
 import { HashRouter, Routes, Route, Navigate } from "react-router";
-import { PrototypeProvider } from "./store";
+import { PrototypeProvider, usePrototype } from "./store";
+import { currentPerson } from "./model";
 import { Shell, NotFound } from "./shell";
 import HomePage from "./home";
 import MethodologyPage from "./methodology";
@@ -18,6 +21,32 @@ import { EmployerJobs, EmployerJobEditor, CompanyEditor } from "./employer";
 import { SettingsPage, PrivacyPage } from "./settings";
 import { CasePage } from "./case";
 import { EditaurusComponentsPage } from "@/features/editaurus/components-page";
+
+function PostHogIdentity() {
+  const { state } = usePrototype();
+  const posthog = usePostHog();
+  const previousPersonId = useRef<string | null | undefined>(undefined);
+  const person = currentPerson(state);
+
+  useEffect(() => {
+    const personId = person?.id ?? null;
+    if (previousPersonId.current === personId) return;
+
+    if (previousPersonId.current !== undefined) posthog.reset();
+
+    if (person) {
+      posthog.identify(person.id, {
+        name: person.name,
+        role: person.role,
+      });
+    }
+
+    previousPersonId.current = personId;
+  }, [person, posthog]);
+
+  return null;
+}
+
 function AppRoutes() {
   return (
     <Routes>
@@ -152,6 +181,7 @@ function AppRoutes() {
 export function App() {
   return (
     <PrototypeProvider>
+      <PostHogIdentity />
       <HashRouter>
         <AppRoutes />
       </HashRouter>

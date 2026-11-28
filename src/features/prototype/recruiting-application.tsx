@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
+import { usePostHog } from "@posthog/react";
 import { SecondaryButton } from "@/components/editaurus/secondary-button";
 import { EditaurusTextarea } from "@/components/editaurus/textarea";
 import { ApplicationRecord } from "./application-record";
@@ -7,6 +8,7 @@ import { usePrototype } from "./store";
 
 export function RecruitingApplication({ application }: { application: Application }) {
   const { state, run } = usePrototype();
+  const posthog = usePostHog();
   const [note, setNote] = useState("");
   const [announcement, setAnnouncement] = useState("");
   const statusRef = useRef<HTMLSpanElement>(null);
@@ -40,6 +42,11 @@ export function RecruitingApplication({ application }: { application: Applicatio
                     className={stage === "rejected" ? "editaurus-danger-button" : undefined}
                     onClick={() => {
                       if (run({ type: "stage", applicationId: application.id, stage, note })) {
+                        posthog.capture("application_stage_changed", {
+                          previous_stage: application.stage,
+                          stage,
+                          has_note: Boolean(note.trim()),
+                        });
                         setNote("");
                         setAnnouncement(`Zapisano etap: ${stageLabels[stage]}.`);
                         pendingFocus.current = true;

@@ -56,7 +56,11 @@ function localLandingPreview(): Plugin {
 export default defineConfig(({ mode }) => ({
   plugins: [
     localLandingPreview(),
-    projectAiPlugin(loadEnv(mode, process.cwd(), "OPENROUTER_")),
+    projectAiPlugin({
+      ...loadEnv(mode, process.cwd(), "OPENROUTER_"),
+      ...loadEnv(mode, process.cwd(), "VITE_PUBLIC_POSTHOG_"),
+      NODE_ENV: mode === "production" ? "production" : "development",
+    }),
     react(),
     tailwindcss(),
   ],
