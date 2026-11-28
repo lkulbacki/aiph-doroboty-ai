@@ -104,8 +104,9 @@ export function SettingsPage() {
       <section className="editaurus-panel editaurus-settings-panel mt-6">
         <h2>O prototypie</h2>
         <p>
-          Wybór osoby zastępuje logowanie. Propozycje AI, Match Score i podsumowania odtwarzają
-          przygotowany scenariusz; nie oceniają kompetencji. Używaj przykładowych danych i CV.
+          Wybór osoby zastępuje logowanie. Match Score pochodzi z przygotowanego scenariusza.
+          OpenRouter przygotowuje propozycje pytań, transkrypcje i krótkie podsumowania odpowiedzi
+          głosowych. Używaj przykładowych danych i CV.
         </p>
       </section>
       <ConfirmDialog
@@ -133,9 +134,13 @@ export function PrivacyPage() {
           ani poufnych informacji.
         </p>
         <p>
-          Profile, aplikacje i ustawienia pozostają w pamięci tej przeglądarki. Aplikacja nie wysyła
-          ich do bazy, dostawcy AI ani systemu analitycznego. Plik eksportu zawiera cały lokalny
-          scenariusz, w tym notatki.
+          Przeglądarka przechowuje profile, zgłoszenia i ustawienia. Plik eksportu zawiera cały
+          lokalny scenariusz, w tym notatki, nagrania, transkrypcje i podsumowania.
+        </p>
+        <p>
+          Gdy poprosisz o propozycje pytań, lokalny serwer wysyła tytuł, brief i opis do OpenRouter.
+          Po wysłaniu odpowiedzi głosowej OpenRouter otrzymuje nagranie do transkrypcji, a następnie
+          transkrypcję do przygotowania podsumowania.
         </p>
         <p>
           Możesz usunąć zmiany przyciskiem „Resetuj scenariusz” w ustawieniach lub wyczyścić dane

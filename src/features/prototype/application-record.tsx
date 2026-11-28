@@ -5,6 +5,7 @@ import { RecordSheet } from "@/components/record-sheet";
 import { CvAttachment } from "./cv-attachment";
 import { MatchScore } from "./match-score";
 import { stageLabels, type Application, type Stage } from "./model";
+import { recordingUrl } from "./project-ai";
 
 type RecordEvent = { stage: Stage; at: string; note?: string };
 const dateFormat = new Intl.DateTimeFormat("pl-PL", {
@@ -24,7 +25,15 @@ export function ApplicationRecord({
 }: {
   application: Pick<
     Application,
-    "candidateId" | "candidateName" | "jobTitle" | "stage" | "answer" | "cv" | "score" | "summary"
+    | "candidateId"
+    | "candidateName"
+    | "jobTitle"
+    | "stage"
+    | "answer"
+    | "projectResponse"
+    | "cv"
+    | "score"
+    | "summary"
   >;
   companyName: string;
   audience: "candidate" | "employer";
@@ -37,6 +46,7 @@ export function ApplicationRecord({
   const title = candidate ? application.jobTitle : application.candidateName;
   const context = candidate ? application.candidateName : application.jobTitle;
   const submitted = history[0];
+  const projectResponse = application.projectResponse;
   return (
     <article className="recruiting-record editaurus-record">
       <header className="recruiting-header">
@@ -75,6 +85,42 @@ export function ApplicationRecord({
                 <>
                   <h3>Przesłana aplikacja</h3>
                   <p>{application.answer}</p>
+                  {projectResponse && (
+                    <section
+                      className="project-response-card mt-6"
+                      aria-labelledby="record-project-title"
+                    >
+                      <h3 id="record-project-title">Odpowiedź projektowa</h3>
+                      <p className="project-response-prompt">{projectResponse.question}</p>
+                      {projectResponse.voice ? (
+                        <>
+                          <audio
+                            aria-label="Nagranie odpowiedzi"
+                            className="w-full"
+                            controls
+                            src={recordingUrl(projectResponse.voice)}
+                          />
+                          {!candidate && (
+                            <div className="project-response-summary">
+                              <h4>Podsumowanie AI</h4>
+                              <p>{projectResponse.voice.summary}</p>
+                            </div>
+                          )}
+                          <div>
+                            <h4>Transkrypcja nagrania</h4>
+                            <p>{projectResponse.voice.transcript}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <p>
+                          {projectResponse.answer ||
+                            (candidate
+                              ? "Brak odpowiedzi na to pytanie."
+                              : "Kandydat nie odpowiedział na to pytanie")}
+                        </p>
+                      )}
+                    </section>
+                  )}
                 </>
               ),
             },

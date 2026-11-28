@@ -45,6 +45,7 @@ export type Job = {
   title: string;
   summary: string;
   description: string;
+  projectQuestion?: string;
   category: JobCategory;
   function: JobFunction;
   remoteStatus: RemoteStatus;

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { EditaurusTextarea } from "@/components/editaurus/textarea";
 import { HeroButton, HeroLink } from "@/components/editaurus/hero-button";
@@ -17,6 +17,7 @@ import { currentPerson, jobSchema } from "./model";
 import { usePrototype } from "./store";
 import { Field } from "./workspace";
 import { NotFound, PageTitle } from "./shell";
+import { ProjectQuestionSuggestions } from "./project-question-suggestions";
 
 export function EmployerJobs() {
   const { state } = usePrototype();
@@ -39,6 +40,7 @@ export function EmployerJobs() {
                   <p className="editaurus-employer-job-meta">
                     {state.applications.filter((x) => x.jobId === job.id).length} aplikacji ·{" "}
                     {job.publicationStatus === "published" ? "Opublikowana" : "Szkic"}
+                    {state.jobRevisions?.some((draft) => draft.id === job.id) && " · Szkic zmian"}
                   </p>
                 </div>
                 <SecondaryButton
@@ -72,29 +74,34 @@ export function EmployerJobEditor() {
   const person = currentPerson(state)!;
   const navigate = useNavigate();
   const existing = state.jobs.find((x) => x.id === id && x.companyId === person.companyId);
-  const [title, setTitle] = useState(existing?.title ?? "");
-  const [summary, setSummary] = useState(existing?.summary ?? "");
-  const [description, setDescription] = useState(existing?.description ?? "");
-  const [source, setSource] = useState(existing?.sourceBrief ?? "");
-  const [generated, setGenerated] = useState(existing?.generatedDescription ?? "");
-  const salaryCurrency = existing?.salaryCurrency ?? "PLN";
-  const salaryPeriod = existing?.salaryPeriod ?? "month";
-  const salaryKind = existing?.salaryKind ?? "gross";
+  const draft = existing && state.jobRevisions?.find((x) => x.id === existing.id);
+  const fields = draft ?? existing;
+  const [title, setTitle] = useState(fields?.title ?? "");
+  const [summary, setSummary] = useState(fields?.summary ?? "");
+  const [description, setDescription] = useState(fields?.description ?? "");
+  const [projectQuestion, setProjectQuestion] = useState(fields?.projectQuestion ?? "");
+  const projectQuestionInput = useRef<HTMLTextAreaElement>(null);
+  const [source, setSource] = useState(fields?.sourceBrief ?? "");
+  const [generated, setGenerated] = useState(fields?.generatedDescription ?? "");
+  const salaryCurrency = fields?.salaryCurrency ?? "PLN";
+  const salaryPeriod = fields?.salaryPeriod ?? "month";
+  const salaryKind = fields?.salaryKind ?? "gross";
   const salaryBasis = `${salaryCurrency} ${salaryKind === "net" ? "netto" : "brutto"} / ${salaryPeriod === "year" ? "rok" : "mies."}`;
   const [approved, setApproved] = useState(false);
   const [error, setError] = useState("");
   if (id !== "nowa" && !existing) return <NotFound />;
-  function publish(e: FormEvent<HTMLFormElement>) {
+  function save(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    if (!approved) {
+    const draft = (e.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "draft";
+    if (!draft && !approved) {
       setError("Zatwierdź opis przed publikacją.");
       return;
     }
     const data = new FormData(e.currentTarget);
     const newId = existing?.id ?? crypto.randomUUID();
     const location = String(data.get("location")).trim();
-    const locationUnchanged = existing && location === existing.locations.join(" / ").trim();
+    const locationUnchanged = fields && location === fields.locations.join(" / ").trim();
     const parsed = jobSchema.safeParse({
       id: newId,
       slug: existing?.slug ?? `oferta-${newId}`,
@@ -102,12 +109,13 @@ export function EmployerJobEditor() {
       title,
       summary,
       description,
+      projectQuestion: projectQuestion.trim() || undefined,
       sourceBrief: source,
       generatedDescription: generated,
       category: data.get("category"),
       function: data.get("function"),
       remoteStatus: data.get("remoteStatus"),
-      locations: locationUnchanged ? existing.locations : [location],
+      locations: locationUnchanged ? fields.locations : [location],
       seniority: data.get("seniority"),
       contract: data.get("contract"),
       salaryMin: data.get("salaryMin") ? Number(data.get("salaryMin")) : undefined,
@@ -116,7 +124,7 @@ export function EmployerJobEditor() {
       salaryPeriod,
       salaryKind,
       coordinates: locationUnchanged
-        ? existing.coordinates
+        ? fields.coordinates
         : (
             {
               warszawa: { latitude: 52.2297, longitude: 21.0122 },
@@ -126,10 +134,15 @@ export function EmployerJobEditor() {
               poznań: { latitude: 52.4064, longitude: 16.9252 },
             } as Record<string, { latitude: number; longitude: number }>
           )[location.toLocaleLowerCase("pl")],
-      publicationStatus: "published",
-      publishedAt: existing?.publishedAt ?? new Date().toISOString(),
+      publicationStatus: draft ? "draft" : "published",
+      publishedAt:
+        existing && (draft || existing.publicationStatus !== "draft")
+          ? existing.publishedAt
+          : new Date().toISOString(),
       expiryAt: existing?.expiryAt ?? "2099-12-31T23:59:59.000Z",
-      verificationStatus: "employer_verified",
+      verificationStatus: draft
+        ? (existing?.verificationStatus ?? "unverified")
+        : "employer_verified",
     });
     if (
       !parsed.success ||
@@ -138,18 +151,21 @@ export function EmployerJobEditor() {
         parsed.data.salaryMin > parsed.data.salaryMax)
     ) {
       setError(
-        "Sprawdź formularz: tytuł, lokalizacja, podsumowanie (min. 10 znaków), opis (min. 30 znaków) i widełki wynagrodzenia.",
+        draft
+          ? "Sprawdź formularz: tytuł, lokalizację, opcje z list i widełki wynagrodzenia."
+          : "Sprawdź formularz: tytuł, lokalizacja, podsumowanie (min. 10 znaków), opis (min. 30 znaków) i widełki wynagrodzenia.",
       );
       return;
     }
-    if (run({ type: "publish", job: parsed.data })) navigate("/app/oferty");
+    if (run({ type: draft ? "save_job_draft" : "publish", job: parsed.data }))
+      navigate("/app/oferty");
   }
   return (
     <section className="editaurus-applications editaurus-profile editaurus-job-editor">
       <PageTitle>{existing ? "Edytuj ofertę" : "Nowa oferta"}</PageTitle>
       <form
         className="editaurus-panel editaurus-profile-panel editaurus-profile-form"
-        onSubmit={publish}
+        onSubmit={save}
       >
         <Field label="Nazwa stanowiska">
           <Input
@@ -229,14 +245,44 @@ export function EmployerJobEditor() {
             }}
           />
         </Field>
+        <section className="project-response-card" aria-label="Pytanie o wkład w projekt">
+          <Field label="Pytanie o wkład w projekt (opcjonalnie)">
+            <EditaurusTextarea
+              rows={3}
+              ref={projectQuestionInput}
+              maxLength={12000}
+              aria-describedby="job-project-question-example"
+              value={projectQuestion}
+              onChange={(e) => {
+                setProjectQuestion(e.target.value);
+                setApproved(false);
+              }}
+            />
+          </Field>
+          <p className="editaurus-form-help" id="job-project-question-example">
+            Przykład: „Opisz jeden wcześniejszy projekt, w którym wykorzystałeś umiejętność
+            przydatną w tej roli. Za co odpowiadałeś osobiście i jaki był efekt Twojej pracy?”.
+          </p>
+          <ProjectQuestionSuggestions
+            key={JSON.stringify([title, source, description])}
+            title={title}
+            brief={source}
+            description={description}
+            onSelect={(question) => {
+              setProjectQuestion(question);
+              setApproved(false);
+              projectQuestionInput.current?.focus();
+            }}
+          />
+        </section>
         <div className="grid gap-4 sm:grid-cols-2">
           {(
             [
-              ["category", "Kategoria", categoryLabels, existing?.category ?? "build"],
-              ["function", "Funkcja", functionLabels, existing?.function ?? "engineering"],
-              ["remoteStatus", "Tryb pracy", remoteLabels, existing?.remoteStatus ?? "hybrid"],
-              ["seniority", "Poziom", seniorityLabels, existing?.seniority ?? "mid"],
-              ["contract", "Umowa", contractLabels, existing?.contract ?? "employment"],
+              ["category", "Kategoria", categoryLabels, fields?.category ?? "build"],
+              ["function", "Funkcja", functionLabels, fields?.function ?? "engineering"],
+              ["remoteStatus", "Tryb pracy", remoteLabels, fields?.remoteStatus ?? "hybrid"],
+              ["seniority", "Poziom", seniorityLabels, fields?.seniority ?? "mid"],
+              ["contract", "Umowa", contractLabels, fields?.contract ?? "employment"],
             ] as const
           ).map(([name, label, values, value]) => (
             <Field key={name} label={label}>
@@ -260,7 +306,7 @@ export function EmployerJobEditor() {
               onChange={() => setApproved(false)}
               required
               maxLength={200}
-              defaultValue={existing?.locations.join(" / ") ?? "Warszawa"}
+              defaultValue={fields?.locations.join(" / ") ?? "Warszawa"}
             />
           </Field>
           <Field label={`Wynagrodzenie od (${salaryBasis})`}>
@@ -270,7 +316,7 @@ export function EmployerJobEditor() {
               onChange={() => setApproved(false)}
               type="number"
               min="0"
-              defaultValue={existing?.salaryMin}
+              defaultValue={fields?.salaryMin}
             />
           </Field>
           <Field label={`Wynagrodzenie do (${salaryBasis})`}>
@@ -280,7 +326,7 @@ export function EmployerJobEditor() {
               onChange={() => setApproved(false)}
               type="number"
               min="0"
-              defaultValue={existing?.salaryMax}
+              defaultValue={fields?.salaryMax}
             />
           </Field>
         </div>
@@ -297,9 +343,14 @@ export function EmployerJobEditor() {
             {error}
           </p>
         )}
-        <HeroButton type="submit" disabled={!approved}>
-          Opublikuj ofertę
-        </HeroButton>
+        <div className="flex flex-wrap items-center gap-4">
+          <HeroButton type="submit" disabled={!approved}>
+            Opublikuj ofertę
+          </HeroButton>
+          <SecondaryButton type="submit" value="draft" formNoValidate>
+            Zapisz szkic
+          </SecondaryButton>
+        </div>
       </form>
     </section>
   );

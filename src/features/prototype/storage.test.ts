@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { initialState } from "./model";
+import { initialState, transition } from "./model";
 import {
   MAX_IMPORT_BYTES,
   parseState,
@@ -7,6 +7,7 @@ import {
   saveState,
   serializeState,
   STORAGE_KEY,
+  StorageConflictError,
 } from "./storage";
 function memory(raw: string | null = null) {
   const values = new Map(raw === null ? [] : [[STORAGE_KEY, raw]]);
@@ -24,6 +25,19 @@ describe("browser persistence and recovery", () => {
     saveState(storage, s);
     expect(readState(storage).state).toEqual(s);
     expect(parseState(serializeState(s))).toEqual(s);
+  });
+  it("rejects a stale snapshot without overwriting another tab's data", () => {
+    const storage = memory();
+    const original = readState(storage);
+    const changed = { ...original.state, activePersonId: "candidate-anna" };
+    saveState(storage, changed, original.snapshot);
+    const saved = storage.getItem(STORAGE_KEY);
+    expect(() => saveState(storage, original.state, original.snapshot)).toThrow(
+      StorageConflictError,
+    );
+    expect(storage.getItem(STORAGE_KEY)).toBe(saved);
+    saveState(storage, original.state, saved);
+    expect(readState(storage).state).toEqual(original.state);
   });
   it("protects incompatible/corrupt original saves", () => {
     for (const raw of ["{", JSON.stringify({ ...initialState(), version: 2 })]) {
@@ -67,5 +81,71 @@ describe("browser persistence and recovery", () => {
     for (const theme of ["dark", "system", "light"]) {
       expect(parseState(JSON.stringify({ ...state, theme }))).toEqual(state);
     }
+  });
+  it("resumes version-1 drafts and keeps legacy submissions without a project response", () => {
+    const state = initialState();
+    state.activePersonId = "candidate-anna";
+    const draft = {
+      candidateId: "candidate-anna",
+      jobId: state.jobs[0].id,
+      notes: "Legacy source notes",
+      generated: "Legacy proposal",
+      answer: "Approved answer with sufficient context.",
+    };
+    state.drafts.push(draft);
+    const imported = parseState(serializeState(state));
+    expect(imported).toStrictEqual(state);
+    const submitted = transition(imported, {
+      type: "submit",
+      ...draft,
+      projectAnswer: "An answer for a question that is not present.",
+      consent: true,
+    });
+    expect(submitted.applications.at(-1)).toMatchObject({
+      answer: draft.answer,
+      sourceNotes: draft.notes,
+      generatedAnswer: draft.generated,
+    });
+    expect(submitted.applications.at(-1)).not.toHaveProperty("projectResponse");
+    expect(submitted.applications[0]).toEqual(state.applications[0]);
+  });
+  it("round-trips a pending job revision, project draft and skipped submission", () => {
+    const state = initialState();
+    state.activePersonId = "employer-brightlabs";
+    const job = { ...state.jobs[0], projectQuestion: "Za co odpowiadałeś osobiście?" };
+    let next = transition(state, { type: "publish", job });
+    const revision = {
+      ...job,
+      publicationStatus: "draft" as const,
+      projectQuestion: "Jaki był efekt?",
+    };
+    next = transition(next, { type: "save_job_draft", job: revision });
+    expect(next.jobs[0]).toStrictEqual(job);
+    expect(next.jobRevisions).toStrictEqual([revision]);
+    next = transition(next, { type: "select_person", id: "candidate-anna" });
+    const input = {
+      jobId: job.id,
+      notes: "",
+      generated: "",
+      answer: "Approved answer with sufficient context.",
+    };
+    next = transition(next, { type: "draft", ...input, projectAnswer: "  Własny wkład.  " });
+    const storage = memory();
+    saveState(storage, next);
+    const loaded = readState(storage).state;
+    expect(loaded).toStrictEqual(next);
+    expect(loaded.drafts[0].projectResponse).toEqual({
+      question: job.projectQuestion,
+      answer: "Własny wkład.",
+    });
+    next = transition(loaded, { type: "submit", ...input, projectAnswer: "  ", consent: true });
+    expect(parseState(serializeState(next)).applications.at(-1)?.projectResponse).toEqual({
+      question: job.projectQuestion,
+      answer: "",
+    });
+    expect(next.drafts).toHaveLength(0);
+    expect(() =>
+      parseState(serializeState({ ...next, jobRevisions: [{ ...revision, slug: "wrong-slug" }] })),
+    ).toThrow("Nieprawidłowy plik");
   });
 });

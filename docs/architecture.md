@@ -1,12 +1,12 @@
 # Architecture
 
-One React/TypeScript application is built by Vite into static files. HashRouter renders routes under /#/; route parameters created in the browser require no hosting rewrites. The running app currently uses local CSS tokens, Timeless font and Base UI primitives. New and changed UI must follow the accepted Poster People [design system](design-system/README.md), adapted into the existing stack; installing its reference did not convert runtime styles. There is no server data/API layer.
+One React/TypeScript application is built by Vite into static files. HashRouter renders routes under /#/; route parameters created in the browser require no hosting rewrites. New and changed UI uses local CSS tokens and Base UI primitives under the [Editaurus contract](design-system/editaurus/README.md). Vite dev and preview offer an optional local OpenRouter proxy for question suggestions and voice analysis. On Vercel, root api/project-ai entries expose the same provider operations through Node.js Functions with bounded JSON, same-origin browser checks and shared Zod schemas. The proxy validates the bounded payload and holds the provider key. Scenario data is stored by the browser.
 
 ## Data flow
 
 JSON marketplace/person fixtures → initialState → PrototypeProvider → feature views. Local operations go through transition with shared Zod schemas and explicit role/ownership/transition checks for coherent simulation. All roles still have access to the same browser data; these checks are not security.
 
-Candidate source notes, generated draft and approved application are distinct fields. Submission snapshots CV, candidate name, job title, scenario score and summary. Employer stage events are appended, with private-in-the-UI notes. Profile/job edits do not rewrite submitted records.
+Candidate source notes, generated draft and approved application are distinct fields. Submission snapshots the CV, candidate name, job title, scenario score and summary. A project answer snapshots its question and the written answer or recording, transcript and AI summary. The proxy requests a speech-to-text transcript and sends that transcript to the text model for summarization. Employer stage events append private-in-the-UI notes. Profile and job edits do not rewrite submitted records.
 
 Storage uses one versioned localStorage key. Import validates schema/version, unique IDs, cross-references and stage history before replacing state. Unreadable/incompatible saves are protected against automatic overwrite; settings can download the original raw save, import a valid file or explicitly reset. Failed/quota-limited persistence leaves the in-memory app usable and offers export. Import/export is capped at 2 MB; no binary CV storage.
 
@@ -23,3 +23,11 @@ The baseline historical CSV and JSON are separate from interactive state. Future
 ## Checks
 
 npm run check and ./scripts/verify run formatting, design-system reference integrity/example checks, lint, types, unit tests, build and Playwright against the static preview. Playwright checks external requests, complete workflows, error/recovery behavior, keyboard controls and mobile layout. No test starts system services. npm run dev only starts Vite.
+
+## Local concurrency and optional AI limits
+
+The store holds a Web Locks writer lock for its tab lifetime. This keeps the synchronous domain transition API and prevents concurrent full-scenario writes by cooperating tabs. A second tab rejects domain actions, import and reset; it can take over after the writer closes and it reloads. Snapshot comparison detects intervening writes outside this protocol. Unsupported Web Locks environments reject writes rather than falling back to an unsafe localStorage lock. No scenario schema migration or cross-tab merge is introduced.
+
+Each Vite proxy instance shares an in-memory gate across question and voice actions: one active request, 10 attempts per fixed minute and 100 attempts per process. A finally block releases the active slot on success, validation errors and provider failures. These limits survive client disconnects within the process, but reset on restart and do not establish a provider currency budget.
+
+Hosted AI is public and relies on the owner-configured OpenRouter key budget ($1 for this experiment). Local process attempt limits are not applied as a distributed Vercel limit. The key remains in server environment variables; Functions allow 120 seconds for the sequential voice operations.
