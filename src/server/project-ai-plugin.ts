@@ -7,6 +7,8 @@ import {
 } from "../features/prototype/project-ai";
 import { openRouter } from "./openrouter";
 import { aiRequestLimits } from "./ai-request-limits";
+import { createAiObserver, readAiCallContext } from "./posthog-ai";
+import { createPostHogLogger } from "./posthog-logs";
 
 const actions = {
   "/api/project-ai/questions": { operation: "questions", schema: questionContextSchema },
@@ -36,12 +38,15 @@ async function readBody(request: IncomingMessage): Promise<unknown> {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
-export function projectAiPlugin(env: Record<string, string>): Plugin {
+export function projectAiPlugin(env: Record<string, string | undefined>): Plugin {
   const limits = aiRequestLimits();
+  const observer = createAiObserver(env);
+  const logger = createPostHogLogger(env);
   const ai = openRouter({
     apiKey: env.OPENROUTER_API_KEY?.trim() ?? "",
     textModel: env.OPENROUTER_TEXT_MODEL,
     transcriptionModel: env.OPENROUTER_TRANSCRIPTION_MODEL,
+    observer,
   });
 
   async function handle(request: IncomingMessage, response: ServerResponse, next: () => void) {
@@ -80,17 +85,41 @@ export function projectAiPlugin(env: Record<string, string>): Plugin {
       return json(response, 429, { error: slot.error });
     }
     try {
+      logger?.info("project AI request accepted", { operation: action.operation });
       if (action.operation === "questions") {
         const input = action.schema.safeParse(body);
         if (!input.success)
           return json(response, 400, { error: "Sprawdź treść briefu i opisu oferty." });
-        return json(response, 200, await ai.questions(input.data));
+        const result = await ai.questions(
+          input.data,
+          readAiCallContext((name) => {
+            const value = request.headers[name];
+            return Array.isArray(value) ? value[0] : value;
+          }),
+        );
+        logger?.info("project AI request completed", {
+          operation: action.operation,
+          status_code: 200,
+        });
+        return json(response, 200, result);
       }
       const input = action.schema.safeParse(body);
       if (!input.success)
         return json(response, 400, { error: "Sprawdź format i rozmiar nagrania." });
-      return json(response, 200, await ai.voice(input.data));
+      const result = await ai.voice(
+        input.data,
+        readAiCallContext((name) => {
+          const value = request.headers[name];
+          return Array.isArray(value) ? value[0] : value;
+        }),
+      );
+      logger?.info("project AI request completed", {
+        operation: action.operation,
+        status_code: 200,
+      });
+      return json(response, 200, result);
     } catch {
+      logger?.error("project AI request failed", { operation: action.operation, status_code: 502 });
       return json(response, 502, {
         error:
           action.operation === "questions"
@@ -106,9 +135,17 @@ export function projectAiPlugin(env: Record<string, string>): Plugin {
     name: "local-project-ai",
     configureServer(server) {
       server.middlewares.use(handle);
+      server.httpServer?.once("close", () => {
+        void observer?.shutdown();
+        void logger?.shutdown();
+      });
     },
     configurePreviewServer(server) {
       server.middlewares.use(handle);
+      server.httpServer?.once("close", () => {
+        void observer?.shutdown();
+        void logger?.shutdown();
+      });
     },
   };
 }

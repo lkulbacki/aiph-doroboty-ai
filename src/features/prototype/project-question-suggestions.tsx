@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { usePostHog } from "@posthog/react";
 import { SecondaryButton } from "@/components/editaurus/secondary-button";
 import { suggestQuestions } from "./project-ai-client";
 
@@ -14,6 +15,7 @@ export function ProjectQuestionSuggestions({
   onSelect: (question: string) => void;
 }) {
   const groupName = useId();
+  const posthog = usePostHog();
   const [proposals, setProposals] = useState<string[]>([]);
   const [selection, setSelection] = useState<string>();
   const [error, setError] = useState("");
@@ -35,7 +37,10 @@ export function ProjectQuestionSuggestions({
         { title, brief, description },
         controller.signal,
       );
-      if (!controller.signal.aborted) setProposals(questions);
+      if (!controller.signal.aborted) {
+        setProposals(questions);
+        posthog.capture("project_questions_generated", { question_count: questions.length });
+      }
     } catch (error) {
       if (!controller.signal.aborted)
         setError(error instanceof Error ? error.message : "Spróbuj ponownie.");

@@ -1,4 +1,5 @@
 import { useRef, useState, type FormEvent } from "react";
+import { usePostHog } from "@posthog/react";
 import { Link, useNavigate, useParams } from "react-router";
 import { EditaurusTextarea } from "@/components/editaurus/textarea";
 import { HeroButton, HeroLink } from "@/components/editaurus/hero-button";
@@ -71,6 +72,7 @@ export function EmployerJobs() {
 export function EmployerJobEditor() {
   const { id } = useParams();
   const { state, run } = usePrototype();
+  const posthog = usePostHog();
   const person = currentPerson(state)!;
   const navigate = useNavigate();
   const existing = state.jobs.find((x) => x.id === id && x.companyId === person.companyId);
@@ -157,8 +159,14 @@ export function EmployerJobEditor() {
       );
       return;
     }
-    if (run({ type: draft ? "save_job_draft" : "publish", job: parsed.data }))
+    if (run({ type: draft ? "save_job_draft" : "publish", job: parsed.data })) {
+      posthog.capture(draft ? "job_draft_saved" : "job_published", {
+        is_existing_job: Boolean(existing),
+        job_category: parsed.data.category,
+        has_project_question: Boolean(parsed.data.projectQuestion),
+      });
       navigate("/app/oferty");
+    }
   }
   return (
     <section className="editaurus-applications editaurus-profile editaurus-job-editor">
@@ -199,6 +207,7 @@ export function EmployerJobEditor() {
                 `${title}\n\nO roli\n${source.trim().slice(0, 10000)}\n\nJak pracujemy\nŁączymy potrzeby użytkowników, odpowiedzialne wykorzystanie AI i mierzalne efekty.\n\nProces rekrutacji\nPrześlij aplikację i opowiedz o projekcie, w którym Twoje decyzje wpłynęły na wynik.`,
               );
               setApproved(false);
+              posthog.capture("job_description_generated");
             }}
           >
             Przygotuj opis z AI
@@ -271,6 +280,7 @@ export function EmployerJobEditor() {
             onSelect={(question) => {
               setProjectQuestion(question);
               setApproved(false);
+              posthog.capture("project_question_selected");
               projectQuestionInput.current?.focus();
             }}
           />
@@ -357,6 +367,7 @@ export function EmployerJobEditor() {
 }
 export function CompanyEditor() {
   const { state, run } = usePrototype();
+  const posthog = usePostHog();
   const person = currentPerson(state)!;
   const company = state.companies.find((x) => x.id === person.companyId)!;
   const [message, setMessage] = useState("");
@@ -369,8 +380,10 @@ export function CompanyEditor() {
         name: String(data.get("name")),
         description: String(data.get("description")),
       })
-    )
+    ) {
+      posthog.capture("company_profile_updated");
       setMessage("Dane firmy zostały zapisane.");
+    }
   }
   return (
     <section className="editaurus-applications editaurus-profile">

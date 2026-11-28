@@ -143,6 +143,13 @@ export function PrivacyPage() {
           transkrypcję do przygotowania podsumowania.
         </p>
         <p>
+          Jeśli PostHog jest skonfigurowany, zbiera zdarzenia działań, identyfikator i rolę
+          przykładowej osoby, błędy i logi przeglądarki oraz techniczne metryki wywołań AI. Nie
+          wysyłamy do analityki nagrań, transkrypcji, treści zapytań i odpowiedzi AI ani edytowanych
+          imion i nazwisk. Treść i atrybuty elementów są maskowane, a nagrywanie sesji jest
+          wyłączone. Analityka przeglądarki respektuje sygnał „Do Not Track”.
+        </p>
+        <p>
           Możesz usunąć zmiany przyciskiem „Resetuj scenariusz” w ustawieniach lub wyczyścić dane
           witryny w przeglądarce. Hosting może prowadzić własne logi dostępu.
         </p>

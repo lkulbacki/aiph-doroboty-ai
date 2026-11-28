@@ -4,6 +4,8 @@ import {
   recordingSchema,
 } from "../features/prototype/project-ai.js";
 import { openRouter } from "./openrouter.js";
+import { createAiObserver, readAiCallContext } from "./posthog-ai.js";
+import { createPostHogLogger } from "./posthog-logs.js";
 
 type Operation = "questions" | "voice";
 const maxBodyBytes = (MAX_AUDIO_BYTES * 4) / 3 + 1000;
@@ -59,26 +61,38 @@ export async function handleProjectAi(
   } catch {
     return json(400, { error: "Nie udało się odczytać danych." });
   }
+  const observer = createAiObserver(env);
+  const logger = createPostHogLogger(env);
+  const context = readAiCallContext((name) => request.headers.get(name));
   const ai = openRouter({
     apiKey: env.OPENROUTER_API_KEY.trim(),
     textModel: env.OPENROUTER_TEXT_MODEL,
     transcriptionModel: env.OPENROUTER_TRANSCRIPTION_MODEL,
+    observer,
   });
   try {
+    logger?.info("project AI request accepted", { operation });
     if (operation === "questions") {
       const input = questionContextSchema.safeParse(body);
       if (!input.success) return json(400, { error: "Sprawdź treść briefu i opisu oferty." });
-      return json(200, await ai.questions(input.data));
+      const result = await ai.questions(input.data, context);
+      logger?.info("project AI request completed", { operation, status_code: 200 });
+      return json(200, result);
     }
     const input = recordingSchema.safeParse(body);
     if (!input.success) return json(400, { error: "Sprawdź format i rozmiar nagrania." });
-    return json(200, await ai.voice(input.data));
+    const result = await ai.voice(input.data, context);
+    logger?.info("project AI request completed", { operation, status_code: 200 });
+    return json(200, result);
   } catch {
+    logger?.error("project AI request failed", { operation, status_code: 502 });
     return json(502, {
       error:
         operation === "questions"
           ? "Nie udało się przygotować pytań. Spróbuj ponownie."
           : "Nie udało się przetworzyć nagrania. Możesz zapisać szkic i spróbować ponownie.",
     });
+  } finally {
+    await observer?.flush();
   }
 }
