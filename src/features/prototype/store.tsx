@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { initialState, transition, type Action, type State } from "./model";
+import { trackAction } from "../analytics/posthog";
 import {
   MAX_IMPORT_BYTES,
   STORAGE_KEY,
@@ -100,7 +101,9 @@ function useStore() {
         throw new Error(
           "Zapis scenariusza przekroczyłby 2 MB. Skróć nagranie lub wpisz odpowiedź.",
         );
-      return commit(next);
+      const committed = commit(next);
+      if (committed) trackAction(action.type);
+      return committed;
     } catch (e) {
       setError(
         e instanceof Error && e.name !== "ZodError"

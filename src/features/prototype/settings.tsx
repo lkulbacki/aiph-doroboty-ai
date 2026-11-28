@@ -143,6 +143,12 @@ export function PrivacyPage() {
           transkrypcję do przygotowania podsumowania.
         </p>
         <p>
+          Jeśli analityka jest włączona w tej wersji, PostHog otrzymuje odsłony ekranów i typy
+          wykonanych akcji. Nie przesyłamy treści formularzy, CV, nagrań ani identyfikatorów
+          wybranych osób. Nie nagrywamy sesji. Anonimowy identyfikator działa do odświeżenia strony;
+          analityka respektuje sygnał „Do Not Track” przeglądarki.
+        </p>
+        <p>
           Możesz usunąć zmiany przyciskiem „Resetuj scenariusz” w ustawieniach lub wyczyścić dane
           witryny w przeglądarce. Hosting może prowadzić własne logi dostępu.
         </p>
