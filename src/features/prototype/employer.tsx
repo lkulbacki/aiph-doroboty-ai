@@ -163,7 +163,6 @@ export function EmployerJobEditor() {
       posthog.capture(draft ? "job_draft_saved" : "job_published", {
         is_existing_job: Boolean(existing),
         job_category: parsed.data.category,
-        job_function: parsed.data.function,
         has_project_question: Boolean(parsed.data.projectQuestion),
       });
       navigate("/app/oferty");

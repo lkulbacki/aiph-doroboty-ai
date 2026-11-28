@@ -12,6 +12,10 @@ if (posthogToken && posthogHost) {
   posthog.init(posthogToken, {
     api_host: posthogHost,
     defaults: "2026-08-30",
+    mask_all_text: true,
+    mask_all_element_attributes: true,
+    disable_session_recording: true,
+    respect_dnt: true,
     logs: {
       serviceName: "doroboty-ai-web",
       environment: import.meta.env.MODE,
@@ -26,9 +30,7 @@ if (posthogToken && posthogHost) {
   const missingVariable = posthogToken
     ? "VITE_PUBLIC_POSTHOG_HOST"
     : "VITE_PUBLIC_POSTHOG_PROJECT_TOKEN";
-  throw new Error(
-    `${missingVariable} variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once ${missingVariable} is configured`,
-  );
+  console.info(`${missingVariable} is not configured; PostHog analytics is inactive.`);
 }
 
 createRoot(document.getElementById("root")!).render(

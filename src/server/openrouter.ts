@@ -33,19 +33,6 @@ function numberValue(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
 }
 
-function generationOutput(endpoint: string, payload: unknown) {
-  const response = objectValue(payload);
-  if (endpoint === "chat/completions" && Array.isArray(response?.choices)) {
-    return response.choices.flatMap((choice) => {
-      const message = objectValue(objectValue(choice)?.message);
-      return typeof message?.content === "string"
-        ? [{ role: "assistant", content: message.content }]
-        : [];
-    });
-  }
-  return typeof response?.text === "string" ? [{ role: "assistant", content: response.text }] : [];
-}
-
 export function openRouter(config: OpenRouterConfig, fetchProvider = fetch) {
   const textModel = config.textModel || "openai/gpt-oss-20b";
   const transcriptionModel = config.transcriptionModel || "openai/whisper-large-v3-turbo";
@@ -59,10 +46,6 @@ export function openRouter(config: OpenRouterConfig, fetchProvider = fetch) {
   ) {
     const startedAt = Date.now();
     const request = body as Record<string, unknown>;
-    const input =
-      endpoint === "chat/completions" && Array.isArray(request.messages)
-        ? request.messages
-        : [{ role: "user", content: JSON.stringify(body) }];
     const model = typeof request.model === "string" ? request.model : undefined;
     try {
       const response = await fetchProvider(`https://openrouter.ai/api/v1/${endpoint}`, {
@@ -80,7 +63,6 @@ export function openRouter(config: OpenRouterConfig, fetchProvider = fetch) {
             endpoint === "chat/completions" ? "structured_chat_completion" : "audio_transcription",
           $ai_model: model,
           $ai_provider: "openrouter",
-          $ai_input: input,
           $ai_latency: (Date.now() - startedAt) / 1_000,
           $ai_http_status: response.status,
           $ai_is_error: true,
@@ -96,8 +78,6 @@ export function openRouter(config: OpenRouterConfig, fetchProvider = fetch) {
           endpoint === "chat/completions" ? "structured_chat_completion" : "audio_transcription",
         $ai_model: model,
         $ai_provider: "openrouter",
-        $ai_input: input,
-        $ai_output_choices: generationOutput(endpoint, payload),
         $ai_input_tokens: numberValue(usage?.prompt_tokens) ?? numberValue(usage?.input_tokens),
         $ai_output_tokens:
           numberValue(usage?.completion_tokens) ?? numberValue(usage?.output_tokens),
@@ -119,10 +99,9 @@ export function openRouter(config: OpenRouterConfig, fetchProvider = fetch) {
             endpoint === "chat/completions" ? "structured_chat_completion" : "audio_transcription",
           $ai_model: model,
           $ai_provider: "openrouter",
-          $ai_input: input,
           $ai_latency: (Date.now() - startedAt) / 1_000,
           $ai_is_error: true,
-          $ai_error: error.message,
+          $ai_error: "OpenRouter request failed.",
         });
       }
       throw error;

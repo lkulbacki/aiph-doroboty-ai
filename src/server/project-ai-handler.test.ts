@@ -30,10 +30,10 @@ describe("hosted project AI HTTP boundary", () => {
     expect(result.status).toBe(200);
     expect(result.headers.get("cache-control")).toBe("no-store");
     expect(await result.json()).toEqual({ questions: ["Jaki był efekt?"] });
-    expect(provider.questions).toHaveBeenCalledWith(context);
+    expect(provider.questions).toHaveBeenCalledWith(context, null);
     const recording = { format: "webm", data: "AAAA" };
     expect((await voice.fetch(request(recording))).status).toBe(200);
-    expect(provider.voice).toHaveBeenCalledWith(recording);
+    expect(provider.voice).toHaveBeenCalledWith(recording, null);
   });
 
   it("rejects unsupported methods, foreign origins and content types before calling AI", async () => {
@@ -67,6 +67,29 @@ describe("hosted project AI HTTP boundary", () => {
       ).status,
     ).toBe(415);
     expect(provider.questions).not.toHaveBeenCalled();
+  });
+
+  it("passes validated PostHog context through the hosted boundary", async () => {
+    const trace = {
+      distinctId: "candidate-example",
+      sessionId: "session-example",
+      traceId: "trace-example",
+    };
+    const response = await handleProjectAi(
+      "questions",
+      request(context, {
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "https://prototype.vercel.app",
+          "x-posthog-distinct-id": trace.distinctId,
+          "x-posthog-session-id": trace.sessionId,
+          "x-posthog-trace-id": trace.traceId,
+        },
+      }),
+      env,
+    );
+    expect(response.status).toBe(200);
+    expect(provider.questions).toHaveBeenCalledWith(context, trace);
   });
 
   it("rejects missing configuration, malformed JSON and invalid domain payloads", async () => {

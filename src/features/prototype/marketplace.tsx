@@ -547,7 +547,6 @@ export function JobPage() {
                       if (run({ type: "toggle_saved", jobId: job.id })) {
                         posthog.capture(saved ? "job_unsaved" : "job_saved", {
                           job_category: job.category,
-                          job_function: job.function,
                         });
                       }
                     }}

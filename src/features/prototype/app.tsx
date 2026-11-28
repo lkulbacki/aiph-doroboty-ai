@@ -36,7 +36,6 @@ function PostHogIdentity() {
 
     if (person) {
       posthog.identify(person.id, {
-        name: person.name,
         role: person.role,
       });
     }

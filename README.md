@@ -78,6 +78,25 @@ hosting changes. Verify questions, voice, provider-error recovery and microphone
 permission on HTTPS using synthetic data. A successful build does not establish
 that the hosted AI provider works. Browser scenarios remain device-local.
 
+## PostHog wizard integration
+
+Optional analytics uses `VITE_PUBLIC_POSTHOG_PROJECT_TOKEN` (the public project
+token, never a personal API key) and `VITE_PUBLIC_POSTHOG_HOST`
+(`https://eu.i.posthog.com`). Set them in Vercel Production before deployment,
+or in `.env.local` for an explicit local analytics test. Without both values,
+participant startup and the local AI workflow remain available without analytics.
+
+The wizard's React provider tracks named product events, synthetic persona IDs
+and roles, browser errors/logs, and server AI model, timing, token/cost and status
+metadata linked through trace headers. AI prompts, recordings, transcripts and
+generated responses are excluded from telemetry; edited names and custom job
+functions are not sent. Autocapture text/attributes are masked and session replay
+is disabled. Do Not Track is respected by the browser SDK. Use synthetic data
+only; PostHog receives browser/network metadata. Removing both variables and
+rebuilding disables instrumentation. This does not delete earlier collected data.
+
+Local checks and successful deployment do not prove dashboard event receipt.
+
 ## Build and verify
 
 ```sh
